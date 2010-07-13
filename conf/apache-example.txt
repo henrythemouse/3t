@@ -1,0 +1,44 @@
+# 
+# Change the file path ( '/www/fleet') to the correct one for your setup.
+# 
+
+LoadModule python_module modules/mod_python.so
+
+<Directory /www/fleet>
+    Order allow,deny
+    Allow from all
+</Directory>
+
+# the sethandler directive applies to 
+# the stated dir and all subdirs unless 
+# overriden by subsequent directives
+
+<Directory /www/fleet>
+	SetHandler mod_python
+	PythonHandler mod_python.publisher
+   	PythonDebug On
+	PythonPath "sys.path+['/www/fleet']"
+	Order allow,deny
+	Allow from all
+</Directory>
+
+
+# have to sethandler to none in order
+# for images and other dirs to be useable
+# as just data dirs
+
+<Directory /www/fleet/images>
+	SetHandler none
+</Directory>
+<Directory /www/fleet/itemimages>
+	SetHandler none
+</Directory>
+<Directory /www/fleet/catimages>
+	SetHandler none
+</Directory>
+<Directory /www/fleet/style>
+	SetHandler none
+</Directory>
+<Directory /www/fleet/cat>
+	SetHandler none
+</Directory>

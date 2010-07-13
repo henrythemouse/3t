@@ -1,0 +1,70 @@
+********************************************************
+In general these installation instructions are focused toward the 
+minimum needed to get 3t running. Other configurations are 
+possible and sometimes desireable depending on your server
+configuration and administrative access and skills.
+
+Windows users will have to modify the path values at least.
+Use the files under the 'conf' directory for examples.
+********************************************************
+
+- STEP ONE - PACKAGE INSTALLATION
+
+** Unpack the auto archive in your apache document root
+    You are reading this. Seems like you've already done this step.
+** Install Apache (tested using ver 2.2.11)
+** Install MySQL server and command client (tested using ver 5.1)
+    Setup default user to be 'root' with no password
+    Use 'localhost' as server, and any valid email address as a contact.
+** Install Python (tested using ver 2.5.2)
+** Install Python mod_python (tested using ver 3.3.1) (for Python 2.5)
+    Apache can not be running during this installation.
+** Install Python MySQL-python (tested using ver 1.2.2) (for Python 2.5)
+
+- STEP TWO - PACKAGE CONFIGURATION
+    ( for example, using a db named 'auto')
+    
+** auto:
+    Rename the program dir to 'auto'.
+    Change variables and paths at top of index.py.
+    Change the paths in conf/apache-auto.txt.
+
+** Apache:
+    Edit the Apache configuration file.
+    Set the documentroot to the path where you want to server the files from.
+	Use the Apache Include directive to include the the db configuration file:
+	Include /www/auto/conf/apache-auto.txt
+	(useing your path-to-conf-file, above is just and example)
+	
+** MySQL:
+    Create MySQL DB, using default user 'root' that has a blank password.
+	Open a command prompt and cd to /www/auto/conf (example location)
+	Setting up the mysql database can be done by creating an empty 
+	database, importing the table layout and granting the proper permissions.
+	A initial default record will be created automatically.
+    
+    Here is an example of that procedure (using the example sql.txt provided):
+    
+    (The mysql command line utility may not be in the executable path. In that
+    case you should use the full path to the executable instead of 'mysql'.)
+    
+    The mysql user/password in the GRANT statement must be the same as the dbname (auto).
+
+	# mysql -uroot
+	> CREATE DATABASE auto character set utf8 collate utf8_unicode_ci;
+	> GRANT ALL PRIVILEGES ON auto.* TO auto@localhost IDENTIFIED BY 'auto';
+	> quit
+
+	# mysql -uroot auto < sql.txt 
+    
+    Theres a gui client provided by MySQL, if you prefer, you can use that to do the same thing.
+	
+** Access to the auto web page:
+    Open your web browser and type the auto url in the address bar.
+    
+    http://localhost/auto
+    
+    ( for remote access you may need to use the ip address of the server in place of 'localhost')
+    
+**********************************************************
+END OF INSTALLATION INSTRUCTIONS

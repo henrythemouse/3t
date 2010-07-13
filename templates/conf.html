@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<HTML>
+
+<HEAD>
+<title> Configuration</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+<LINK rel="stylesheet" href="style/main.css" type="text/css">
+</HEAD>
+<BODY>
+<B><%=message1%></B><BR>
+<B><%=message2%></B><BR>
+<B><%=message3%></B><BR>
+<B><%=message4%></B><BR>
+<B><%=message5%></B><BR>
+    <!--Start the Edit table area-->
+
+<%
+fileName='config.txt'
+apacheConfig=req.get_config()
+rootPath=apacheConfig['PythonPath'][11:-2]
+directory=req.construct_url("")
+configFile=rootPath+"/"+'conf'+'/'+fileName
+confFile=open(configFile,"rb")
+lines=confFile.readlines()
+confFile.close()
+x="http://cube"+"/fleet/"
+for thisLine in range(0,9):
+%>
+            <!-- result header -->
+            <DIV >
+                <%=lines[thisLine]%>
+            </DIV>
+<%
+#end
+%>
+    <FORM method="post" name="errorConfig" enctype="multipart/form-data" action="myFunctions/writeConfig">
+<%
+for thisLine in range(9,len(lines)):
+    if lines[thisLine][0:2]=="# ":
+        pass
+    elif lines[thisLine][0:2]=="##":
+%>
+            <!-- description of configuration value -->
+            <DIV >
+                <%=lines[thisLine][2:]%>
+            </DIV>
+<%
+    elif "#" not in lines[thisLine] and len(lines[thisLine].strip())>0:
+        inputLine=lines[thisLine].split("=")
+        label=repr(inputLine[0].strip())
+        value=repr(inputLine[1].strip())
+%>
+            <!--  value input -->
+            </DIV>
+                <INPUT TYPE="text" NAME=<%=label%> VALUE=<%=value%> MAXLENGTH="50" SIZE="50" Class="editfield">
+            </DIV>
+            <BR><BR>
+<%
+#end
+%>
+
+
+    <INPUT TYPE="hidden" NAME="errorConfig" VALUE="errorConfig">
+    <input type="submit" value="Submit" />
+    
+    </FORM>
+</BODY>
+</HTML>

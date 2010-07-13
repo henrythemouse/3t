@@ -1,0 +1,84 @@
+fleet (2.0-1) unstable; urgency=low
+
+  * Added support for a third table to store notes and images 
+    for records in the item table and the catagory table.
+  * Added more css to better control table results and edit tables.
+  * Validated all pages to HTML 4.01 strict.
+  * Replaced all uses of <span> with <div>.
+  * Replaced use of target="_blank" with js (onClick="window.open(this.href);return false;").
+  * Removed unused code.
+  * Updated db tables to reflect storage changes:
+    Removed Glob table, removed note column in service table,
+    and removed name column in note table.
+  * Upgrading from ver 1.1 will require moving data over to new
+    tables/columns and updating indexes.
+  * Added support for Integer and Float fields
+  * Changed 'note' icon.
+  * Require web server write access to itemimages, catimages,
+     conf, and tmp dirs.
+  * Implemented multiple configuration editing and creating via the about view.
+     Load configs via the url: add 'config=(dbname) to url.
+  * Enabled config for placing logoname on logo: top, middle, bottom. 
+     If the logoname wraps, bottom won't work, might as well select middle.
+  * Enabled All_Items in item picker and search routines.
+  * Removed requirement for pri fields to start with an '_'.
+  * Changed action associated with search checkbox to mean:
+     'enable boolean search' only. Just adds enum fields to the search.
+  * Added a login for insert/update privileges, default user will only have
+    select privileges (use the grant command to set table_priv)
+  
+  
+ -- Gary M. Witscher <g@webquery.org>  Sun, 21 Jun 2009 12:21:58 -0800
+
+fleet (1.2-1) unstable; urgency=low
+
+  * Added global search that searchs all cat records and returns a mixed
+     item/cat table, with a specific header for these searches.
+  * Changed main.html to loop through the header to cover multiple header lengths
+  * Move header and table element width settings out of css and into code to support
+     changing dbs without having to rewrite the css. getColWidths calculates the widths.
+  * Added queries to searchQuery function so that entering nothing returns everything.
+  * Started some error handling when insert/update queries might fail.
+  * Updated function itemData to use the uniqueItemID list, enabling custom item lists.
+  * Updated function catImgs so that the image names are gotten from the db
+    rather than the image directory. A default image is provided for missing images.
+  * Renamed mysqlInfo to config and getMysqlInfo to getConfig and rewrote them.
+  * All settable variables now set in getConfig.
+  * The logo image is now a link to the "About" display.
+  * Implemented a config.txt file and a internal dialog for editing that file.
+  * Changed 'system' field to 'sys', fits better in global search result tables.
+  * Combined the itemUniqueID fields into one field for global search result table.
+  * Added shim.gif to each TD as an additional row at the end of catTable to fix column widths.
+  * Added orderby to all search queries.
+  * Added hilites via css outline to all inputs except action buttons.
+
+ -- Gary M. Witscher <g@webquery.org>  Sun, 2 Aug 2009 12:21:58 -0800
+
+fleet (1.1-1) unstable; urgency=low
+
+  * Added more details to INSTALL.TXT.
+  * Updated INSTALL.TXT so that the db is created with utf8 support by example.
+  * Remove documentroot assignment from apache-fleet.txt.
+  * Add version to top of index.py
+  * Changed companyname and company to displayname, set to default.
+  * Added displaylogo variable to enable user level control of the logo image, set to default.
+  * Changed item list to display year-make-vln,  same year-make-model was not unique.
+  * Added function that saves mysql db info to a cookie so save functions could have access.
+  * Commented out line in myFunctions that stopped query execution.
+  * Updated sql.txt to NOT specifiy character set and collation - defaults to db level settings.
+  * Updated sql.txt to NOT include former auto-increment settings.
+  * Updated sql.txt to create service.date as a DATE field.
+  * Updated sql.txt to create service.cost as a varchr field.
+  * Updated sql.txt to create auto.vln with length 8
+  * Updated index.py so that field lengths are honored in text input fields.
+  * Clean out developement files from all directories.
+  * Moved the mysql database definitions to myFunctions.py as a function
+  * Updated all queries to use mysqlInfo dictionary definitions
+
+ -- Gary M. Witscher <g@webquery.org>  Sun, 21 Jun 2009 12:21:58 -0800
+
+fleet (1.0-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Gary M. Witscher <g@webquery.org>  Sun, 21 Jun 2009 12:21:58 -0800

@@ -1,0 +1,59 @@
+# configuration file for all 3 table dbs (3t)
+# Use this form to edit the configuration, editing this file by hand requires strict adherence to specific formatting.
+#
+# This file (config-(dbname).txt) must exists and must be located in the conf subdirectory of the program directory.
+# This form will create the file if it is found to be missing or is a new configuration.
+# To complete a new configuration you will need catImages in place under the dir "catImages/(dbname)"
+# The dir is automatically created and a default img is provided.
+#
+
+
+# start of configuration
+## Enter a name to print on top of the logo image (no default).
+displayname=My Junk Pile
+
+## Enter a location for the displayname (top,middle,bottom).
+displaynamelocation=bottom
+
+## Enter the name of the image to use as your logo (a default is provided).
+displaylogo=auto.jpg
+
+## Enter the database name for the mysql server (no default).
+dbname=auto
+
+## Enter the hostname for the mysql server (default is localhost).
+selectedHost=localhost
+
+## Enter the name of the category table (no default).
+catTable=service
+
+## Enter the name of the item table (no default).
+itemTable=auto
+
+## Enter the name of the media table (no default).
+mediaTable=note
+
+## Enter the catTable catagory field (enumeration field).
+catField=sys
+
+## Enter the catTable informational field (no default).
+## Used to visually provide a relatationship for media info.
+catInfo=service_
+
+## Enter the category table column that results will be sorted by (default ?).
+orderbyField=date
+
+## Enter a space seperated list of item table column names
+## that will uniquely identify an item (no default).
+itemUniqueID=year make_ model_
+
+## Enter a space seperated list of item table column names
+## that will comprise the All_Items table (no default).
+allItems=year make_ model_ vln vin
+
+## Enter a space seperated list of category table column names
+## that you want included in combination search results (no default).
+catSearchFields=sys service_ date vendor
+
+
+# end of configuration file

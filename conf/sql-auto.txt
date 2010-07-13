@@ -1,0 +1,58 @@
+# sql to create the needed tables for the auto db
+# assumes the db has already been created with the correct access permissions
+# run this from the command line or import into the MySQL gui client and execute
+
+CREATE TABLE `auto` (
+  `_aid` int(4) unsigned zerofill NOT NULL auto_increment,
+  `vin` varchar(25) default '',
+  `make_` varchar(10) default NULL,
+  `model_` varchar(10) default NULL,
+  `year` varchar(4) default NULL,
+  `cost` varchar(8) default NULL,
+  `vln` varchar(8) default '',
+  `modstamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `img` mediumblob,
+  `gvw` varchar(6) default NULL,
+  `evw` varchar(6) default NULL,
+  `reg_date` char(15) default NULL,
+  `equipment` text,
+  PRIMARY KEY  (`_aid`),
+  FULLTEXT KEY `auto` (`make_`,`model_`,`year`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `cookie` (
+  `_cookieID` bigint(20) unsigned NOT NULL default '0',
+  `modstamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `cookieData` mediumtext character set utf8,
+  PRIMARY KEY  (`_cookieID`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `note` (
+  `_nid` int(10) unsigned zerofill NOT NULL auto_increment,
+  `name_` varchar(25) default '',
+  `note` text,
+  `modstamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `_aid` int(10) unsigned zerofill default '0000000000',
+  PRIMARY KEY  (`_nid`),
+  FULLTEXT KEY `note` (`name_`,`note`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `service` (
+  `_sid` int(4) unsigned zerofill NOT NULL auto_increment,
+  `_aid` int(4) unsigned zerofill NOT NULL default '0000',
+  `system` enum('Maintenance','DriveTrain','Electrical','Fuel','ToDo','Cooling','Suspension','Emission','Body') NOT NULL default 'Maintenance',
+  `service_` varchar(25) default '',
+  `date` date default NULL,
+  `miles` varchar(6) default NULL,
+  `invoice` varchar(15) default NULL,
+  `cost` varchar(8) default NULL,
+  `vendor` enum('CM Motors','Napa','Other') NOT NULL default 'Other',
+  `note` text,
+  `modstamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`_sid`),
+  FULLTEXT KEY `service` (`note`,`service_`)
+) ENGINE=MyISAM;
+
+insert into `auto` (
+	`equipment`,`model_`,`vln`,`vin`,`make_`,`reg_date`,`cost`,`year`,`gvw`,`evw`) 
+	values ('default', 'defalult', 'default', 'default', 'default', '', '', '2020', '', '');

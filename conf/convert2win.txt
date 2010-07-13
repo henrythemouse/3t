@@ -1,0 +1,17 @@
+These are the steps I take to make a windowized version of fleet.
+
+Make a copy of the fleet directory, name it "fleet10". Replace the "10" 
+with the correct version number. Change to this directory.
+
+ZIP will create the zip file and convert eol to windows type.
+I use two seperate commands, one to do the text files, and one to add the binary files.
+Make sure that you cover all the image extensions that will be found by zip.
+
+1) Avoid the binary img files so the eol conversion will work.
+    zip -rl fleetwin10.zip fleet10 -x \*.jpg \*.png \*.gif \*.ico \*.img
+ 
+2) Add the image files.
+    zip -ru fleetwin10.zip fleet10
+    
+Move the new zip file to the public ftp directory.
+
