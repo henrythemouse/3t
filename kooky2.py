@@ -12,6 +12,7 @@ from mod_python import Cookie, apache,util
 def myCookies(req,action,data,kookyDB,selectedHost):
         
     #~ util.redirect(req,"testValue.py/testvalue?test="+action+" "+kookyDB)
+    #~ action="save"
     
     kookyID=''
     kookyData={}

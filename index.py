@@ -6,6 +6,9 @@ import datetime
 import imghdr
 import kooky2
 import myFunctions
+import mimetypes
+import shutil
+
 
 from mod_python import psp,util
 from mod_python import apache
@@ -235,6 +238,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         itemImage=itemImg(itemImage,item,config)
         search=searchForm(searchText)
         results=itemQuery(currentItem,item,config)
+        cleanTmp(config)
         
         # parse the results list
         caption=results[0]
@@ -259,6 +263,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         catImage=catImages[currentCat][1]
         search=searchForm(searchText)
         results=catQuery(req,catImages[currentCat][0],item[1],config)
+        cleanTmp(config)
         
         # parse the results list
         caption=results[0]
@@ -467,8 +472,8 @@ def index(req,currentCat=0,currentItem=1,action=0):
             catSelect=catForm(catImages,currentCat)
             catImage=catImages[currentCat][1]
             search=searchForm(searchText)
-            
             results=itemQuery(currentItem,item,config)
+            cleanTmp(config)
             
             # parse the results list
             caption=results[0]
@@ -498,9 +503,9 @@ def index(req,currentCat=0,currentItem=1,action=0):
             'userpass':userpass,\
             'results':results\
             }
-        #~ util.redirect(req,"testValue.py/testvalue?test="+"kooky"+repr('here'))
 
         kookied=kooky2.myCookies(req,'save',data,config['dbname'],config['selectedHost'])
+        #~ util.redirect(req,"testValue.py/testvalue?test="+"kooky"+repr(data))
 
         mainForm='templates/main.html'
 
@@ -1466,23 +1471,40 @@ def catTable(catData,categoryName,header,colWidths,config):
             noteID=db.dbConnect(config['selectedHost'],config['dbname'],q2,1)
             try:
                 note=noteID[0]
+                deleteImg="images/delete-inactive.png"
+                delToolTip=""
             except:
                 note=""
+                deleteImg="images/delete.png"
+                delToolTip="Delete Record"
                 
             for thisCol in range(0,len(thisRecord)):
 
                 if thisCol==0:
                     recNum=str(thisRecord[thisCol])
-                    # column for the edit button if not a All search
-                    if searchType=='booleanSearch':
-                        catRow.append(strict401gen.TD(strict401gen.RawText("&nbsp;"),Class="resultcol0"))
-                    elif searchType=="allSearch":
-                        edimage=strict401gen.Image(("images/edit.png","16","16"),alt="Edit",name="Edit",title="Edit Record")
-                        catRow.append(strict401gen.TD(strict401gen.Href("index?alledit="+str(thisRecord[thisCol]),edimage),Class="hilite"))
-                    else:
-                        edimage=strict401gen.Image(("images/edit.png","16","16"),alt="Edit",name="Edit",title="Edit Record")
-                        catRow.append(strict401gen.TD(strict401gen.Href("index?edit="+str(thisRecord[thisCol]),edimage),Class="resultcol0"))
 
+                    toolTable=strict401gen.TableLite(border=0,CLASS='',cellpadding="0",cellspacing="0")
+                    toolRow=strict401gen.TR(style="background-color:"+rowcolor)
+                    # column for the edit button
+                    if searchType=='booleanSearch':
+                        editImage=strict401gen.RawText("&nbsp;")
+                    elif searchType=="allSearch":
+                        editImage=strict401gen.Image(("images/edit.png","16","16"),alt="Edit",name="Edit",title="Edit Record")
+                    else:
+                        editImage=strict401gen.Image(("images/edit.png","16","16"),alt="Edit",name="Edit",title="Edit Record")
+                    toolRow.append(strict401gen.TD(strict401gen.Href("index?edit="+str(thisRecord[thisCol]),editImage),valign='top',colspan="1",Class="toolcol0"))
+                    toolTable.append(toolRow)
+                    toolRow=strict401gen.TR(style="background-color:"+rowcolor)
+                    
+                    # column for the delete link
+                    delimage=strict401gen.Image((deleteImg,str(endWidth),str(endWidth)),alt="Del",name="Del",title=delToolTip)
+                    if delToolTip:
+                        toolRow.append(strict401gen.TD(strict401gen.Href("index?action=96&catID="+str(thisRecord[thisCol]),delimage),valign='top',colspan="1",Class="toolcol0"))
+                    else:
+                        toolRow.append(strict401gen.TD(delimage,valign='top',colspan="1",Class="toolcol0"))
+                    toolTable.append(toolRow)                    
+                    catRow.append(strict401gen.TD(toolTable,valign='top',colspan="1",Class="toolcol0"))
+                    
                 elif thisRecord[thisCol]:
                     catRow.append(strict401gen.TD(thisRecord[thisCol],Class="resultcol"+str(thisCol)))
                 else:
@@ -1892,7 +1914,7 @@ def mediaQuery(record,config):
     
     for thisCol in qresult:
         if 'timestamp'in thisCol[1]:
-            orderby=thisCol[0]
+            pass
         elif thisCol[3]=='PRI':
             idCol=thisCol[0]
         elif thisCol[0] in config['primaries']:
@@ -1900,8 +1922,10 @@ def mediaQuery(record,config):
         elif config['owner'] in thisCol[0]:
             pass
         else:
+            if 'date'in thisCol[1]:
+                orderby=thisCol[0]
             colNames.append(thisCol[0])
-    colNames.insert(0,idCol)
+    colNames.insert(0,idCol)    # for edit link
     
      # build the select fields for the media table query
     selectFields=""
@@ -1950,15 +1974,17 @@ def mediaQuery(record,config):
 
 def mediaTable(mediaData,cookieID,record,config):
 
-    endWidth=32
+    endWidth=16
     mediaTable=strict401gen.TableLite(border=0,CLASS='resultstable',cellpadding="10",cellspacing="0")
     
     rowcolor='#FFFF99'
     imageCount=0
-
+    maxCols=len(mediaData[0])
+    
     for thisRecord in mediaData:
         
         # display the owner at the top of the media if available
+        # enabled for the 'read' db specifically
         if record[0]=="I":
             # this is an item note
             recordNum=record[1:]
@@ -1999,7 +2025,8 @@ def mediaTable(mediaData,cookieID,record,config):
         for thisCol in thisRecord:
             if thisCol:
                 colValues=colValues+1
-
+        
+        # go through the cols, insert the data into the table
         for thisCol in range(0,len(thisRecord)):
             
             # if this col is an image set the image type
@@ -2007,74 +2034,108 @@ def mediaTable(mediaData,cookieID,record,config):
                 imgType=imghdr.what('',thisRecord[thisCol])
                 # force 3 char extention for windows
                 if len(imgType)>3:
-                    imgType=imgType[0:2]+imgType[-1:]
+                    imgType="."+imgType[0:2]+imgType[-1:]
                 else:
-                    imgType=imgType
+                    imgType="."+imgType
             except:
                 imgType=''
             
+            # test if col is binary - defaults to not binary
+            isBinary=0
+            try:
+                if "\0" in thisRecord[thisCol]:
+                    isBinary=1
+                else:
+                    isBinary=0
+            except:
+                isBinary=0
+
+              
             if thisCol==0:
+                
+                toolTable=strict401gen.TableLite(border=0,CLASS='',cellpadding="0",cellspacing="0")
                 # column for the edit button if not a All search
+                toolRow=strict401gen.TR(style="background-color:"+rowcolor)
                 edimage=strict401gen.Image(("images/edit.png",str(endWidth),str(endWidth)),alt="Edit",name="Edit",title="Edit Record")
-                mediaRow.append(strict401gen.TD(strict401gen.Href("index?medit="+mediaType+str(thisRecord[thisCol]),edimage),valign='top',colspan="1",Class="mediacol0"))
-                                
-            # if it's an image write it to disk
+                toolRow.append(strict401gen.TD(strict401gen.Href("index?medit="+mediaType+str(thisRecord[thisCol]),edimage),valign='top',colspan="1",Class="mediacol0"))
+                toolTable.append(toolRow)
+                # column for the delete button if not a All search
+                toolRow=strict401gen.TR(style="background-color:"+rowcolor)
+                delimage=strict401gen.Image(("images/delete.png",str(endWidth),str(endWidth)),alt="Del",name="Del",title="Del Record")
+                toolRow.append(strict401gen.TD(strict401gen.Href("index?action=97"+"&mediaID="+str(thisRecord[thisCol])+"&mediaRecord="+str(record),delimage),valign='top',colspan="1",Class="mediacol0"))
+                toolTable.append(toolRow)
+                # add the buttons at col one
+                mediaRow.append(strict401gen.TD(toolTable,valign='top',colspan="1",Class="mediacol0"))
+
             elif imgType :
+                # if it's an image write it to disk so the program can load it
                 if os.path.exists(config['mediaPath']+cookieID):
                     pass
                 else:
                     os.mkdir(config['mediaPath']+cookieID)
                 imageCount=imageCount+1
                 # imagename must be unique
-                imagename=config['dbname']+'-'+str(thisRecord[0])+'-'+str(imageCount)+'.'+imgType
+                imagename=config['dbname']+'-'+str(thisRecord[0])+'-'+str(imageCount)+imgType
                 imgFile=open(config['mediaPath']+cookieID+'/'+imagename,"wb")
                 imgFile.write(thisRecord[thisCol])
                 imgFile.close()
                                     
-                if colValues==3:
-                    columns=1
-                    colClass='mediacol2'
-                else:
-                    columns=2
-                    colClass='mediacol3'
-                    
+                columns=1
+                
                 imageLink=strict401gen.Href("tmp/"+cookieID+'/'+imagename,strict401gen.Image("tmp/"+cookieID+'/'+imagename,alt="alt.img",Class="mediaimage"),onClick="window.open(this.href);return false;")
-                mediaRow.append(strict401gen.TD(imageLink,colspan=str(columns),valign='top',Class=colClass))
+                mediaRow.append(strict401gen.TD(imageLink,colspan=str(columns),align="right",valign='top',Class="mediaimage"))
                 
-            # if it's not an image, it's text
-            elif thisRecord[thisCol]:
-            
-                if colValues==3:
-                    columns=1
-                    colClass='mediacol1'
+            elif isBinary:
+                # this is a minimal branching for binary files not recognized as images
+                # I've read that it gives false results for utf16 files, possibly other files too.
+                # I just provide a download link
+                if os.path.exists(config['mediaPath']+cookieID):
+                    pass
                 else:
-                    columns=2
-                    colClass='mediacol3'
+                    os.mkdir(config['mediaPath']+cookieID)
+                imageCount=imageCount+1
+                # name must be unique
+                binaryname=config['dbname']+'-'+str(thisRecord[0])+'-'+str(imageCount)+imgType
+                binFile=open(config['mediaPath']+cookieID+'/'+binaryname,"wb")
+                binFile.write(thisRecord[thisCol])
+                binFile.close()
+                                    
+                columns=1
                 
-                text1=str(thisRecord[thisCol])
+                text="Download Binary File"
+                binaryLink=strict401gen.Href("tmp/"+cookieID+'/'+binaryname,text,onClick="window.open(this.href);return false;")
+                mediaRow.append(strict401gen.TD(binaryLink,colspan=str(columns),align="right",valign='top',Class="mediaimage"))
+                
+            else:                           #thisRecord[thisCol]:
+                # it's not an image, it's text or it's empty
+                if thisRecord[thisCol]==None:
+                    value=""
+                else:
+                    value=thisRecord[thisCol]
+
+                columns=1
+                
+                text1=str(value)
                 text2=text1.replace('\r\n','<BR>')
                 text3=text2.replace('\n','<BR>')
                 text=text3.replace('\r','<BR>')
-                if owner:  # test for a text field too??
+                
+                if owner:  # special concern for the 'read' db
                     if thisCol==1:
                         text=owner.capitalize()+' says:<BR><BR>'+text
-                mediaRow.append(strict401gen.TD(strict401gen.RawText(text),colspan=str(columns),valign='top',Class=colClass))
-                    
-        # or else it's empty
-        if colValues==1:
-            mediaRow.append(strict401gen.TD(strict401gen.RawText("&nbsp"),colspan="2",Class="mediacol3"))
-                    
+                mediaRow.append(strict401gen.TD(strict401gen.RawText(text),colspan=str(columns),valign='top',Class="mediacol1"))
+        
+        # add the row to the table
         mediaTable.append(mediaRow)
         
         # add a row to make sure the scroll will go beyond the bottom
         mediaRow=strict401gen.TR()
         mediaRow.append(strict401gen.TD(strict401gen.RawText("&nbsp"),colspan=str(len(thisRecord))))
-                
+
+    # add row to main table                
     mediaTable.append(mediaRow)
            
-        
     return (mediaTable)
-
 
 def mediaTable2(mediaData,cookieID,colWidths,config):
     # this function is not in use, experimental
@@ -2436,6 +2497,7 @@ def editMedia(mediaID,catID,item,config):
     header=formbuttons('update')
 
     return(caption,header,mediaTable,mediaType,catID)
+
 
 ############ support functions
 
@@ -2967,3 +3029,15 @@ def createConfig(req,config):
     
     return (caption,header,configTable,'writeConfig')
 
+def cleanTmp(config):
+    
+    # delete the tmp files whenever itemQuery or catQuery are called
+    
+    subDirs=os.listdir(config['mediaPath'])
+    for dir in subDirs:
+        if dir[0]!=".":
+            shutil.rmtree(config['mediaPath']+dir)
+        
+    return
+
+    

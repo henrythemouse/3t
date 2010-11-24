@@ -353,7 +353,6 @@ def cat(req):
                 
     util.redirect(req,"../index.py"+parameter)
         
-    
 def item(req):
     
     config=getConfig(req,req.form['configDB'].value)
@@ -443,12 +442,13 @@ def media(req):
             insertID=what[1]
             parameter="?media="+str(tableID)
     else:    
-        try:
-            cancelAction=req.form['cancelAction']
-        except:
-            cancelAction="7"
-        parameter="?action="+cancelAction
-        
+#        try:
+#            cancelAction=req.form['cancelAction']
+#        except:
+#            cancelAction="7"
+#        parameter="?action="+cancelAction
+        parameter="?media="+str(tableID)
+
     util.redirect(req,"../index.py"+parameter)    
     
 def Imedia(req):
@@ -502,7 +502,69 @@ def Imedia(req):
         parameter="?action=3"
         
     util.redirect(req,"../index.py"+parameter)
+
+def delMedia(req):
+    try:
+        action=req.form['delMedia'].lower()
+    except:
+        try:
+            action=req.form['cancel'].lower()
+        except:
+            action='cancel'
+                
+    config=getConfig(req,req.form['configDB'])
+
+    mediaID=req.form['mediaID']
+    mediaRecord=req.form['mediaRecord']
+    selectedHost=config["selectedHost"]
+    tableName=config['mediaTable']
+    idField=config['mediaIDfield']
+    dbname=config['dbname']
     
+    if action!='cancel':
+        
+        # delete the record
+        what=doSql(req,"DELETE",mediaID,idField,dbname,tableName,selectedHost,"")
+        if what[0]:
+            parameter="?error="+what[0]+"...\\n\\n perhaps you are not \\n the owner of this record \\n or are not logged in"
+        else:    
+            parameter="?media="+mediaRecord
+    else:
+        parameter="?media="+mediaRecord
+
+    util.redirect(req,"/3t/index.py"+parameter)    
+
+
+def delCat(req):
+    try:
+        action=req.form['delCat'].lower()
+    except:
+        try:
+            action=req.form['cancel'].lower()
+        except:
+            action='cancel'
+                
+    config=getConfig(req,req.form['configDB'])
+
+    catID=req.form['catID']
+    selectedHost=config["selectedHost"]
+    tableName=config['catTable']
+    idField=config['catIDfield']
+    dbname=config['dbname']
+    
+    if action!='cancel':
+        
+        # delete the record
+        what=doSql(req,"DELETE",catID,idField,dbname,tableName,selectedHost,"")
+        if what[0]:
+            parameter="?error="+what[0]+"...\\n\\n perhaps you are not \\n the owner of this record \\n or are not logged in"
+        else:    
+            parameter="?action=7"
+    else:
+        parameter="?action=7"
+
+    util.redirect(req,"/3t/index.py"+parameter)    
+        
 def doSql(req,action,cols,idField,dbname,tableName,selectedHost,owner):
     
     error=""
@@ -722,11 +784,29 @@ def doSql(req,action,cols,idField,dbname,tableName,selectedHost,owner):
         # DELETE - The current record
         # *******************************************************************
         #
+        id=cols
+        error=""
         
         q="delete from `"+tableName+"` where `"+tableName+"`.`"+idField+"`="+"'"+str(id)+"'"
         error=""
-        # any qresult value indicates an error.
         
+        try:
+            dbconnection = MySQLdb.connect(host=selectedHost,user=username,passwd=userpass,db=dbname)
+            cursor = dbconnection.cursor()
+            cursor.execute(q)
+        except:
+            error="error deleting "+tableName  #+" perhaps you don't have permission or are not logged in?"
+            
+        try:
+            xcursor.close()
+        except:
+            pass
+        try:
+            dbconnection.close()
+        except:
+            pass        
+        ########################
+
     return (error,insertID)
     
 def getServerInfo(selectedHost, variableName):

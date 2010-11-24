@@ -90,12 +90,12 @@ DIV.notes{
 	height:37px;width:100px;border:0px;
 }
 .mediaedit { position:absolute;top:5px;left:5px;}
-.mediacol0 { font:12pt Times, serif;width:5%;}
+.mediacol0 { font:12pt Times, serif;width:16px;height:16px}
 .mediacol1 { font:12pt Times, serif;width:60%;}
 .mediacol2 { font:12pt Times, serif;width:40%;}
 .mediacol3 { font:12pt Times, serif;width:95%;}
 .mediaimage { width:128px;border:0px;}
-
+toolTable {padding:0px}
 /* logo division */
 
 .logodiv { 
@@ -222,7 +222,7 @@ select:hover {
 .loginbox {position:absolute;top:200px;left:200px;width:420px;height:220px;border:0;
 	z-index:1;background-image:url('../images/3t-2.png');color:black;
 }
-.loginmsg {position:absolute;top:10px;left:90px;font:20px sans-serif;z-index:1;color:white
+.loginmsg {position:absolute;top:10px;left:90px;font:20px sans-serif;z-index:1;color:red;background-color:transparent;
 }
 .loginName {position:absolute;top:50px;left:60px;font:20px sans-serif;z-index:1;
 }
@@ -252,5 +252,5 @@ select:hover {
 	position:absolute;top:15px;left:365px;width:165px;height:15px;font: 8pt Times, sans, bold;background-color:#F5D0A9;color:black;
 }
 .loginlogout{
-	position:absolute;top:15px;left:735px;width:25px;height:15px;font: 8pt Times, serif;background-color:#F5D0A9;color:black;
+	position:absolute;top:15px;left:700px;width:65px;height:15px;font: 8pt Times, serif;background-color:#F5D0A9;color:black;
 }

@@ -63,7 +63,7 @@ else:
                 <A HREF="MAILTO:gary@webquery.org?subject=3tdb">Contact</A>
             </DIV>
             <DIV CLASS='loginlogout'>
-                    <A HREF="index?action=99"><%=loginlogout%></a>
+                    <A HREF="index?action=99"><%=loginlogout%> <%=dogleg%> </a>
             </DIV>
         </DIV>
 
@@ -422,9 +422,19 @@ else:
 #end
 %>
 <%
-if action==99 or action==98:
+if action==99 or action==98 or action==97 or action==96:
     if action==98:
         loginmsg="Failed login, try again?"
+    elif action==97:
+        loginmsg="DELETE THIS RECORD?!"
+        mediaID=req.form['mediaID']
+        mediaRecord=req.form['mediaRecord']
+        loginlogout="deleteMedia"
+    elif action==96:
+        loginmsg="DELETE THIS RECORD?!"
+        catID=req.form['catID']
+        
+        loginlogout="deleteCat"
     else:
         loginmsg=""
     if loginlogout=='login':
@@ -474,6 +484,58 @@ if action==99 or action==98:
                     <INPUT TYPE="submit" NAME="cancel" VALUE="CANCEL" CLASS='inputfield'>
                 </DIV>
             <INPUT TYPE="hidden" NAME="configDB" VALUE="<%=configDB%>">
+            <!-- end of form-->
+            </FORM>
+        </DIV>
+
+</DIV>
+
+<%
+    elif loginlogout=='deleteMedia':
+%>
+<DIV CLASS='loginbox'>
+        <DIV>
+            <!--start of form - the Edit table area-->
+            <FORM method="post" id="dogForm" name="dogForm" enctype="multipart/form-data" action="myFunctions.py/delMedia">
+            
+	            <DIV CLASS='loginmsg'>
+	                <%=loginmsg%>
+	            </DIV>
+                 <DIV CLASS='logout'>
+                    <INPUT TYPE="submit" NAME="delMedia" id='delMedia' VALUE="DELETE" CLASS='inputfield'>
+                </DIV>
+                <DIV CLASS='logoutcancel'>
+                    <INPUT TYPE="submit" NAME="cancel" id='cancel' VALUE="CANCEL" CLASS='inputfield'>
+                </DIV>
+            <INPUT TYPE="hidden" NAME="configDB" VALUE="<%=configDB%>">
+            <INPUT TYPE="hidden" NAME="mediaID" VALUE="<%=mediaID%>">
+            <INPUT TYPE="hidden" NAME="mediaRecord" VALUE="<%=mediaRecord%>">
+            <!-- end of form-->
+            </FORM>
+        </DIV>
+
+</DIV>
+
+
+<%
+    elif loginlogout=='deleteCat':
+%>
+<DIV CLASS='loginbox'>
+        <DIV>
+            <!--start of form - the Edit table area-->
+            <FORM method="post" id="dogForm" name="dogForm" enctype="multipart/form-data" action="myFunctions.py/delCat">
+            
+                <DIV CLASS='loginmsg'>
+                    <%=loginmsg%>
+                </DIV>
+                 <DIV CLASS='logout'>
+                    <INPUT TYPE="submit" NAME="delCat" id='delCat' VALUE="DELETE" CLASS='inputfield'>
+                </DIV>
+                <DIV CLASS='logoutcancel'>
+                    <INPUT TYPE="submit" NAME="cancel" id='cancel' VALUE="CANCEL" CLASS='inputfield'>
+                </DIV>
+            <INPUT TYPE="hidden" NAME="configDB" VALUE="<%=configDB%>">
+            <INPUT TYPE="hidden" NAME="catID" VALUE="<%=catID%>">
             <!-- end of form-->
             </FORM>
         </DIV>
