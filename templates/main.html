@@ -300,7 +300,10 @@ elif resultHeader[0]=='empty':
         <!--  start the header div - while viewing the item details-->
         <DIV>
             <DIV CLASS="headerleft imgyellow">
-                <a href="index?action=10" ><img src="images/edit3.png" alt="Edit" title="Edit Me" CLASS="itemeditimage"></a>
+                <a href="index?action=10" ><img src="images/edit3.png" alt="Edit" title="Edit" CLASS="itemeditimage"></a>
+            </DIV>
+            <DIV CLASS="headerleft2 imgyellow">
+                <a href="index?action=95" ><img src="images/delete.png" alt="Edit" title="Delete" CLASS="itemdeleteimage"></a>
             </DIV>
             <DIV CLASS="header">
                 <B><%=caption%></B>
@@ -394,7 +397,10 @@ else:
         <!--  start of header div - view media header for item table -->
         <DIV>
             <DIV CLASS="headerleft imgyellow">
-                <a href="index?action=10" ><img src="images/edit3.png" alt="Edit" title="Edit Me" CLASS="itemeditimage"></a>
+                <a href="index?action=10" ><img src="images/edit3.png" alt="Edit" title="Edit" CLASS="itemeditimage"></a>
+            </DIV>
+            <DIV CLASS="headerleft2 imgyellow">
+                <a href="index?action=95" ><img src="images/delete.png" alt="Delete" title="Delete" CLASS="itemdeleteimage"></a>
             </DIV>
             <DIV CLASS="header">
                 <B><%=caption%></B>
@@ -422,7 +428,7 @@ else:
 #end
 %>
 <%
-if action==99 or action==98 or action==97 or action==96:
+if action==99 or action==98 or action==97 or action==96 or action==95:
     if action==98:
         loginmsg="Failed login, try again?"
     elif action==97:
@@ -432,9 +438,11 @@ if action==99 or action==98 or action==97 or action==96:
         loginlogout="deleteMedia"
     elif action==96:
         loginmsg="DELETE THIS RECORD?!"
-        catID=req.form['catID']
-        
+        catID=req.form['catID']        
         loginlogout="deleteCat"
+    elif action==95:
+        loginmsg="DELETE THIS RECORD?!"
+        loginlogout="deleteItem"
     else:
         loginmsg=""
     if loginlogout=='login':
@@ -540,6 +548,29 @@ if action==99 or action==98 or action==97 or action==96:
             </FORM>
         </DIV>
 
+
+<%
+    elif loginlogout=='deleteItem':
+%>
+<DIV CLASS='loginbox'>
+        <DIV>
+            <!--start of form - the Edit table area-->
+            <FORM method="post" id="dogForm" name="dogForm" enctype="multipart/form-data" action="myFunctions.py/delItem">
+            
+                <DIV CLASS='loginmsg'>
+                    <%=loginmsg%>
+                </DIV>
+                 <DIV CLASS='logout'>
+                    <INPUT TYPE="submit" NAME="itemCat" id='itemCat' VALUE="DELETE" CLASS='inputfield'>
+                </DIV>
+                <DIV CLASS='logoutcancel'>
+                    <INPUT TYPE="submit" NAME="cancel" id='cancel' VALUE="CANCEL" CLASS='inputfield'>
+                </DIV>
+            <INPUT TYPE="hidden" NAME="configDB" VALUE="<%=configDB%>">
+            <INPUT TYPE="hidden" NAME="itemID" VALUE="<%=itemID%>">
+            <!-- end of form-->
+            </FORM>
+        </DIV>
 </DIV>
 
 <%

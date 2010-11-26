@@ -565,6 +565,36 @@ def delCat(req):
 
     util.redirect(req,"/3t/index.py"+parameter)    
         
+def delItem(req):
+    try:
+        action=req.form['delItem'].lower()
+    except:
+        try:
+            action=req.form['cancel'].lower()
+        except:
+            action='cancel'
+                
+    config=getConfig(req,req.form['configDB'])
+
+    itemID=req.form['itemID']
+    selectedHost=config["selectedHost"]
+    tableName=config['itemTable']
+    idField=config['itemIDfield']
+    dbname=config['dbname']
+    
+    if action!='cancel':
+        
+        # delete the record
+        what=doSql(req,"DELETE",itemID,idField,dbname,tableName,selectedHost,"")
+        if what[0]:
+            parameter="?error="+what[0]+"...\\n\\n perhaps you are not \\n the owner of this record \\n or are not logged in"
+        else:    
+            parameter="?action=3"
+    else:
+        parameter="?action=3"
+
+    util.redirect(req,"/3t/index.py"+parameter)    
+
 def doSql(req,action,cols,idField,dbname,tableName,selectedHost,owner):
     
     error=""

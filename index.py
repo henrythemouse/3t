@@ -803,7 +803,6 @@ def writeImgs(config):
             
     return imagesondisk
     
-
 def itemImg(itemImage,item,config):
     
     try:
