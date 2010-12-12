@@ -31,8 +31,14 @@ def dogout(req):
         
     except:
         pass
+    
+    if req.form['action']=='15':
+        parameter='?media='+req.form['media']
+    elif req.form['action'] in ('16','17'):
+        parameter='?medit='+req.form['media']
+    else:    
+        parameter='?action='+req.form['action']
         
-    parameter='?action=3'
     util.redirect(req,"../index.py"+parameter)
     
 def dogin(req):    
@@ -78,10 +84,10 @@ def dogin(req):
         kookied=kooky2.myCookies(req,'save',data,config['dbname'],config['selectedHost'])
     
     if cancelClicked:
-        parameter='?action=3'
+        parameter='?action='+req.form['action']
     else:
         if loginAccepted:
-            parameter='?action=3'            
+            parameter='?action='+req.form['action']            
         else:
             parameter='?action=98'
         
@@ -340,6 +346,7 @@ def cat(req):
         except:
             action='cancel'
             
+#    util.redirect(req,"../testValue.py/testvalue?test="+repr(req.form.list))
     if action !='cancel':
                         
         what=doSql(req,action,cols,config['catIDfield'],config['dbname'],config['catTable'],config['selectedHost'],config['owner'])
@@ -426,8 +433,10 @@ def media(req):
             action=req.form['updatebutton.x']
             action='update'
             cols[config['mediaIDfield']]=req.form['mediaID'].value
-        except:
+        except:                
             action='cancel'
+
+#    util.redirect(req,"../testValue.py/testvalue?test="+repr(req.form.list))
     
     #  set the realted table, so this returns to the correct data
     tableID=req.form['catID']
@@ -515,7 +524,7 @@ def delMedia(req):
     config=getConfig(req,req.form['configDB'])
 
     mediaID=req.form['mediaID']
-    mediaRecord=req.form['mediaRecord']
+    mediaRecord=req.form['media']
     selectedHost=config["selectedHost"]
     tableName=config['mediaTable']
     idField=config['mediaIDfield']
@@ -533,7 +542,6 @@ def delMedia(req):
         parameter="?media="+mediaRecord
 
     util.redirect(req,"/3t/index.py"+parameter)    
-
 
 def delCat(req):
     try:
@@ -559,9 +567,9 @@ def delCat(req):
         if what[0]:
             parameter="?error="+what[0]+"...\\n\\n perhaps you are not \\n the owner of this record \\n or are not logged in"
         else:    
-            parameter="?action=7"
+            parameter="?action=8"
     else:
-        parameter="?action=7"
+        parameter="?action=8"
 
     util.redirect(req,"/3t/index.py"+parameter)    
         
@@ -601,7 +609,7 @@ def doSql(req,action,cols,idField,dbname,tableName,selectedHost,owner):
     insertID=''
     
     data=kooky2.myCookies(req,'get','',dbname,selectedHost)
-    #~ util.redirect(req,"../testValue.py/testvalue?test="+repr(data))
+#    util.redirect(req,"../testValue.py/testvalue?test="+repr(data))
 
     try:
         username=data['username']
@@ -926,6 +934,7 @@ def getFieldInfo3(req,selectedHost,dbname,tableName):
 
 # ****************************************************************************
 # ***************** dougs quote handler 10-23-02 *****************************
+
 def quoteHandler(tmp):
     # replace all occurances of ascii quotes in a string
     # with the upper ascii right and left quote characters

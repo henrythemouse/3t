@@ -13,10 +13,10 @@
 displayname=Home Sweet Home
 
 ## Enter a location for the displayname (top,middle,bottom).
-displaynamelocation=bottom
+displaynamelocation=top
 
 ## Enter the name of the image to use as your logo (a default is provided).
-displaylogo=auto.jpg
+displaylogo=home.jpg
 
 ## Enter the database name for the mysql server (no default).
 dbname=home
@@ -52,7 +52,7 @@ itemUniqueID=address city
 allItems=address city state zip year
 
 ## Enter a space seperated list of category table column names
-## that you want included in combination search results (no default).
+## that you want included in boolean search results (no default).
 catSearchFields=cat service_ date vendor
 
 

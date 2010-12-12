@@ -198,6 +198,11 @@ def index(req,currentCat=0,currentItem=1,action=0):
                 action=16
             except:
                 mediaID=''
+                
+        try:
+            popup=req.form['popup'].value
+        except:
+            popup=''
 
         #~ if action:          # load saved data
         # if I set this back to 'if action' then the login is reset on startup
@@ -223,11 +228,10 @@ def index(req,currentCat=0,currentItem=1,action=0):
             #~ util.redirect(req,"testValue.py/testvalue?test="+repr(data))
             pass
     
-        #~ util.redirect(req,"testValue.py/testvalue?test="+repr(data))
+
         
     # *******************************************
     # item image and navagation
-
     if action in (1,2,3,4):       # index item
         
         catSelect=catForm(catImages,currentCat)
@@ -239,6 +243,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         search=searchForm(searchText)
         results=itemQuery(currentItem,item,config)
         cleanTmp(config)
+#        util.redirect(req,"testValue.py/testvalue?test="+repr(results)+repr(currentItem))
         
         # parse the results list
         caption=results[0]
@@ -247,9 +252,11 @@ def index(req,currentCat=0,currentItem=1,action=0):
         cancelAction=3
         
         if currentItem==0:
+            # this is for ALL items listing
             headerWidths=getItemColWidths(resultHeader,config)
             resultTable=itemAllTable(resultData,"",resultHeader,headerWidths,config)
         else:
+            # a single item listing
             resultTable=itemTable(resultData,config)
 
     # *******************************************
@@ -426,10 +433,11 @@ def index(req,currentCat=0,currentItem=1,action=0):
         caption=result[0]
         resultHeader=result[1]
         resultTable=result[2]
-        
+
     elif action==100:     # configure dialog
         # the emergency configuration dialog
         # when something is wrong in the config.txt file
+        # the actual branch is done below
         pass
 
     else:               # no action - use defaults
@@ -483,7 +491,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
             resultTable=itemTable(resultData,config)
     
     if action<100:
-        
+        # actions =>100 are errors
         # either a item or a catagory 
         try:
             activeForm=result[3]
@@ -505,12 +513,17 @@ def index(req,currentCat=0,currentItem=1,action=0):
             }
 
         kookied=kooky2.myCookies(req,'save',data,config['dbname'],config['selectedHost'])
-        #~ util.redirect(req,"testValue.py/testvalue?test="+"kooky"+repr(data))
-
-        mainForm='templates/main.html'
+#        util.redirect(req,"testValue.py/testvalue?test="+"kooky "+repr((relatedCat)))
+        
+        # set the template name
+        mainForm='templates/main3.html'
+        # check for an item related cat record to enable/disable delete function
+        relatedCat=relatedRecords(currentItem,config)
 
         # the dic of values to pass to the html page
         vars['action']=action
+        vars['popup']=popup
+        vars['relatedCat']=relatedCat
         vars['dogleg']=username
         vars['cancelAction']=str(cancelAction)
         vars['error']=error
@@ -545,7 +558,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         vars['message4']="CHECK THE VALUES BELOW AND EDIT THEM AS NEEDED"
         vars['message5']="********************************************************"
 
-    #~ util.redirect(req,"testValue.py/testvalue?test="+repr(error))
+#    util.redirect(req,"testValue.py/testvalue?test="+repr(resultHeader))
 
     # call the html doc passing it the data
     return psp.PSP(req,mainForm,vars=vars)
@@ -1498,7 +1511,7 @@ def catTable(catData,categoryName,header,colWidths,config):
                     # column for the delete link
                     delimage=strict401gen.Image((deleteImg,str(endWidth),str(endWidth)),alt="Del",name="Del",title=delToolTip)
                     if delToolTip:
-                        toolRow.append(strict401gen.TD(strict401gen.Href("index?action=96&catID="+str(thisRecord[thisCol]),delimage),valign='top',colspan="1",Class="toolcol0"))
+                        toolRow.append(strict401gen.TD(strict401gen.Href("index?popup=96&catID="+str(thisRecord[thisCol]),delimage),valign='top',colspan="1",Class="toolcol0"))
                     else:
                         toolRow.append(strict401gen.TD(delimage,valign='top',colspan="1",Class="toolcol0"))
                     toolTable.append(toolRow)                    
@@ -2061,7 +2074,7 @@ def mediaTable(mediaData,cookieID,record,config):
                 # column for the delete button if not a All search
                 toolRow=strict401gen.TR(style="background-color:"+rowcolor)
                 delimage=strict401gen.Image(("images/delete.png",str(endWidth),str(endWidth)),alt="Del",name="Del",title="Del Record")
-                toolRow.append(strict401gen.TD(strict401gen.Href("index?action=97"+"&mediaID="+str(thisRecord[thisCol])+"&mediaRecord="+str(record),delimage),valign='top',colspan="1",Class="mediacol0"))
+                toolRow.append(strict401gen.TD(strict401gen.Href("index?popup=97"+"&mediaID="+str(thisRecord[thisCol])+"&media="+str(record),delimage),valign='top',colspan="1",Class="mediacol0"))
                 toolTable.append(toolRow)
                 # add the buttons at col one
                 mediaRow.append(strict401gen.TD(toolTable,valign='top',colspan="1",Class="mediacol0"))
@@ -2370,7 +2383,7 @@ def createMedia(mediaID,catID,item,config):
 
         info=db.dbConnect(config['selectedHost'],config['dbname'],q2,1)
         #~ caption='Insert '+config['mediaTable']+' for '+info[0]
-        caption='Insert '+config['mediaTable']
+        caption='Insert '+config['mediaTable']+' for '+" ".join(info)+' '
 
     header=formbuttons('create')
     
@@ -2497,8 +2510,31 @@ def editMedia(mediaID,catID,item,config):
 
     return(caption,header,mediaTable,mediaType,catID)
 
-
 ############ support functions
+
+def relatedRecords(itemID,config):
+    
+    # see if there is at least one record in the cat table related to the current item
+    # return a 1 if there is, a zero if not
+    records=[]
+    q="SELECT * FROM "+config['catTable']+" where "+config['catTable']+"."+config['itemIDfield']+"='"+str(itemID)+"'"
+    r=db.dbConnect(config['selectedHost'],config['dbname'],q,1)
+    if r:
+        records.append(r)
+    related=str(len(records))
+    
+    return related
+
+def cleanTmp(config):
+    
+    # delete the tmp files whenever itemQuery or catQuery are called
+    
+    subDirs=os.listdir(config['mediaPath'])
+    for dir in subDirs:
+        if dir[0]!=".":
+            shutil.rmtree(config['mediaPath']+dir)
+        
+    return
 
 def lastUpdate(config):
     
@@ -3028,15 +3064,3 @@ def createConfig(req,config):
     
     return (caption,header,configTable,'writeConfig')
 
-def cleanTmp(config):
-    
-    # delete the tmp files whenever itemQuery or catQuery are called
-    
-    subDirs=os.listdir(config['mediaPath'])
-    for dir in subDirs:
-        if dir[0]!=".":
-            shutil.rmtree(config['mediaPath']+dir)
-        
-    return
-
-    

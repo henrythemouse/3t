@@ -2,7 +2,6 @@
 
 import MySQLdb
 import string
-import kooky2
 
 
 def dbConnect(selectedHost,dbToOpen,queryText,fetchFlag):
