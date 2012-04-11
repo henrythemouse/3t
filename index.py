@@ -2134,8 +2134,9 @@ def mediaTable(mediaData,cookieID,record,config):
                 
                 if owner:  # special concern for the 'read' db
                     if thisCol==1:
-                        text=owner.capitalize()+' says:<BR><BR>'+text
-                mediaRow.append(strict401gen.TD(strict401gen.RawText(text),colspan=str(columns),valign='top',Class="mediacol1"))
+                        text=owner.capitalize()+' writes:<BR><BR>'+text
+#                mediaRow.append(strict401gen.TD(strict401gen.RawText(text),colspan=str(columns),valign='top',Class="mediacol1"))
+                mediaRow.append(strict401gen.TD(strict401gen.RawText(text),colspan=str(columns),valign='top'))
         
         # add the row to the table
         mediaTable.append(mediaRow)
