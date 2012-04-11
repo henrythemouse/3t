@@ -2131,12 +2131,16 @@ def mediaTable(mediaData,cookieID,record,config):
                 text2=text1.replace('\r\n','<BR>')
                 text3=text2.replace('\n','<BR>')
                 text=text3.replace('\r','<BR>')
-                
+                # make more room for large text cols
+                if len(text)>15:
+                    colClass="mediaCol1"
+                else:
+                    colClass="mediaCol2"
                 if owner:  # special concern for the 'read' db
                     if thisCol==1:
                         text=owner.capitalize()+' writes:<BR><BR>'+text
 #                mediaRow.append(strict401gen.TD(strict401gen.RawText(text),colspan=str(columns),valign='top',Class="mediacol1"))
-                mediaRow.append(strict401gen.TD(strict401gen.RawText(text),colspan=str(columns),valign='top',Class="mediacol2"))
+                mediaRow.append(strict401gen.TD(strict401gen.RawText(text),colspan=str(columns),valign='top',Class=colClass))
         
         # add the row to the table
         mediaTable.append(mediaRow)

@@ -92,7 +92,7 @@ DIV.notes{
 .mediaedit { position:absolute;top:5px;left:5px;}
 .mediacol0 { font:12pt Times, serif;width:16px;height:16px}
 .mediacol1 { font:12pt Times, serif;width:60%;}
-.mediacol2 { font:12pt Times, serif;width:20%;}
+.mediacol2 { font:12pt Times, serif;width:100px;}
 .mediacol3 { font:12pt Times, serif;width:95%;}
 .mediaimage { width:128px;border:0px;}
 toolTable {padding:0px}
