@@ -14,6 +14,10 @@ from mod_python import psp,util
 from mod_python import apache
 
 '''
+$LastChangedDate$
+$Rev$
+'''
+'''
 BUG FIXES THAT NEED TO PROPIGATE TO 2TABLE
 
 '''
@@ -1142,6 +1146,7 @@ def itemTable(itemData,config):
             resultTable.append(itemRow)
     else:
         # the query failed
+        caption="query failed"
         resultTable=strict401gen.Table(caption,border=0,heading=['Error','Result','Query'],id='results',\
             column1_align="left",cell_align="left",cell_padding="0",\
             cell_spacing="0",body_color=['#FFFF99','#FFFFCC'],heading_color=['#FFFF99'])
