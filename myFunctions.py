@@ -905,11 +905,11 @@ def getFieldInfo3(req,selectedHost,dbname,tableName):
             fieldDefaults[fieldName.lower()]=fDefault
 
         fieldInfo['fieldNames']=fieldNames
-    else:
-        msg.append('Query Failed')
-        msg.append(repr(q))
-        msg.append('ID=2 for dbname='+str(dbname))
-        errorHandler(req,msg,1)
+#    else:
+#        msg.append('Query Failed')
+#        msg.append(repr(q))
+#        msg.append('ID=2 for dbname='+str(dbname))
+#        errorHandler(req,msg,1)
 
         
     if fieldInfo['idField']:

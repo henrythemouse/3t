@@ -4,6 +4,7 @@
 <%minorTitle=catImages[int(currentCat)][0]%>
 <%searchImage="images/search.jpeg"%>
 <%
+mode="Rows Displayed: "+str(len(resultTable))
 if 'default' in minorImage:
     minorImage='catimages/'+configDB+'/default.png'
 if displaynamelocation=='top':
@@ -13,10 +14,8 @@ elif displaynamelocation=='middle':
 else:
     location="bottom:1%"
 if dogleg:
-    mode="read/write mode"
     loginlogout='logout'
 else:
-    mode="read only mode"
     loginlogout='login'
 if action in (15,):
     p2="&media="+str(mediaID)

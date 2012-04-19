@@ -86,7 +86,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
     
     
     action=int(action)
-    caption=''
+    caption='' 
     resultTable=''
     headerWidths=''
     vars={}
@@ -254,14 +254,15 @@ def index(req,currentCat=0,currentItem=1,action=0):
         resultHeader=results[1]
         resultData=results[2]
         cancelAction=3
-        
+#        colSums=catSum(currentItem,config)
+#        util.redirect(req,"testValue.py/testvalue?test="+repr(colSums))
         if currentItem==0:
             # this is for ALL items listing
             headerWidths=getItemColWidths(resultHeader,config)
             resultTable=itemAllTable(resultData,"",resultHeader,headerWidths,config)
         else:
             # a single item listing
-            resultTable=itemTable(resultData,config)
+            resultTable=itemTable(str(item[1]),resultData,config)
 
     # *******************************************
     # category image and navagation
@@ -343,7 +344,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         search=searchForm(searchText)
 
         results=searchQuery(searchText,searchMode,catImages[currentCat][0],item[1],config)
-        #~ util.redirect(req,"testValue.py/testvalue?test="+repr(results))
+#        util.redirect(req,"testValue.py/testvalue?test="+repr(results[-1]))
 
         # parse the results list
         caption=results[0]
@@ -492,7 +493,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
             resultHeader=results[1]
             resultData=results[2]
             
-            resultTable=itemTable(resultData,config)
+            resultTable=itemTable(str(item[1]),resultData,config)
     
     if action<100:
         # actions =>100 are errors
@@ -575,111 +576,114 @@ def index(req,currentCat=0,currentItem=1,action=0):
 
 ############ search functions
     
-def searchQuery(searchText,searchMode,categoryName,itemID,config):
+def searchQuery(searchText1,searchMode,categoryName,itemID,config):
             
-    selectFields,catHeader,booleanFields=catColumns(categoryName,itemID,config)
+    selectFields,catHeader=catColumns(categoryName,itemID,config)
     itemFullTextCols,catFullTextCols,mediaFullTextCols=getFullTextCols(config)
-    
+    itemBooleanFields,catBooleanFields,mediaBooleanFields=getBooleanFields(config)
             
     if searchMode:
-        catFullTextCols=catFullTextCols+booleanFields
+        catFullTextCols=catFullTextCols+catBooleanFields
+        itemFullTextCols=itemFullTextCols+itemBooleanFields
+        mediaFullTextCols=mediaFullTextCols+mediaBooleanFields
         mode=' IN BOOLEAN MODE'
     else:
         mode=""
         
-    # all searchMode does is add some search fields and change the mode to boolean.
-
+    # all searchMode does is add enum search fields and change the mode to boolean.
+    searchText="'"+'"'+searchText1+'"'+"'"
+    
     if itemID=='0': #All_Items
         if categoryName[:3]=='All':
-            if searchText: #ok
+            if searchText:
                 # the  search query that searches all the category records for all the items for searchtext
                 # all_items, all_cats,  searchText
-                q='select distinct '+selectFields+\
-                ' from '+config['catTable']+\
-                ' left join '+config['itemTable']+' on '+\
-                config['catTable']+'.'+config['itemIDfield']+'='+config['itemTable']+'.'+config['itemIDfield']+\
-                ' left join '+config['mediaTable']+' on '+\
-                config['mediaTable']+'.'+config['catIDfield']+'='+config['catTable']+'.'+config['catIDfield']+\
-                ' where '+ '(MATCH ('+catFullTextCols+') AGAINST ("'+searchText+'"'+mode+')'+\
-                ' or MATCH ('+itemFullTextCols+') AGAINST ("'+searchText+'"'+')'+\
-                ' or MATCH ('+mediaFullTextCols+') AGAINST ("'+searchText+'"'+'))'+\
+                q="select distinct "+selectFields+\
+                " from "+config['catTable']+\
+                " left join "+config['itemTable']+" on "+\
+                config['catTable']+"."+config['itemIDfield']+"="+config['itemTable']+"."+config['itemIDfield']+\
+                " left join "+config['mediaTable']+" on "+\
+                config['mediaTable']+"."+config['catIDfield']+"="+config['catTable']+"."+config['catIDfield']+\
+                " where "+ "(MATCH ("+catFullTextCols+") AGAINST ("+searchText+" "+mode+")"+\
+                " or MATCH ("+itemFullTextCols+") AGAINST ("+searchText+" "+mode+")"+\
+                " or MATCH ("+mediaFullTextCols+") AGAINST ("+searchText+" "+mode+"))"+\
                 " order by "+config['orderbyField']+" desc"
                 
-            else: #ok
+            else:
                 # get all records for all items
                 # all_items, all_cats, NO searchText
-                q='select '+selectFields+' from '+config['catTable']+\
-                ' left join '+config['itemTable']+' on '+\
-                config['catTable']+'.'+config['itemIDfield']+\
-                '='+config['itemTable']+'.'+config['itemIDfield']+\
+                q="select "+selectFields+" from "+config['catTable']+\
+                " left join "+config['itemTable']+" on "+\
+                config['catTable']+"."+config['itemIDfield']+\
+                "="+config['itemTable']+"."+config['itemIDfield']+\
                 " order by "+config['orderbyField']+" desc"
 
         else:
-            if searchText: #ok
+            if searchText:
                 # all_items, selected_cat, searchText
-                q='select distinct '+selectFields+\
-                ' from '+config['catTable']+\
-                ' left join '+config['mediaTable']+' on '+\
-                config['mediaTable']+'.'+config['catIDfield']+'='+config['catTable']+'.'+config['catIDfield']+\
-                ' left join '+config['itemTable']+' on '+\
-                config['catTable']+'.'+config['itemIDfield']+\
-                '='+config['itemTable']+'.'+config['itemIDfield']+\
-                ' where '+config['catField']+'="'+categoryName+'"'+\
-                ' and (MATCH ('+catFullTextCols+') AGAINST ("'+searchText+'"'+mode+')'+\
-                ' or MATCH ('+itemFullTextCols+') AGAINST ("'+searchText+'"'+')'+\
-                ' or MATCH ('+mediaFullTextCols+') AGAINST ("'+searchText+'"'+'))'+\
+                q="select distinct "+selectFields+\
+                " from "+config['catTable']+\
+                " left join "+config['mediaTable']+" on "+\
+                config['mediaTable']+"."+config['catIDfield']+"="+config['catTable']+"."+config['catIDfield']+\
+                " left join "+config['itemTable']+" on "+\
+                config['catTable']+"."+config['itemIDfield']+\
+                "="+config['itemTable']+"."+config['itemIDfield']+\
+                " where "+config['catField']+"='"+categoryName+"'"+\
+                " and (MATCH ("+catFullTextCols+") AGAINST ("+searchText+" "+mode+")"+\
+                " or MATCH ("+itemFullTextCols+") AGAINST ("+searchText+" "+")"+\
+                " or MATCH ("+mediaFullTextCols+") AGAINST ("+searchText+" "+"))"+\
                 " order by "+config['orderbyField']+" desc"
 
-            else: #ok
+            else:
                 # get records in this category all items
                 # all_items, selected_cat, NO searchText
-                q='select '+selectFields+' from '+config['catTable']+\
-                ' left join '+config['itemTable']+' on '+\
-                config['catTable']+'.'+config['itemIDfield']+\
-                '='+config['itemTable']+'.'+config['itemIDfield']+\
-                ' where '+config['catField']+'="'+categoryName+'"'+\
+                q="select "+selectFields+" from "+config['catTable']+\
+                " left join "+config['itemTable']+" on "+\
+                config['catTable']+"."+config['itemIDfield']+\
+                "="+config['itemTable']+"."+config['itemIDfield']+\
+                " where "+config['catField']+"='"+categoryName+"'"+\
                 " order by "+config['orderbyField']+" desc"
             
 
     else: # selected_item
         if categoryName[:3]=='All':
-            if searchText: #ok
+            if searchText:
                 # the  category search limited to the selected item and the search text
                 # selected_item, all_cats, searchText
-                q='select distinct '+selectFields+' from '+config['catTable']+\
-                ' left join '+config['mediaTable']+' on '+\
-                config['mediaTable']+'.'+config['catIDfield']+'='+config['catTable']+'.'+config['catIDfield']+\
-                ' where '+config['catTable']+'.'+config['itemIDfield']+'="'+itemID+'"'\
-                ' and (MATCH ('+catFullTextCols+') AGAINST ("'+searchText+'"'+mode+')'+\
-                ' or MATCH ('+config['mediaTable']+') AGAINST ("'+searchText+'"'+'))'+\
+                q="select distinct "+selectFields+" from "+config['catTable']+\
+                " left join "+config['mediaTable']+" on "+\
+                config['mediaTable']+"."+config['catIDfield']+"="+config['catTable']+"."+config['catIDfield']+\
+                " where "+config['catTable']+"."+config['itemIDfield']+"='"+itemID+"'"\
+                " and (MATCH ("+catFullTextCols+") AGAINST ("+searchText+" "+mode+")"+\
+                " or MATCH ("+mediaFullTextCols+") AGAINST ("+searchText+" "+mode+"))"+\
                 " order by "+config['orderbyField']+" desc"
                 
-            else: #ok
+            else:
                 # the category search limited to the selected item, but not limited by search text
                 # selected_item, all_cats,  NO searchText
-                q='select '+selectFields+' from '+config['catTable']+\
-                ' where '+config['catTable']+'.'+config['itemIDfield']+'="'+itemID+'"'+\
+                q="select "+selectFields+" from "+config['catTable']+\
+                " where "+config['catTable']+"."+config['itemIDfield']+"='"+itemID+"'"+\
                 " order by "+config['orderbyField']+" desc"
                 
         else:
-            if searchText: #ok
+            if searchText:
                 # the normal search limited to the selected item and selected category and searchText
                 # selected_item, selected_cat,  searchText                    
-                q='select distinct '+selectFields+' from '+config['catTable']+\
-                ' left join '+config['mediaTable']+' on '+\
-                config['mediaTable']+'.'+config['catIDfield']+'='+config['catTable']+'.'+config['catIDfield']+\
-                ' where '+config['catField']+'="'+categoryName+'"'+\
-                ' and '+config['catTable']+'.'+config['itemIDfield']+'="'+itemID+'"'\
-                ' and (MATCH ('+catFullTextCols+') AGAINST ("'+searchText+'"'+mode+')'+\
-                ' or MATCH ('+config['mediaTable']+') AGAINST ("'+searchText+'"'+'))'+\
+                q="select distinct "+selectFields+" from "+config['catTable']+\
+                " left join "+config['mediaTable']+" on "+\
+                config['mediaTable']+"."+config['catIDfield']+"="+config['catTable']+"."+config['catIDfield']+\
+                " where "+config['catField']+"='"+categoryName+"'"+\
+                " and "+config['catTable']+"."+config['itemIDfield']+"='"+itemID+"'"\
+                " and (MATCH ("+catFullTextCols+") AGAINST ("+searchText+" "+mode+")"+\
+                " or MATCH ("+mediaFullTextCols+") AGAINST ("+searchText+" "+mode+"))"+\
                 " order by "+config['orderbyField']+" desc"
                 
-            else: #ok
+            else:
                 # the normal search limited to the selected item and selected category only
                 # selected_item, selected_cat, NO searchText                    
-                q='select '+selectFields+' from '+config['catTable']+\
-                ' where '+config['catField']+'="'+categoryName+'"'+\
-                ' and '+config['catTable']+'.'+config['itemIDfield']+'="'+itemID+'"'+\
+                q="select "+selectFields+" from "+config['catTable']+\
+                " where "+config['catField']+"='"+categoryName+"'"+\
+                " and "+config['catTable']+"."+config['itemIDfield']+"='"+itemID+"'"+\
                 " order by "+config['orderbyField']+" desc"
                             
     qresult1=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
@@ -708,7 +712,7 @@ def searchQuery(searchText,searchMode,categoryName,itemID,config):
         catCaption='No results for this search query!'
         #~ catHeader=q
     
-    return (catCaption,catHeader,qresult2,"cat")
+    return (catCaption,catHeader,qresult2,"cat",q)
 
 def getFullTextCols(config):
     
@@ -720,7 +724,6 @@ def getFullTextCols(config):
     for thisCol in qresult:
         if thisCol[10]=="FULLTEXT":
             itemFullTextCols=itemFullTextCols+config['itemTable']+'.'+thisCol[4]+","
-        mode=''
     itemFullTextCols=itemFullTextCols[:-1]
     
     # fulltext cols for catTable
@@ -731,7 +734,6 @@ def getFullTextCols(config):
     for thisCol in qresult:
         if thisCol[10]=="FULLTEXT":
             catFullTextCols=catFullTextCols+config['catTable']+'.'+thisCol[4]+","
-        mode=''
     catFullTextCols=catFullTextCols[:-1]
     
     # fulltext cols for mediaTable
@@ -742,14 +744,51 @@ def getFullTextCols(config):
     for thisCol in qresult:
         if thisCol[10]=="FULLTEXT":
             mediaFullTextCols=mediaFullTextCols+config['mediaTable']+'.'+thisCol[4]+","
-        mode=''
+
     mediaFullTextCols=mediaFullTextCols[:-1]
     
     return(itemFullTextCols,catFullTextCols,mediaFullTextCols)
     
+def getBooleanFields(config):
+    
+    # boolean cols for itemTable
+    q="show columns from "+config['itemTable']
+    qresult=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
+    
+    itemBooleanFields=""
+    for thisCol in qresult:
+        # add enum cols to boolean search
+        if 'enum(' in thisCol[1]:
+            itemBooleanFields=itemBooleanFields+','+config['itemTable']+"."+thisCol[0]
+#    itemBooleanFields=itemBooleanFields[:-1]
+    
+    # boolean cols for catTable
+    q="show columns from "+config['catTable']
+    qresult=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
+    
+    catBooleanFields=""
+    for thisCol in qresult:
+        # add enum cols to boolean search
+        if 'enum(' in thisCol[1]:
+            catBooleanFields=catBooleanFields+','+config['catTable']+"."+thisCol[0]
+#    catBooleanFields=catBooleanFields[:-1]
+    
+    # boolean cols for mediaTable
+    q="show columns from "+config['mediaTable']
+    qresult=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
+    
+    mediaBooleanFields=""
+    for thisCol in qresult:
+        # add enum cols to boolean search
+        if 'enum(' in thisCol[1]:
+            mediaBooleanFields=mediaBooleanFields+','+config['mediaTable']+"."+thisCol[0]
+#    mediaBooleanFields=mediaBooleanFields[:-1]
+    
+    return(itemBooleanFields,catBooleanFields,mediaBooleanFields)
+
 def searchForm(searchText):
 
-    moreInput=strict401gen.Input(type='checkbox',checked='',name='searchMode',title="Boolean Search",Class="editfield searchInput")
+    moreInput=strict401gen.Input(type='checkbox',checked='yes',name='searchMode',title="Include Boolean Search",Class="editfield searchInput")
     searchInput=strict401gen.Input(type='text',llabel="Search",value=searchText,size="15",maxlength="20",name='searchText',title="Enter text to Search for.",Class="editfield searchField searchInput")
     searchButton=strict401gen.Input(type="image",name="searchbutton",srcImage="images/search2.png",alt="Search",title="Submit Search",Class="searchbutton searchSubmit")
     
@@ -1027,7 +1066,7 @@ def itemQuery(currentItem,item,config):
         header=[]
         for thisName in config['allItems']:
             header.append(thisName.upper())
-
+            
     return (caption,header,qresult,'item')
 
 def itemAllTable(itemData,categoryName,header,colWidths,config):
@@ -1105,7 +1144,7 @@ def itemAllTable(itemData,categoryName,header,colWidths,config):
         
     return itemTable
     
-def itemTable(itemData,config):
+def itemTable(itemID,itemData,config):
     
     q="show columns from "+config['itemTable']
     qresult=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
@@ -1124,6 +1163,11 @@ def itemTable(itemData,config):
         
     colNames.insert(0,idCol)
         
+    catSums=catSum(itemID,config)
+    for thisSum in catSums:
+        colNames.append(thisSum[0])
+        itemData.append(thisSum[1])
+
     if itemData:
         
         resultTable=strict401gen.TableLite(border="0",CLASS='resultstable')
@@ -1335,6 +1379,29 @@ def deleteItem(currentItem,item,config):
 
 ############ category functions
 
+def catSum(currentItem,config):
+    numericTypes=('int','tinyint','smallint','medint','bigint','integer','real','double','float','decimal','numeric')
+    q="show columns from "+config['catTable']
+    qresult=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
+    colSums=[]
+    for thisCol in qresult:
+        colType=thisCol[1].partition('(')
+        colName=thisCol[0]
+        if colType[0] in numericTypes:
+            q1="select sum("+colName+") from "+config['catTable']+" where "+config['itemIDfield']+"="+str(currentItem)
+            qresult=db.dbConnect(config['selectedHost'],config['dbname'],q1,0)
+            if colName[0]!="_":
+                
+                colValue=qresult[0][0]
+                if colValue:
+                    colValue=str(int(colValue))
+                else:
+                    colValue="0"
+                    
+                colSums.append(["Total for "+colName,colValue])
+#                colSums.append(q1)
+    return colSums
+
 def catImgs(config):
 
     catImagePath=config['catImagePath']+config['dbname']+'/'
@@ -1395,7 +1462,7 @@ def indexCat(currentCat,catImages,catSelected,action):
 
 def catQuery(req,categoryName,itemID,config):
 
-    selectFields,catHeader,booleanFields=catColumns(categoryName,itemID,config)
+    selectFields,catHeader=catColumns(categoryName,itemID,config)
 
     if itemID=='0':
         if categoryName[:3]=='All': # will NOT show results
@@ -1563,7 +1630,6 @@ def catColumns(categoryName,itemID,config):
     colNames=[]
     selectFields=''
     catHeader=[]
-    booleanFields=''
     
     q="show columns from "+config['catTable']
     qresult=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
@@ -1582,11 +1648,7 @@ def catColumns(categoryName,itemID,config):
             pass
         else:
             colNames.append(thisCol[0])
-            
-        # add enum cols to boolean search
-        if 'enum(' in thisCol[1]:
-            booleanFields=booleanFields+','+thisCol[0]
-            
+                       
     colNames.insert(0,idCol)
 
     if itemID=='0':
@@ -1645,14 +1707,13 @@ def catColumns(categoryName,itemID,config):
                 selectFields=selectFields+config['catTable']+'.'+thisCol+","
             selectFields=selectFields[:-1]
             
-    return (selectFields,catHeader,booleanFields)
+    return (selectFields,catHeader)
     
 def catColumnsold(categoryName,itemID,config):
 
     colNames=[]
     selectFields=''
     catHeader=[]
-    booleanFields=''
     
     q="show columns from "+config['catTable']
     qresult=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
@@ -1671,10 +1732,6 @@ def catColumnsold(categoryName,itemID,config):
             pass
         else:
             colNames.append(thisCol[0])
-            
-        # add enum cols to boolean search
-        if 'enum(' in thisCol[1]:
-            booleanFields=booleanFields+','+thisCol[0]
             
     colNames.insert(0,idCol)
 
@@ -1716,7 +1773,7 @@ def catColumnsold(categoryName,itemID,config):
             selectFields=selectFields+config['catTable']+'.'+thisCol+","
         selectFields=selectFields[:-1]
     
-    return (selectFields,catHeader,booleanFields)
+    return (selectFields,catHeader)
         
 def catForm(catImages,currentCat):
         
