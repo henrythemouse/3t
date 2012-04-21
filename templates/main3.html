@@ -4,7 +4,7 @@
 <%minorTitle=catImages[int(currentCat)][0]%>
 <%searchImage="images/search.jpeg"%>
 <%
-mode="Rows Displayed: "+str(len(resultTable))
+mode="Rows Displayed: "+str(len(resultTable)-1)
 if 'default' in minorImage:
     minorImage='catimages/'+configDB+'/default.png'
 if displaynamelocation=='top':

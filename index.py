@@ -244,7 +244,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         item=itemData(currentItem,config)
         itemSelect=itemForm(item[4],currentItem)
         itemImage=itemImg(itemImage,item,config)
-        search=searchForm(searchText)
+        search=searchForm(searchText,searchMode)
         results=itemQuery(currentItem,item,config)
         cleanTmp(config)
 #        util.redirect(req,"testValue.py/testvalue?test="+repr(results)+repr(currentItem))
@@ -273,7 +273,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         currentCat=indexCat(currentCat,catImages,catSelected,action)
         catSelect=catForm(catImages,currentCat)
         catImage=catImages[currentCat][1]
-        search=searchForm(searchText)
+        search=searchForm(searchText,searchMode)
         results=catQuery(req,catImages[currentCat][0],item[1],config)
         cleanTmp(config)
         
@@ -290,7 +290,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
         catImage=catImages[currentCat][1]
-        search=searchForm(searchText)
+        search=searchForm(searchText,searchMode)
         # not that in all insert/update forms I use 'result' and not 'results'
         # this way the binary data is not save to the cookie table
         result=editItem(currentCat,item,config)
@@ -304,7 +304,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
         catImage=catImages[currentCat][1]
-        search=searchForm(searchText)
+        search=searchForm(searchText,searchMode)
         result=createItem(currentCat,item,config)
         
         # parse the results list
@@ -316,7 +316,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
         catImage=catImages[currentCat][1]
-        search=searchForm(searchText)
+        search=searchForm(searchText,searchMode)
         result=editCat(catImages[currentCat][0],catID,config)
         
         # parse the results list
@@ -328,7 +328,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
         catImage=catImages[currentCat][1]
-        search=searchForm(searchText)
+        search=searchForm(searchText,searchMode)
         result=createCat(catImages[currentCat][0],catID,config)
         
         # parse the results list
@@ -338,13 +338,14 @@ def index(req,currentCat=0,currentItem=1,action=0):
 
     elif action==14:     # search requested
 
+
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
         catImage=catImages[currentCat][1]
-        search=searchForm(searchText)
+        search=searchForm(searchText,searchMode)
 
         results=searchQuery(searchText,searchMode,catImages[currentCat][0],item[1],config)
-#        util.redirect(req,"testValue.py/testvalue?test="+repr(results[-1]))
+#        util.redirect(req,"testValue.py/testvalue?test="+repr(results[-3:]))
 
         # parse the results list
         caption=results[0]
@@ -361,7 +362,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
         catImage=catImages[currentCat][1]
-        search=searchForm(searchText)        
+        search=searchForm(searchText,searchMode)        
         results=mediaQuery(mediaID,config)
         
         # parse the results list
@@ -378,7 +379,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
         catImage=catImages[currentCat][1]
-        search=searchForm(searchText)
+        search=searchForm(searchText,searchMode)
         result=editMedia(mediaID,catID,item,config)
         
         # parse the results list
@@ -391,7 +392,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
         catImage=catImages[currentCat][1]
-        search=searchForm(searchText)
+        search=searchForm(searchText,searchMode)
         result=createMedia(mediaID,catID,item,config)
         #~ util.redirect(req,"testValue.py/testvalue?test="+repr(result))
         
@@ -405,7 +406,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
         catImage=catImages[currentCat][1]
-        search=searchForm(searchText)
+        search=searchForm(searchText,searchMode)
          
         results=aboutInfo(config)
         # parse the results list
@@ -419,7 +420,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
         catImage=catImages[currentCat][1]
-        search=searchForm(searchText)
+        search=searchForm(searchText,searchMode)
         result=editConfig(req,config)
         
         # parse the results list
@@ -431,7 +432,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
         catImage=catImages[currentCat][1]
-        search=searchForm(searchText)
+        search=searchForm(searchText,searchMode)
         result=createConfig(req,config)
         
         # parse the results list
@@ -458,7 +459,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
             currentCat=0
             catSelect=catForm(catImages,currentCat)
             catImage=catImages[currentCat][1]
-            search=searchForm(searchText)
+            search=searchForm(searchText,searchMode)
             results=mediaQuery(mediaID,config)
             
             # parse the results list
@@ -484,7 +485,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
             catImages=catImgs(config)
             catSelect=catForm(catImages,currentCat)
             catImage=catImages[currentCat][1]
-            search=searchForm(searchText)
+            search=searchForm(searchText,searchMode)
             results=itemQuery(currentItem,item,config)
             cleanTmp(config)
             
@@ -517,8 +518,8 @@ def index(req,currentCat=0,currentItem=1,action=0):
             'results':results\
             }
 
+#        util.redirect(req,"testValue.py/testvalue?test="+"kooky "+repr((data)))
         kookied=kooky2.myCookies(req,'save',data,config['dbname'],config['selectedHost'])
-#        util.redirect(req,"testValue.py/testvalue?test="+"kooky "+repr((relatedCat)))
         
         # set the template name
         mainForm='templates/main3.html'
@@ -582,16 +583,19 @@ def searchQuery(searchText1,searchMode,categoryName,itemID,config):
     itemFullTextCols,catFullTextCols,mediaFullTextCols=getFullTextCols(config)
     itemBooleanFields,catBooleanFields,mediaBooleanFields=getBooleanFields(config)
             
+    # all searchMode does is add enum fields
+    # change the mode to boolean and force phrase searching
+    # phrase searching seems allow special character searching
     if searchMode:
         catFullTextCols=catFullTextCols+catBooleanFields
         itemFullTextCols=itemFullTextCols+itemBooleanFields
         mediaFullTextCols=mediaFullTextCols+mediaBooleanFields
         mode=' IN BOOLEAN MODE'
+        searchText="'"+'"'+searchText1+'"'+"'"
     else:
         mode=""
+        searchText="'"+searchText1+"'"
         
-    # all searchMode does is add enum search fields and change the mode to boolean.
-    searchText="'"+'"'+searchText1+'"'+"'"
     
     if itemID=='0': #All_Items
         if categoryName[:3]=='All':
@@ -688,31 +692,28 @@ def searchQuery(searchText1,searchMode,categoryName,itemID,config):
                             
     qresult1=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
     
-    if itemID=='0':
-        qresult2=[]
-        for thisRow in qresult1:
-            uniqueField=""
-            row2=[thisRow[0]]
-            for thisCol in range(1,len(config['itemUniqueID'])+1):
-                uniqueField=uniqueField+str(thisRow[thisCol])+" "
-            row2.append(uniqueField)
-            for thisCol in range(len(config['itemUniqueID'])+1,len(thisRow)):
-                row2.append(str(thisRow[thisCol]))
-            qresult2.append(row2)
-    else:
-        qresult2=qresult1
+    if isinstance(qresult1,tuple):        
+        if itemID=='0':
+            qresult2=[]
+            for thisRow in qresult1:
+                uniqueField=""
+                row2=[thisRow[0]]
+                for thisCol in range(1,len(config['itemUniqueID'])+1):
+                    uniqueField=uniqueField+str(thisRow[thisCol])+" "
+                row2.append(uniqueField)
+                for thisCol in range(len(config['itemUniqueID'])+1,len(thisRow)):
+                    row2.append(str(thisRow[thisCol]))
+                qresult2.append(row2)
+        else:
+            qresult2=qresult1
             
-            
-    if isinstance(qresult1,tuple):
-        catCaption=str(len(qresult2))+' records matching search="'+searchText
-        #~ catCaption=q
-
+        catCaption=str(len(qresult2))+' records matching search='+searchText
     else:
         # the query failed
         catCaption='No results for this search query!'
-        #~ catHeader=q
+        qresult2=[]
     
-    return (catCaption,catHeader,qresult2,"cat",q)
+    return (catCaption,catHeader,qresult2,"cat",q,searchText1,searchText)
 
 def getFullTextCols(config):
     
@@ -786,12 +787,15 @@ def getBooleanFields(config):
     
     return(itemBooleanFields,catBooleanFields,mediaBooleanFields)
 
-def searchForm(searchText):
+def searchForm(searchText,searchMode):
 
-    moreInput=strict401gen.Input(type='checkbox',checked='yes',name='searchMode',title="Include Boolean Search",Class="editfield searchInput")
+    moreInput=strict401gen.Input(type='checkbox',checked=searchMode,name='searchMode',title="Double Quoted Boolean Search",Class="editfield searchInput")
     searchInput=strict401gen.Input(type='text',llabel="Search",value=searchText,size="15",maxlength="20",name='searchText',title="Enter text to Search for.",Class="editfield searchField searchInput")
     searchButton=strict401gen.Input(type="image",name="searchbutton",srcImage="images/search2.png",alt="Search",title="Submit Search",Class="searchbutton searchSubmit")
     
+    # the "+" sign is removed from the query text
+    # I tried using enctype='multipart/form-data',but that didn't help
+    # and it causes the pickle operation to fail
     form=strict401gen.Form(submit="",name='newSearch',cgi='index?action=14')
     form.append("<p>")
     form.append(moreInput)
