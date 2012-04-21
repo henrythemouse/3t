@@ -35,7 +35,7 @@ else:
     itemDelete='<a href="index?popup=95&action='+str(action)+'"'+'><img src="images/delete.png" alt="Delete" title="Delete" CLASS="itemdeleteimage"></a>'
 # can use the mode varible for debug messages
 #mode=repr(popup)+repr(loginlogout)+repr(action)
-
+mode=str(itemSelected)
 %>
 <% 
 #end
@@ -269,6 +269,7 @@ elif len(resultHeader)==2:
             <INPUT TYPE="hidden" NAME="system" VALUE="<%=minorTitle%>">
             <INPUT TYPE="hidden" NAME="configDB" VALUE="<%=configDB%>">
             <INPUT TYPE="hidden" NAME="cancelAction" VALUE="<%=cancelAction%>">
+            <INPUT TYPE="hidden" NAME="selectedItem" VALUE="<%=selectedItem%>">
         </DIV>
         
         <!-- end of form-->
@@ -542,6 +543,7 @@ if popup in ('99','98','97','96','95'):
             <INPUT TYPE="hidden" NAME="media" VALUE="<%=mediaRecord%>">
             <INPUT TYPE="hidden" NAME="action" VALUE="<%=action%>">
             <INPUT TYPE="hidden" NAME="medit" VALUE="<%=mediaID%>">
+            <INPUT TYPE="hidden" NAME="itemID" VALUE="<%=itemID%>">
             <!-- end of form-->
             </FORM>
         </DIV>
@@ -569,6 +571,8 @@ if popup in ('99','98','97','96','95'):
             <INPUT TYPE="hidden" NAME="configDB" VALUE="<%=configDB%>">
             <INPUT TYPE="hidden" NAME="catID" VALUE="<%=catID%>">
             <INPUT TYPE="hidden" NAME="action" VALUE="<%=action%>">
+            <INPUT TYPE="hidden" NAME="itemID" VALUE="<%=itemID%>">
+            <INPUT TYPE="hidden" NAME="currentCat" VALUE="<%=currentCat%>">
             <!-- end of form-->
             </FORM>
         </DIV>
@@ -586,7 +590,7 @@ if popup in ('99','98','97','96','95'):
                     <%=loginmsg%>
                 </DIV>
                  <DIV CLASS='logout'>
-                    <INPUT TYPE="submit" NAME="itemCat" id='itemCat' VALUE="DELETE" CLASS='inputfield'>
+                    <INPUT TYPE="submit" NAME="delItem" id='delItem' VALUE="DELETE" CLASS='inputfield'>
                 </DIV>
                 <DIV CLASS='logoutcancel'>
                     <INPUT TYPE="submit" NAME="cancel" id='cancel' VALUE="CANCEL" CLASS='inputfield'>

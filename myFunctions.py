@@ -389,16 +389,18 @@ def item(req):
         except:
             action='cancel'
 
+    selectedItem=req.form['selectedItem']
+
     if action !='cancel':
 
         what=doSql(req,action,cols,config['itemIDfield'],config['dbname'],config['itemTable'],config['selectedHost'],config['owner'])
 
+#        util.redirect(req,"../testValue.py/testvalue?test="+repr(what))
         if what[0]:
             parameter="?error="+what[0]+"...\\n\\n perhaps you are not \\n the owner of this record \\n or are not logged in"
-            #~ util.redirect(req,"../testValue.py/testvalue?test="+repr(parameter))
         elif action=='insert':
             insertID=what[1]
-            parameter="?item="+str(insertID)
+            parameter="?action=4&item="+str(insertID)
         else:
             parameter="?action=3"
     else:
@@ -523,6 +525,7 @@ def delMedia(req):
                 
     config=getConfig(req,req.form['configDB'])
 
+    itemID=req.form['itemID']
     mediaID=req.form['mediaID']
     mediaRecord=req.form['media']
     selectedHost=config["selectedHost"]
@@ -530,6 +533,7 @@ def delMedia(req):
     idField=config['mediaIDfield']
     dbname=config['dbname']
     
+#    util.redirect(req,"../testValue.py/testvalue?test="+str(req.form)+"*****"+str(action))
     if action!='cancel':
         
         # delete the record
@@ -537,9 +541,11 @@ def delMedia(req):
         if what[0]:
             parameter="?error="+what[0]+"...\\n\\n perhaps you are not \\n the owner of this record \\n or are not logged in"
         else:    
-            parameter="?media="+mediaRecord
+#            parameter="?media="+mediaRecord
+            parameter="?action=3&item="+str(itemID)
     else:
-        parameter="?media="+mediaRecord
+#        parameter="?media="+mediaRecord
+        parameter="?action=3&item="+str(itemID)
 
     util.redirect(req,"/3t/index.py"+parameter)    
 
@@ -554,12 +560,15 @@ def delCat(req):
                 
     config=getConfig(req,req.form['configDB'])
 
+    itemID=req.form['itemID']
     catID=req.form['catID']
     selectedHost=config["selectedHost"]
     tableName=config['catTable']
     idField=config['catIDfield']
     dbname=config['dbname']
+    currentCat=req.form['currentCat']
     
+#    util.redirect(req,"../testValue.py/testvalue?test="+str(req.form)+"*****"+str(action))
     if action!='cancel':
         
         # delete the record
@@ -567,9 +576,11 @@ def delCat(req):
         if what[0]:
             parameter="?error="+what[0]+"...\\n\\n perhaps you are not \\n the owner of this record \\n or are not logged in"
         else:    
-            parameter="?action=8"
+#            parameter="?action=8"
+            parameter="?action=8&category="+str(currentCat)
     else:
-        parameter="?action=8"
+#        parameter="?action=8"
+        parameter="?action=8&category="+str(currentCat)
 
     util.redirect(req,"/3t/index.py"+parameter)    
         
@@ -589,6 +600,7 @@ def delItem(req):
     tableName=config['itemTable']
     idField=config['itemIDfield']
     dbname=config['dbname']
+#    util.redirect(req,"../testValue.py/testvalue?test="+str(req.form)+"*****"+str(action))
     
     if action!='cancel':
         
@@ -597,9 +609,11 @@ def delItem(req):
         if what[0]:
             parameter="?error="+what[0]+"...\\n\\n perhaps you are not \\n the owner of this record \\n or are not logged in"
         else:    
-            parameter="?action=3"
+            # tell the routine where to return to, got to pick an item.
+            parameter="?action=3&item=1"
     else:
-        parameter="?action=3"
+#        parameter="?action=3"
+        parameter="?action=3&item=1"
 
     util.redirect(req,"/3t/index.py"+parameter)    
 
@@ -827,6 +841,7 @@ def doSql(req,action,cols,idField,dbname,tableName,selectedHost,owner):
         
         q="delete from `"+tableName+"` where `"+tableName+"`.`"+idField+"`="+"'"+str(id)+"'"
         error=""
+#        util.redirect(req,"../testValue.py/testvalue?test="+repr(q))
         
         try:
             dbconnection = MySQLdb.connect(host=selectedHost,user=username,passwd=userpass,db=dbname)

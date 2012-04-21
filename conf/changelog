@@ -1,4 +1,15 @@
-fleet (2.0-1) unstable; urgency=low
+3t (2.1-1) unstable; urgency=low
+
+  * Added date field to all tables, default to today.
+  * Added boolean search to all tables in search.
+  * Two search types are now: double quoted fulltext boolean and fulltex only.
+  * Enum fields are added to dqfb searches
+  * Added delete function, and dependency checking, with popup confirmation.
+  * Search select button stays selected until changed.
+  * On startup ui opens to last revised record.
+  * Moved this version to a svn branch.  
+
+3t (2.0-1) unstable; urgency=low
 
   * Added support for a third table to store notes and images 
     for records in the item table and the catagory table.

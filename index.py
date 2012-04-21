@@ -15,7 +15,7 @@ from mod_python import apache
 
 '''
 $LastChangedDate$
-$Rev$
+$Rev:$
 '''
 '''
 BUG FIXES THAT NEED TO PROPIGATE TO 2TABLE
@@ -232,12 +232,13 @@ def index(req,currentCat=0,currentItem=1,action=0):
             #~ util.redirect(req,"testValue.py/testvalue?test="+repr(data))
             pass
     
-
-        
+#    itemSelected=1
     # *******************************************
     # item image and navagation
     if action in (1,2,3,4):       # index item
         
+        # need to refresh item in case of a newly inserted item
+        item=itemData(currentItem,config)
         catSelect=catForm(catImages,currentCat)
         catImage=catImages[currentCat][1]
         currentItem=indexItem(item,itemSelected,action)
@@ -247,7 +248,6 @@ def index(req,currentCat=0,currentItem=1,action=0):
         search=searchForm(searchText,searchMode)
         results=itemQuery(currentItem,item,config)
         cleanTmp(config)
-#        util.redirect(req,"testValue.py/testvalue?test="+repr(results)+repr(currentItem))
         
         # parse the results list
         caption=results[0]
@@ -447,7 +447,29 @@ def index(req,currentCat=0,currentItem=1,action=0):
         pass
 
     else:               # no action - use defaults
-        if config['lastUpdate']:
+        if popup:
+            # this goes back to the item display
+            # I could do more and return to ???, not a safe bet however.
+            item=itemData(currentItem,config)
+            #~ util.redirect(req,"testValue.py/testvalue?test="+repr(currentItem))
+            currentItem=indexItem(item,itemSelected,action)
+            itemSelect=itemForm(item[4],currentItem)
+            itemImage=itemImg(itemImage,item,config)
+            catImages=catImgs(config)
+            catSelect=catForm(catImages,currentCat)
+            catImage=catImages[currentCat][1]
+            search=searchForm(searchText,searchMode)
+            results=itemQuery(currentItem,item,config)
+            cleanTmp(config)
+            
+            # parse the results list
+            caption=results[0]
+            resultHeader=results[1]
+            resultData=results[2]
+            
+            resultTable=itemTable(str(item[1]),resultData,config)
+            
+        elif config['lastUpdate']:
             
             itemID,mediaID=lastUpdate(config)
             #~ util.redirect(req,"testValue.py/testvalue?test="+repr(itemID)+repr(mediaID))
@@ -527,6 +549,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         relatedCat=relatedRecords(currentItem,config)
 
         # the dic of values to pass to the html page
+        vars['itemSelected']=itemSelected
         vars['action']=action
         vars['popup']=popup
         vars['relatedCat']=relatedCat
@@ -905,7 +928,7 @@ def indexItem(item,itemSelected,action):
     elif action==4 or action==0:
         if itemSelected:
             for thisItem in range(0,len(itemList)):
-                if itemSelected in itemList[thisItem]:
+                if str(itemSelected) in itemList[thisItem]:
                     currentItem=thisItem
     # no change
     else:
