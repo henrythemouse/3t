@@ -338,7 +338,7 @@ def writeConfig(req):
                     pass
         
         # copy the default logo image file to images/dbname
-        defaultLogoFile=config['rootPath']+'/images/displaylogo.png'
+        defaultLogoFile=config['rootPath']+'/images/defaultlogo.png'
         logoImageDir=config['rootPath']+'/images/'+dbname
 #        util.redirect(req,"../testValue.py/testvalue?test="+repr(defaultLogoFile)+" "+repr(logoImageDir))
         try:
