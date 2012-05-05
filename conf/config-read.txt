@@ -18,6 +18,12 @@ displaynamelocation=top
 ## Enter the name of the image to use as your logo (a default is provided).
 displaylogo=read.jpg
 
+## Enter the name of the image to use as the popup background (default=displaylogo).
+popupbackground=
+
+## Enter the email contact address (no default is provided).
+emailcontact=witscher@gmail.com
+
 ## Enter the database name for the mysql server (no default).
 dbname=read
 
@@ -54,6 +60,10 @@ allItems=lastname_ firstname_ othername date
 ## Enter a space seperated list of category table column names
 ## that you want included in boolean search results (no default).
 catSearchFields=title_ subtitle kind date
+
+## On startup display the last record entered (no default).
+## Any value will enable, leave blank to disable.
+lastupdate=1
 
 
 # end of configuration file

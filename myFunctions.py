@@ -16,10 +16,12 @@ from mod_python import util
 
 def dogout(req):
 
-    config=getConfig(req,req.form['configDB'].value)
+#    util.redirect(req,"../testValue.py/testvalue?test="+repr(req.form))
+    config=getConfig(req,req.form['dbname'].value)
+    action=req.form['action'].value
     
     try:
-        logoutClicked=req.form['dogout']
+        logoutClicked=req.form['dogout'].value
         
         data=kooky2.myCookies(req,'get','',config['dbname'],config['selectedHost'])
 
@@ -31,28 +33,31 @@ def dogout(req):
         
     except:
         pass
-    
-    if req.form['action']=='15':
+
+    if action=='15':
         parameter='?media='+req.form['media']
-    elif req.form['action'] in ('16','17'):
+    elif action in ('16','17'):
         parameter='?medit='+req.form['media']
     else:    
+#        parameter='?media='+req.form['media']
         parameter='?action='+req.form['action']
         
     util.redirect(req,"../index.py"+parameter)
     
 def dogin(req):    
     
-    config=getConfig(req,req.form['configDB'].value)
+#    util.redirect(req,"../testValue.py/testvalue?test="+repr(req.form))
+    config=getConfig(req,req.form['dbname'].value)
     cancelClicked=''
+    action=req.form['action'].value
     
     try:
-        loginClicked=req.form['dogin']
+        loginClicked=req.form['dogin'].value
         username=req.form['dogleg'].value
         userpass=req.form['cattail'].value
     except:
         try:
-            cancelClicked=req.form['cancel']
+            cancelClicked=req.form['cancel'].value
             username=''
             userpass=''
         except:
@@ -87,26 +92,33 @@ def dogin(req):
         parameter='?action='+req.form['action']
     else:
         if loginAccepted:
-            parameter='?action='+req.form['action']            
+            if action=='15':
+                parameter='?media='+req.form['media']
+            elif action in ('16','17'):
+                parameter='?medit='+req.form['media']
+            else:    
+#                parameter='?media='+req.form['media']
+                parameter='?action='+req.form['action']     
         else:
             parameter='?action=98'
         
     util.redirect(req,"../index.py"+parameter)
 
-def getConfig(req,configDB):
+def getConfig(req,dbname):
 
     config={}
     config['configError']='no'
 
     try:
-        if configDB:
-            fileName='config-'+configDB+'.txt'
+        if dbname:
+            fileName='config-'+dbname+'.txt'
         else:
             fileName='config.txt'
             
         apacheConfig=req.get_config()
         rootPath=apacheConfig['PythonPath'][11:-2]
         configFile=rootPath+"/"+'conf'+'/'+fileName
+        config['rootPath']=rootPath
         config['configFile']=configFile
         
         try:
@@ -171,6 +183,13 @@ def getConfig(req,configDB):
         config['catSearchFields']=config['catSearchFields'].split(" ")
         config['lastUpdate']="1"
         config['owner']='owner'
+        # config defaults
+        if not config['displaylogo']:
+            config['displaylogo']='displaylogo.png'
+        if not config['popupbackground']:
+            config['popupbackground']=config['displaylogo']
+        if config['lastupdate']:
+            config['lastupdate']="1"
                 
     except:
         config['configError']="configError"
@@ -191,7 +210,11 @@ def writeConfig(req):
     if action:
         # This just writes a config file, however some config variables are not present in the file.
         # Some are gotten by inference or from the mysql db.
-        config=getConfig(req,req.form['configDB'].value)
+        # Because the dbname is passed as a hidden value and as a form data 
+        # I get a list of two dbname values. This is unique to this function
+        # So I'm going to leave it this way as it makes the rest of this program more readable.
+        dbname=(req.form['dbname'][0].value).strip()
+        config=getConfig(req,dbname)
 
         fileHeader=[\
         '# configuration file for all 3 table dbs (3t)',\
@@ -217,8 +240,14 @@ def writeConfig(req):
             '## Enter the name of the image to use as your logo (a default is provided).',\
             'displaylogo='+req.form['displaylogo'].strip(),\
             '',\
+            '## Enter the name of the image to use as the popup background (default=displaylogo).',\
+            'popupbackground='+req.form['popupbackground'].strip(),\
+            '',\
+            '## Enter the email contact address (no default is provided).',\
+            'emailcontact='+req.form['emailcontact'].strip(),\
+            '',\
             '## Enter the database name for the mysql server (no default).',\
-            'dbname='+req.form['dbname'].strip(),\
+            'dbname='+dbname,\
             '',\
             '## Enter the hostname for the mysql server (default is localhost).',\
             'selectedHost='+req.form['selectedHost'].strip(),\
@@ -253,6 +282,11 @@ def writeConfig(req):
             '## Enter a space seperated list of category table column names',\
             '## that you want included in boolean search results (no default).',\
             'catSearchFields='+req.form['catSearchFields'].strip(),\
+            '',\
+            '## On startup display the last record entered (no default).',\
+            '## Any value will enable, leave blank to disable.',\
+            'lastupdate='+req.form['lastupdate'].strip(),\
+
             ]
 
         fileFooter=[\
@@ -263,7 +297,7 @@ def writeConfig(req):
         
         # write the lines to disk
         dir=config['configFile'].split("/")
-        fileName="/".join(dir[:-1])+"/config-"+req.form['dbname'].strip()+".txt"
+        fileName="/".join(dir[:-1])+"/config-"+dbname+".txt"
         
         cfgFile=open(fileName,"wb")
         
@@ -279,20 +313,23 @@ def writeConfig(req):
         # create the catImages dbname dir if not found
         # but you will still need to populate it with images
         # allthough the default image is copied over.
-        dir=config['configFile'].split("/")
-        catImagesDir="/".join(dir[:-2])+"/catimages/"
-        catDBdir=catImagesDir+req.form['dbname'].strip()+"/"
+        catImagesDir=config['rootPath']+"/catimages/"
+        catDBdir=catImagesDir+dbname+"/"
         if os.path.isdir(catDBdir):
-            os.chmod(catDBdir,16895)
+            try:
+                os.chmod(catDBdir,0777)
+            except:
+                pass
         else:
-            os.mkdir(catDBdir)
-            os.chmod(catDBdir,16895)
+            try:
+                os.mkdir(catDBdir)
+                os.chmod(catDBdir,16895)
+            except:
+                pass
             
         # copy the default cat image file over if needed
         # it should be the only file in the catImagesDir
-        dirList=os.listdir(catImagesDir)
-        #~ util.redirect(req,"../testValue.py/testvalue?test="+repr(dirList))
-                    
+        dirList=os.listdir(catImagesDir)                    
         for thisEl in dirList:
             if os.path.isfile(catImagesDir+thisEl):
                 try:
@@ -300,6 +337,14 @@ def writeConfig(req):
                 except:
                     pass
         
+        # copy the default logo image file to images/dbname
+        defaultLogoFile=config['rootPath']+'/images/displaylogo.png'
+        logoImageDir=config['rootPath']+'/images/'+dbname
+#        util.redirect(req,"../testValue.py/testvalue?test="+repr(defaultLogoFile)+" "+repr(logoImageDir))
+        try:
+            shutil.copy(defaultLogoFile,logoImageDir)
+        except:
+            pass
             
             
     else:
@@ -318,7 +363,7 @@ def checkConfig(config):
     
 def cat(req):
     
-    config=getConfig(req,req.form['configDB'].value)
+    config=getConfig(req,req.form['dbname'].value)
 
     # get the column names and column types for tableName
     cols={}
@@ -362,7 +407,7 @@ def cat(req):
         
 def item(req):
     
-    config=getConfig(req,req.form['configDB'].value)
+    config=getConfig(req,req.form['dbname'].value)
     
     # get the column names and column types for tableName
     cols={}
@@ -410,7 +455,7 @@ def item(req):
 
 def media(req):
     
-    config=getConfig(req,req.form['configDB'].value)
+    config=getConfig(req,req.form['dbname'].value)
     
     # get the column names and column types for tableName
     cols={}
@@ -464,7 +509,7 @@ def media(req):
     
 def Imedia(req):
     
-    config=getConfig(req,req.form['configDB'].value)
+    config=getConfig(req,req.form['dbname'].value)
     
     # get the column names and column types for tableName
     cols={}
@@ -523,7 +568,7 @@ def delMedia(req):
         except:
             action='cancel'
                 
-    config=getConfig(req,req.form['configDB'])
+    config=getConfig(req,req.form['dbname'])
 
     itemID=req.form['itemID']
     mediaID=req.form['mediaID']
@@ -558,7 +603,7 @@ def delCat(req):
         except:
             action='cancel'
                 
-    config=getConfig(req,req.form['configDB'])
+    config=getConfig(req,req.form['dbname'])
 
     itemID=req.form['itemID']
     catID=req.form['catID']
@@ -593,7 +638,7 @@ def delItem(req):
         except:
             action='cancel'
                 
-    config=getConfig(req,req.form['configDB'])
+    config=getConfig(req,req.form['dbname'])
 
     itemID=req.form['itemID']
     selectedHost=config["selectedHost"]

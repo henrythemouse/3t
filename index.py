@@ -96,10 +96,11 @@ def index(req,currentCat=0,currentItem=1,action=0):
     access=''
     username=''
     userpass=''
+    searchMode=''
 
     try:
         x=req.form.list
-        #~ util.redirect(req,"testValue.py/testvalue?test="+repr(x))
+#        util.redirect(req,"testValue.py/testvalue?test="+repr(x))
     except:
         pass
     
@@ -108,9 +109,9 @@ def index(req,currentCat=0,currentItem=1,action=0):
     # Hopefully I also supply a default config file that will load
     # a default db in the case where a config name is not passed with the url.
     try:
-        configDB=req.form['config'].value
-        config=myFunctions.getConfig(req,configDB)
-        setDBkooky=kooky2.myCookies(req,"","",configDB,"")
+        dbname=req.form['config'].value
+        config=myFunctions.getConfig(req,dbname)
+        setDBkooky=kooky2.myCookies(req,"","",dbname,"")
     except:
         # all I want here is the dbname from the browser cookie
         # which gives me the config name to retrieve the configuration
@@ -156,7 +157,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         except:
             error=''
         
-        #~ util.redirect(req,"testValue.py/testvalue?test="+repr(error))
+#        util.redirect(req,"testValue.py/testvalue?test="+repr(config))
         
         try:                # if available, get the category formdata
             catSelected=req.form['category']
@@ -173,10 +174,13 @@ def index(req,currentCat=0,currentItem=1,action=0):
             searchText=req.form['searchText']
         except:
             searchText=''
-        try:
-            searchMode=req.form['searchMode']
-        except:
-            searchMode=''
+#        try:
+#            searchMode=req.form['searchMode'].value
+##            util.redirect(req,"testValue.py/testvalue?test="+repr(searchMode))
+#        except:
+#            searchMode=''
+##            util.redirect(req,"testValue.py/testvalue?test="+repr(searchMode))
+##            pass
             
         try:                # if available, get the cat record formdata - edit a record
             catID=req.form['edit']
@@ -223,9 +227,18 @@ def index(req,currentCat=0,currentItem=1,action=0):
             username=data['username']
             userpass=data['userpass']
             try:
-                req.form['searchbutton.x']
+                # is search button clicked?
+                req.form['searchbutton.x'].value
+                try:
+                    # get searchMode if sent
+                    searchMode=req.form['searchMode'].value
+                except:
+                    searchMode=""
             except:
+                # use saved data
+                searchMode=data['searchMode']
                 searchText=data['searchText']
+
             if not catID:
                 catID=data['catID']
         except:
@@ -357,8 +370,11 @@ def index(req,currentCat=0,currentItem=1,action=0):
         resultTable=catTable(resultData,catImages[currentCat][0],resultHeader,headerWidths,config)
         
     elif action==15:         # show note/media
-        if mediaID[0]!="I":
-            catID=mediaID
+        try:
+            if mediaID[0]!="I":
+                catID=mediaID
+        except:
+            pass
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
         catImage=catImages[currentCat][1]
@@ -371,8 +387,8 @@ def index(req,currentCat=0,currentItem=1,action=0):
         resultData=results[2]
         
         headerWidths=getMediaColWidths(req,config)
-        #~ util.redirect(req,"testValue.py/testvalue?test="+repr(cookieID))
-        #~ resultTable=mediaTable(resultData,cookieID['kookyID'],mediaID,config)
+#        util.redirect(req,"testValue.py/testvalue?test="+repr(cookieID))
+#        resultTable=mediaTable(resultData,cookieID['kookyID'],mediaID,config)
         resultTable=mediaTable(resultData,cookieID,mediaID,config)
         
     elif action==16:     # edit media
@@ -469,7 +485,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
             
             resultTable=itemTable(str(item[1]),resultData,config)
             
-        elif config['lastUpdate']:
+        elif config['lastupdate']:
             
             itemID,mediaID=lastUpdate(config)
             #~ util.redirect(req,"testValue.py/testvalue?test="+repr(itemID)+repr(mediaID))
@@ -533,6 +549,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
             'itemImage':itemImage,\
             'catImages':catImages,\
             'searchText':searchText,\
+            'searchMode':searchMode,\
             'catID':catID,\
             'cancelAction':cancelAction,\
             'username':username,\
@@ -540,7 +557,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
             'results':results\
             }
 
-#        util.redirect(req,"testValue.py/testvalue?test="+"kooky "+repr((data)))
+#        util.redirect(req,"testValue.py/testvalue?test="+"kooky "+repr((searchMode)))
         kookied=kooky2.myCookies(req,'save',data,config['dbname'],config['selectedHost'])
         
         # set the template name
@@ -556,7 +573,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         vars['dogleg']=username
         vars['cancelAction']=str(cancelAction)
         vars['error']=error
-        vars['configDB']=config['dbname']
+        vars['dbname']=config['dbname']
         vars['headerWidths']=headerWidths
         vars['mediaTable']=config['mediaTable']
         vars['catSelect']=catSelect
@@ -577,6 +594,8 @@ def index(req,currentCat=0,currentItem=1,action=0):
         vars['displayname']=config['displayname']
         vars['displaynamelocation']=config['displaynamelocation']
         vars['displaylogo']=config['displaylogo']
+        vars['popupbackground']=config['popupbackground']
+        vars['emailcontact']=config['emailcontact']
 
     else:
         mainForm='templates/conf.html'
@@ -587,7 +606,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         vars['message4']="CHECK THE VALUES BELOW AND EDIT THEM AS NEEDED"
         vars['message5']="********************************************************"
 
-#    util.redirect(req,"testValue.py/testvalue?test="+repr(resultHeader))
+#    util.redirect(req,"testValue.py/testvalue?test="+repr(vars))
 
     # call the html doc passing it the data
     return psp.PSP(req,mainForm,vars=vars)
@@ -657,8 +676,8 @@ def searchQuery(searchText1,searchMode,categoryName,itemID,config):
                 "="+config['itemTable']+"."+config['itemIDfield']+\
                 " where "+config['catField']+"='"+categoryName+"'"+\
                 " and (MATCH ("+catFullTextCols+") AGAINST ("+searchText+" "+mode+")"+\
-                " or MATCH ("+itemFullTextCols+") AGAINST ("+searchText+" "+")"+\
-                " or MATCH ("+mediaFullTextCols+") AGAINST ("+searchText+" "+"))"+\
+                " or MATCH ("+itemFullTextCols+") AGAINST ("+searchText+" "+mode+")"+\
+                " or MATCH ("+mediaFullTextCols+") AGAINST ("+searchText+" "+mode+"))"+\
                 " order by "+config['orderbyField']+" desc"
 
             else:
@@ -736,7 +755,7 @@ def searchQuery(searchText1,searchMode,categoryName,itemID,config):
         catCaption='No results for this search query!'
         qresult2=[]
     
-    return (catCaption,catHeader,qresult2,"cat",q,searchText1,searchText)
+    return (catCaption,catHeader,qresult2,"cat",q,searchMode,searchText)
 
 def getFullTextCols(config):
     

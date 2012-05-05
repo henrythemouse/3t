@@ -1,12 +1,12 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <HTML>
-<%minorImage='catimages/'+configDB+'/'+catImages[int(currentCat)][1]%>
+<%minorImage='catimages/'+dbname+'/'+catImages[int(currentCat)][1]%>
 <%minorTitle=catImages[int(currentCat)][0]%>
 <%searchImage="images/search.jpeg"%>
 <%
 mode="Rows Displayed: "+str(len(resultTable)-1)
 if 'default' in minorImage:
-    minorImage='catimages/'+configDB+'/default.png'
+    minorImage='catimages/'+dbname+'/default.png'
 if displaynamelocation=='top':
     location="top:1%"
 elif displaynamelocation=='middle':
@@ -20,14 +20,17 @@ else:
 if action in (15,):
     p2="&media="+str(mediaID)
 elif action in (16,17):
-    p2="&medit="+str(mediaID)
+#    p2="&action="+str(15)
+    p2="&media="+str(catID)
 else:
-    if action in (1,2,3,4):
+    if action in (1,2,3,4,10,11):
         exitAction=3
-    elif action in (5,6,7,8):
+    elif action in (5,6,7,8,12,13):
         exitAction=7
+    elif action in (21,22):
+        exitAction=20
     else:
-        exitAction=""
+        exitAction=action
     p2="&action="+str(exitAction)
 if relatedCat=="1":
     itemDelete='<img src="images/delete-inactive.png" alt="Delete" title="Delete" CLASS="itemdeleteimage">'
@@ -35,13 +38,13 @@ else:
     itemDelete='<a href="index?popup=95&action='+str(action)+'"'+'><img src="images/delete.png" alt="Delete" title="Delete" CLASS="itemdeleteimage"></a>'
 # can use the mode varible for debug messages
 #mode=repr(popup)+repr(loginlogout)+repr(action)
-mode=str(itemSelected)
+mode=str(dbname)
 %>
 <% 
 #end
 %>
 <HEAD>
-<title> <%=configDB.upper()%> </title>
+<title> <%=dbname.upper()%> </title>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
 <LINK rel="stylesheet" href="style/main.css" type="text/css">
     <script type="text/javascript">
@@ -78,7 +81,7 @@ else:
                 <%=mode%>
             </DIV>
             <DIV CLASS='contact'>
-                <A HREF="MAILTO:witscher@gmail.com?subject=3tdb">Contact</A>
+                <A HREF="MAILTO:<%=emailcontact%>?subject=3tdb">Contact</A>
             </DIV>
             <DIV CLASS='loginlogout'>
                     <A HREF="index?popup=99<%=p2%>"><%=loginlogout%> <%=dogleg%> </a>
@@ -167,7 +170,7 @@ if minorTitle[:3] !="All":
         <!-- start logo and note division -->
         <DIV id='logodiv' CLASS="logodiv hilite">
             <A HREF="index?action=20" >
-                <IMG src="images/<%=displaylogo%>" alt="Logo Image" id="logoImage" CLASS="logoimage" title="About">
+                <IMG src="images/<%=dbname%>/<%=displaylogo%>" alt="Logo Image" id="logoImage" CLASS="logoimage" title="About">
             </A>
             <DIV CLASS='company' style="position:absolute;<%=location%>;left:5px;width:290px;height:35px;">
                  <%=displayname%> 
@@ -267,7 +270,7 @@ elif len(resultHeader)==2:
             <INPUT TYPE="hidden" NAME="catID" VALUE="<%=catID%>">
             <INPUT TYPE="hidden" NAME="mediaID" VALUE="<%=mediaID%>">
             <INPUT TYPE="hidden" NAME="system" VALUE="<%=minorTitle%>">
-            <INPUT TYPE="hidden" NAME="configDB" VALUE="<%=configDB%>">
+            <INPUT TYPE="hidden" NAME="dbname" VALUE="<%=dbname%>">
             <INPUT TYPE="hidden" NAME="cancelAction" VALUE="<%=cancelAction%>">
             <INPUT TYPE="hidden" NAME="selectedItem" VALUE="<%=selectedItem%>">
         </DIV>
@@ -463,7 +466,7 @@ if popup in ('99','98','97','96','95'):
 
     if loginlogout=='login':
 %>
-<DIV CLASS='loginbox'>
+<DIV CLASS='loginbox' STYLE="background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
         <DIV>
             <!--start of form - the Edit table area-->
             <FORM method="post" id="dogForm" name="dogForm" action="myFunctions.py/dogin">
@@ -487,7 +490,7 @@ if popup in ('99','98','97','96','95'):
                 <INPUT TYPE="submit" NAME="cancel" VALUE="CANCEL" CLASS='inputfield'>
             </DIV>
             
-            <INPUT TYPE="hidden" NAME="configDB" VALUE="<%=configDB%>">
+            <INPUT TYPE="hidden" NAME="dbname" VALUE="<%=dbname%>">
             <INPUT TYPE="hidden" NAME="action" VALUE="<%=action%>">
             <INPUT TYPE="hidden" NAME="media" VALUE="<%=mediaID%>">
             <INPUT TYPE="hidden" NAME="medit" VALUE="<%=mediaID%>">
@@ -500,7 +503,7 @@ if popup in ('99','98','97','96','95'):
 <%
     elif loginlogout=='logout':
 %>
-<DIV CLASS='loginbox'>
+<DIV CLASS='loginbox' STYLE="background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
         <DIV>
             <!--start of form - the Edit table area-->
             <FORM method="post" id="dogForm" name="dogForm" enctype="multipart/form-data" action="myFunctions.py/dogout">
@@ -510,7 +513,7 @@ if popup in ('99','98','97','96','95'):
                 <DIV CLASS='logoutcancel'>
                     <INPUT TYPE="submit" NAME="cancel" VALUE="CANCEL" CLASS='inputfield'>
                 </DIV>
-            <INPUT TYPE="hidden" NAME="configDB" VALUE="<%=configDB%>">
+            <INPUT TYPE="hidden" NAME="dbname" VALUE="<%=dbname%>">
             <INPUT TYPE="hidden" NAME="mediaID" VALUE="<%=mediaID%>">
             <INPUT TYPE="hidden" NAME="action" VALUE="<%=action%>">
             <INPUT TYPE="hidden" NAME="media" VALUE="<%=mediaID%>">
@@ -538,7 +541,7 @@ if popup in ('99','98','97','96','95'):
                 <DIV CLASS='logoutcancel'>
                     <INPUT TYPE="submit" NAME="cancel" id='cancel' VALUE="CANCEL" CLASS='inputfield'>
                 </DIV>
-            <INPUT TYPE="hidden" NAME="configDB" VALUE="<%=configDB%>">
+            <INPUT TYPE="hidden" NAME="dbname" VALUE="<%=dbname%>">
             <INPUT TYPE="hidden" NAME="mediaID" VALUE="<%=mediaID%>">
             <INPUT TYPE="hidden" NAME="media" VALUE="<%=mediaRecord%>">
             <INPUT TYPE="hidden" NAME="action" VALUE="<%=action%>">
@@ -568,7 +571,7 @@ if popup in ('99','98','97','96','95'):
                 <DIV CLASS='logoutcancel'>
                     <INPUT TYPE="submit" NAME="cancel" id='cancel' VALUE="CANCEL" CLASS='inputfield'>
                 </DIV>
-            <INPUT TYPE="hidden" NAME="configDB" VALUE="<%=configDB%>">
+            <INPUT TYPE="hidden" NAME="dbname" VALUE="<%=dbname%>">
             <INPUT TYPE="hidden" NAME="catID" VALUE="<%=catID%>">
             <INPUT TYPE="hidden" NAME="action" VALUE="<%=action%>">
             <INPUT TYPE="hidden" NAME="itemID" VALUE="<%=itemID%>">
@@ -595,7 +598,7 @@ if popup in ('99','98','97','96','95'):
                 <DIV CLASS='logoutcancel'>
                     <INPUT TYPE="submit" NAME="cancel" id='cancel' VALUE="CANCEL" CLASS='inputfield'>
                 </DIV>
-            <INPUT TYPE="hidden" NAME="configDB" VALUE="<%=configDB%>">
+            <INPUT TYPE="hidden" NAME="dbname" VALUE="<%=dbname%>">
             <INPUT TYPE="hidden" NAME="itemID" VALUE="<%=itemID%>">
             <!-- end of form-->
             </FORM>

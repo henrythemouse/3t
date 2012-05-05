@@ -226,7 +226,7 @@ select:hover {
 
 /* tool bar for login logout contact */
 .loginbox {position:absolute;top:200px;left:200px;width:420px;height:220px;border:0;
-	z-index:1;background-image:url('../images/3t-2.png');color:black;
+	z-index:1;color:black;background-size:420px 220px;background-repeat:no-repeat;
 }
 .loginmsg {position:absolute;top:10px;left:90px;font:20px sans-serif;z-index:1;color:red;background-color:transparent;
 }

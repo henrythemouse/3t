@@ -18,6 +18,12 @@ displaynamelocation=bottom
 ## Enter the name of the image to use as your logo (a default is provided).
 displaylogo=auto.jpg
 
+## Enter the name of the image to use as the popup background (default=displaylogo).
+popupbackground=auto.jpg
+
+## Enter the email contact address (no default is provided).
+emailcontact=witscher@gmail.com
+
 ## Enter the database name for the mysql server (no default).
 dbname=auto
 
@@ -54,6 +60,10 @@ allItems=year make_ model_ vln vin
 ## Enter a space seperated list of category table column names
 ## that you want included in combination search results (no default).
 catSearchFields=sys service_ date vendor
+
+## On startup display the last record entered (no default).
+## Any value will enable, leave blank to disable.
+lastupdate=1
 
 
 # end of configuration file
