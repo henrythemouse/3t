@@ -1,3 +1,13 @@
+3t (2.2) stable; urgency=low
+
+  * Added three configuration variables.
+  	popupbackground: name an image to use as a background for the popup
+  	emailcontact: supply an email address for the contact link
+  	lastupdate: toggle on/off to open program with last updated record
+  * Item delete was broken due to faulty dependency check, fixed.
+  * Search terms would reset for every login/logout, fixed.
+  * First functional stable release for ver2 (ie 3t)
+
 3t (2.1-1) unstable; urgency=low
 
   * Added date field to all tables, default to today.
