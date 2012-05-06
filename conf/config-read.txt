@@ -19,7 +19,7 @@ displaynamelocation=top
 displaylogo=read.jpg
 
 ## Enter the name of the image to use as the popup background (default=displaylogo).
-popupbackground=
+popupbackground=smiley2.gif
 
 ## Enter the email contact address (no default is provided).
 emailcontact=witscher@gmail.com

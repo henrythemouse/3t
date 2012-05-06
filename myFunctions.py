@@ -654,11 +654,11 @@ def delItem(req):
         if what[0]:
             parameter="?error="+what[0]+"...\\n\\n perhaps you are not \\n the owner of this record \\n or are not logged in"
         else:    
-            # tell the routine where to return to, got to pick an item.
-            parameter="?action=3&item=1"
+            # tell the routine where to return to, home.
+            parameter=''
     else:
-#        parameter="?action=3"
-        parameter="?action=3&item=1"
+        # just go home, where ever that is.
+        parameter=''
 
     util.redirect(req,"/3t/index.py"+parameter)    
 

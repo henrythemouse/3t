@@ -563,7 +563,9 @@ def index(req,currentCat=0,currentItem=1,action=0):
         # set the template name
         mainForm='templates/main3.html'
         # check for an item related cat record to enable/disable delete function
-        relatedCat=relatedRecords(currentItem,config)
+        relatedCat=relatedRecords(item[1],config)
+#        relatedCat=relatedRecords(currentItem,config)
+#        util.redirect(req,"testValue.py/testvalue?test="+"kooky "+repr((relatedCat)+repr(currentItem)))
 
         # the dic of values to pass to the html page
         vars['itemSelected']=itemSelected

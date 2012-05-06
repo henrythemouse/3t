@@ -38,7 +38,7 @@ else:
     itemDelete='<a href="index?popup=95&action='+str(action)+'"'+'><img src="images/delete.png" alt="Delete" title="Delete" CLASS="itemdeleteimage"></a>'
 # can use the mode varible for debug messages
 #mode=repr(popup)+repr(loginlogout)+repr(action)
-mode=str(dbname)
+#mode=str(dbname)
 %>
 <% 
 #end
@@ -527,7 +527,7 @@ if popup in ('99','98','97','96','95'):
 <%
     elif loginlogout=='deleteMedia':
 %>
-<DIV CLASS='loginbox'>
+<DIV CLASS='loginbox' STYLE="background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
         <DIV>
             <!--start of form - the Edit table area-->
             <FORM method="post" id="dogForm" name="dogForm" enctype="multipart/form-data" action="myFunctions.py/delMedia">
@@ -557,7 +557,7 @@ if popup in ('99','98','97','96','95'):
 <%
     elif loginlogout=='deleteCat':
 %>
-<DIV CLASS='loginbox'>
+<DIV CLASS='loginbox' STYLE="background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
         <DIV>
             <!--start of form - the Edit table area-->
             <FORM method="post" id="dogForm" name="dogForm" enctype="multipart/form-data" action="myFunctions.py/delCat">
@@ -584,7 +584,7 @@ if popup in ('99','98','97','96','95'):
 <%
     elif loginlogout=='deleteItem':
 %>
-<DIV CLASS='loginbox'>
+<DIV CLASS='loginbox'  STYLE="background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
         <DIV>
             <!--start of form - the Edit table area-->
             <FORM method="post" id="dogForm" name="dogForm" enctype="multipart/form-data" action="myFunctions.py/delItem">
