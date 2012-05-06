@@ -967,11 +967,12 @@ class MailTo:
     def antispam(self, address):
         """Process a string with HTML encodings to defeat address spiders.
         """
-        from whrandom import choice
-        buffer = map(None, address)
+#        from whrandom import choice ... whrandom discontinued in v2.1
+        from random import choice
+        bufferX = map(None, address) # buffer is a reserved name
         for i in range(0, len(address), choice((2,3,4))):
-            buffer[i] = '&#%d;' % ord(buffer[i])
-        return string.join(buffer,'')
+            bufferX[i] = '&#%d;' % ord(bufferX[i])
+        return string.join(bufferX,'')
 
 MAILTO = Mailto = MailTo # aliases
 
