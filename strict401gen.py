@@ -399,7 +399,7 @@ class SeriesDocument(SimpleDocument):
                  Default is on. Set to 0 to disable.
         blank -- Image tuple for the transparent spacer gif
         prev -- Image tuple for the Previous Page button
-        next -- Image tuple for the Next Page button
+        nextx -- Image tuple for the Next Page button
         top -- Image tuple for the Top of Manual button
         home -- Image tuple for the site Home Page button
         goprev -- URL string for the prev button
@@ -410,6 +410,7 @@ class SeriesDocument(SimpleDocument):
         onLoad -- Script, which is executed when the document is loaded
         onUnload -- Script, which is executed when the document is unloaded
     """
+    ## GMW changed next to nextx, next is reserved
     subtitle = None
     banner = ('/image/banner.gif', 472, 30)
     logo = ('/image/logo.gif', 36, 35)
@@ -419,7 +420,7 @@ class SeriesDocument(SimpleDocument):
     place_nav_buttons = 'yes'
     blank = ('../image/blank.gif', 71, 19)
     prev = ('../image/BTN_PrevPage.gif', 71, 19)
-    next = ('../image/BTN_NextPage.gif', 71, 19)
+    nextx = ('../image/BTN_NextPage.gif', 71, 19)
     top = ('../image/BTN_ManualTop.gif', 74, 19)
     home = ('../image/BTN_HomePage.gif', 74, 19)
     goprev = None # URLs for above navigation buttons
@@ -485,7 +486,7 @@ class SeriesDocument(SimpleDocument):
             #btn = Image(self.blank)
             s.append('<span style="width: 60px"></span> \n')
         if self.gonext: # place an image button for next page
-            btn = Image(self.next, border=0, alt='Next')
+            btn = Image(self.nextx, border=0, alt='Next')
             link = Href(self.gonext, str(btn))
             s.append(str(link) + ' \n')
         else: # place a blank gif as spacer
@@ -1020,14 +1021,15 @@ class List(UserList.UserList):
     bgcolor = ''
     pad = '    '
     indent = 1
-    def __init__(self, list = None, **kw):
+    def __init__(self, listx = None, **kw):
+        ## GMW changed list to listx, list is reserved
         self.data = []
         self.lvl = 0
-        if list:
-            if type(list) == type(self.data):
-                self.data[:] = list
+        if listx:
+            if type(listx) == type(self.data):
+                self.data[:] = listx
             else:
-                self.data[:] = list.data[:]
+                self.data[:] = listx.data[:]
         for item in kw.keys():
             self.__dict__[string.lower(item)] = kw[item]
 
@@ -1093,20 +1095,21 @@ class List(UserList.UserList):
         self.lvl = 0
         return string.join(self.s, '')
 
-    def sub_list(self, list):
+    def sub_list(self, listx):
         """Recursive method for generating a subordinate list
         """
+        ## GMW changed list to listx, list is reserved
         self.lvl = self.lvl + 1
-        if type(list) == InstanceType:
+        if type(listx) == InstanceType:
             try:
-                if list.I_am_a_list: #render the List object
-                    list.lvl = self.lvl
-                    self.s.append(str(list))
+                if listx.I_am_a_list: #render the List object
+                    listx.lvl = self.lvl
+                    self.s.append(str(listx))
             except AttributeError:
                 pass
         else:
             self.s.append(self.pad*self.lvl + self.start_element())
-            for item in list:
+            for item in listx:
                 itemtype = type(item)
                 if itemtype == InstanceType:
                     try: #could be another nested List child object
@@ -1142,7 +1145,7 @@ class List(UserList.UserList):
                 pass
         for flag in self.flags:
             try:
-                x = getattr(self, flag)
+#                x = getattr(self, flag) ##not used
                 s.append(' %s' % flag)
             except AttributeError:
                 pass
@@ -1288,14 +1291,15 @@ class Form:
         return string.join(s, '')
         
         
-def overlay_values(obj, dict):
+def overlay_values(obj, dictionary):
     """Adds each item from dict to the given object iff there already
     exists such a key. Raises KeyError if you try to update the value
-    of non-existing keys.
+    of non-existing keys. 
     """
-    for key in dict.keys():
+    ## GMW changed dict to dictionary - dict is reserved
+    for key in dictionary.keys():
         if hasattr(obj, key):
-            obj.__dict__[key] = dict[key]
+            obj.__dict__[key] = dictionary[key]
         else:
             raise KeyError(`key` + ' not a keyword for ' + obj.__class__.__name__)
 
@@ -1495,7 +1499,7 @@ class Textarea:
         self.onChange = ''
         self.onFocus = ''
         self.onSelect = ''
-         # added for 401 strict
+        # added for 401 strict
         self.style = ''
         self.Class = ''
         for item in kw.keys():
@@ -1639,9 +1643,9 @@ class Table:
         """Generates the html for the entire table.
         """
         if self.tabletitle:
-           s = [str(Name(self.tabletitle)) + '\n<P>']
+            s = [str(Name(self.tabletitle)) + '\n<P>']
         else:
-           s = []
+            s = []
 
         s.append('<TABLE border=%s cellpadding=%s cellspacing=%s width="%s">\n' % \
                 (self.border, self.cell_padding, self.cell_spacing, self.width))
@@ -1698,7 +1702,7 @@ class Table:
         # Gary M. Witscher added Valign=top, they used to center
         # by default which doesnt look good for large text fields.
         stmp = '<TD Valign=top Align=%s %s>'
-        tdColor=['teal','red'] # GMW
+#        tdColor=['teal','red'] # GMW not used
         rowCount=0
         
         for row in self.body:
@@ -2093,11 +2097,11 @@ class NoFrames(AbstractTag):
     attr_template, attr_dict = _make_attr_inits(attrs)
 
     def __init__(self, *contents, **kw):
-	AbstractTag.__init__(self)
-	for content in contents: self.append(content)
-	for name, value in kw.items(): self.__setattr__(name,value)
-	if len(contents) == 0:
-	    self.append(Heading(2,'Frame ALERT!',align='center'),
+        AbstractTag.__init__(self)
+        for content in contents: self.append(content)
+        for name, value in kw.items(): self.__setattr__(name,value)
+        if len(contents) == 0:
+            self.append(Heading(2,'Frame ALERT!',align='center'),
 			Para("""This document is designed to be viewed using Netscape's
 			Frame features.  If you are seeing this message, you are using
 			a frame challenged browser."""),
@@ -2432,9 +2436,10 @@ class InitialCaps:
         self.downsize = downsize
 
     def __str__(self):
-        list = string.split(self.text)
+        ## GMW changed list to listx, list is reserved
+        listx = string.split(self.text)
         wordlist = []
-        for word in list:
+        for word in listx:
             word = self.hi(string.upper(word[0])) + self.lo(string.upper(word[1:]))
             wordlist.append(word)
         return string.join(wordlist)
@@ -2617,7 +2622,8 @@ def mpath(path):
     Also will expand environment variables and Cshell tilde
     notation if running on a POSIX platform.
     """
-    import os
+    ## GMW commented out import os, already imported above
+#    import os
     if os.name == 'mac' : #I'm on a Mac
         if path[:3] == '../': #parent
             mp = '::'

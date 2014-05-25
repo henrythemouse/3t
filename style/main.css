@@ -258,5 +258,5 @@ select:hover {
 	position:absolute;top:15px;left:365px;width:165px;height:15px;font: 8pt Times, sans, bold;background-color:#F5D0A9;color:black;
 }
 .loginlogout{
-	position:absolute;top:15px;left:700px;width:65px;height:15px;font: 8pt Times, serif;background-color:#F5D0A9;color:black;
+	position:absolute;top:15px;right:0px;width:65px;height:15px;font: 8pt Times, serif;background-color:#F5D0A9;color:black;
 }

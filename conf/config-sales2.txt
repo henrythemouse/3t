@@ -15,56 +15,56 @@
 
 # start of configuration
 ## Enter a name to print on top of the logo image (no default).
-displayname=READ
+displayname=SALES
 
 ## Enter a location for the displayname (top,middle,bottom).
 displaynamelocation=top
 
 ## Enter the name of the image to use as your logo (a default is provided).
-displaylogo=read.jpg
+displaylogo=ces1.jpg
 
 ## Enter the name of the image to use as the popup background (default=displaylogo).
-popupbackground=smiley2.gif
+popupbackground=
 
 ## Enter the email contact address (no default is provided).
 emailcontact=witscher@gmail.com
 
 ## Enter the database name for the mysql server (no default).
-dbname=read
+dbname=sales2
 
 ## Enter the hostname for the mysql server (default is localhost).
 selectedHost=localhost
 
 ## Enter the name of the category table (no default).
-catTable=readit
+catTable=contact
 
 ## Enter the name of the item table (no default).
-itemTable=author
+itemTable=person
 
 ## Enter the name of the media table (no default).
 mediaTable=note
 
 ## Enter the catTable catagory field (enumeration field).
-catField=kind
+catField=contact
 
 ## Enter the catTable informational field (no default).
 ## Used to visually provide a relatationship for media info.
-catInfo=title_
+catInfo=name
 
 ## Enter the category table column that results will be sorted by (default ?).
 orderbyField=date
 
 ## Enter a space seperated list of item table column names
 ## that will uniquely identify an item (no default).
-itemUniqueID=lastname_ firstname_
+itemUniqueID=name
 
 ## Enter a space seperated list of item table column names
 ## that will comprise the All_Items table (no default).
-allItems=lastname_ firstname_ othername date
+allItems=name comment
 
 ## Enter a space seperated list of category table column names
 ## that you want included in boolean search results (no default).
-catSearchFields=title_ subtitle kind date
+catSearchFields=contact date
 
 ## On startup display the last record entered (no default).
 ## Any value will enable, leave blank to disable.

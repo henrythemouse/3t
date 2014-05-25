@@ -6,6 +6,11 @@
 # To complete a new configuration you will need catImages in place under the dir "catImages/(dbname)"
 # The dir is automatically created and a default img is provided.
 #
+# In order to use the convert2jpg feature you will need to install the Imagemagick 'convert' utility and any
+# required support files in the 3t/convert directory. This location is hardcoded because I found that at least
+# some windows installations already have a convert.exe file (filesystem conversion). Ghostscript will also need to 
+# be installed on your system.
+#
 
 
 # start of configuration
@@ -65,5 +70,8 @@ catSearchFields=cat service_ date vendor
 ## Any value will enable, leave blank to disable.
 lastupdate=1
 
+## Convert PDF, Postscript and TIFF files to JPG, details above.
+## Any value will enable, leave blank to disable.
+convert2jpg=yes
 
 # end of configuration file

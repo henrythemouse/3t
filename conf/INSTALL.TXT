@@ -4,44 +4,42 @@ minimum needed to get 3t running. Other configurations are
 possible and sometimes desirable depending on your server
 configuration and administrative access and skills.
 
-Windows users will have to modify the path values at least.
-Use the files under the 'conf' directory for examples.
 ********************************************************
 
 - STEP ONE - PACKAGE INSTALLATION
 
-** Unpack the 3t archive in your apache document root
-    You are reading this. Seems like you've already done this step.
-** Install Apache (tested using ver 2.2.11)
+** Install Python (tested using ver 2.5.2)
 ** Install MySQL server and command client (tested using ver 5.1)
     Setup default user to be 'root' with no password
     Use 'localhost' as server, and any valid email address as a contact.
-** Install Python (tested using ver 2.5.2)
-** Install Python mod_python (tested using ver 3.3.1) (for Python 2.5)
-    Apache can not be running during this installation.
 ** Install Python MySQL-python (tested using ver 1.2.2) (for Python 2.5)
+** Install Apache (tested using ver 2.2.11)
+** Unpack the 3t archive in your apache document root
+** Install Python mod_python (tested using ver 3.3.1) (for Python 2.5)
+** Restart Apache
 
 - STEP TWO - PACKAGE CONFIGURATION
     ( for example, using a db named 'auto')
     
 ** auto:
-    Rename the program dir to 'auto'.
     Create a config file: conf/config-auto.txt
-    Change the paths in conf/config-auto.txt.
-
+    Copy the config.txt file to config-auto.txt
+    
 ** Apache:
     Edit the Apache configuration file.
     Set the documentroot to the path where you want to serve the files from.
-	Use the Apache Include directive to include the the 3t apache configuration file:
-	Include /www/auto/conf/apache-3t.txt (refer to apache-example.txt)
+	Use the Apache Include directive to include the the 3t apache configuration file like this:
+	Include /www/auto/conf/apache-3t.txt 
+	(refer to apache-example.txt)
 	(useing your path-to-conf-file, above is just and example)
-	
+    Restart Apache
+    
 ** MySQL:
     Create MySQL DB, using default user 'root' that has a blank password.
-	Open a command prompt and cd to /www/auto/conf (example location)
 	Setting up the mysql database can be done by creating an empty 
 	database, importing the table layout and granting the proper permissions.
-	An initial default record will be created automatically.
+	An initial default record will be created automatically if you use the commands below.
+	The program will not run until you have at least one record in the main table.
 	(Of course you can create your own db, with any compatible structure and
 	use a config-dbname.txt file to provide the needed information to the script.)
     
@@ -64,7 +62,7 @@ Use the files under the 'conf' directory for examples.
 ** Access to the auto web page:
     Open your web browser and type the auto url in the address bar.
     
-    http://localhost/auto
+    http://localhost/3t/?config=auto
     
     ( for remote access you may need to use the ip address of the server in place of 'localhost')
     

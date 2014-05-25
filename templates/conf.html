@@ -15,7 +15,7 @@
     <!--Start the Edit table area-->
 
 <%
-fileName='config.txt'
+fileName='config'+configName+'.txt'
 apacheConfig=req.get_config()
 rootPath=apacheConfig['PythonPath'][11:-2]
 directory=req.construct_url("")
@@ -23,7 +23,8 @@ configFile=rootPath+"/"+'conf'+'/'+fileName
 confFile=open(configFile,"rb")
 lines=confFile.readlines()
 confFile.close()
-for thisLine in range(0,9):
+headerLines=16
+for thisLine in range(0,headerLines):
 %>
             <!-- result header -->
             <DIV >
@@ -34,7 +35,7 @@ for thisLine in range(0,9):
 %>
     <FORM method="post" name="errorConfig" enctype="multipart/form-data" action="myFunctions/writeConfig">
 <%
-for thisLine in range(9,len(lines)):
+for thisLine in range(headerLines,len(lines)):
     if lines[thisLine][0:2]=="# ":
         pass
     elif lines[thisLine][0:2]=="##":
@@ -61,7 +62,7 @@ for thisLine in range(9,len(lines)):
 
     <INPUT TYPE="hidden" NAME="errorConfig" VALUE="errorConfig">
     <input type="submit" value="Submit" />
-    
+
     </FORM>
 </BODY>
 </HTML>

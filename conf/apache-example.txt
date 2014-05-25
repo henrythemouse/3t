@@ -1,10 +1,10 @@
 # 
-# Change the file path ( '/www/fleet') to the correct one for your setup.
+# Change the file path ( '/www/auto') to the correct one for your setup.
 # 
 
 LoadModule python_module modules/mod_python.so
 
-<Directory /www/fleet>
+<Directory /www/auto>
     Order allow,deny
     Allow from all
 </Directory>
@@ -13,11 +13,11 @@ LoadModule python_module modules/mod_python.so
 # the stated dir and all subdirs unless 
 # overriden by subsequent directives
 
-<Directory /www/fleet>
+<Directory /www/auto>
 	SetHandler mod_python
 	PythonHandler mod_python.publisher
    	PythonDebug On
-	PythonPath "sys.path+['/www/fleet']"
+	PythonPath "sys.path+['/www/auto']"
 	Order allow,deny
 	Allow from all
 </Directory>
@@ -27,18 +27,21 @@ LoadModule python_module modules/mod_python.so
 # for images and other dirs to be useable
 # as just data dirs
 
-<Directory /www/fleet/images>
+<Directory /www/auto/images>
 	SetHandler none
 </Directory>
-<Directory /www/fleet/itemimages>
+<Directory /www/auto/itemimages>
 	SetHandler none
 </Directory>
-<Directory /www/fleet/catimages>
+<Directory /www/auto/catimages>
 	SetHandler none
 </Directory>
-<Directory /www/fleet/style>
+<Directory /www/auto/style>
 	SetHandler none
 </Directory>
-<Directory /www/fleet/cat>
+<Directory /www/auto/tmp>
+	SetHandler none
+</Directory>
+<Directory /www/auto/conf>
 	SetHandler none
 </Directory>

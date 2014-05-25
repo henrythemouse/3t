@@ -1,67 +1,76 @@
-# configuration file for fleet 1.2
+# configuration file for all 3 table dbs (3t)
+# Use this form to edit the configuration, editing this file by hand requires strict adherence to specific formatting.
 #
-# This file (config.txt) must exists and must be located in the conf subdirectory of the program directory.
-# The program will create this file if it is found to be missing.
-# Use the program to edit the configuration, editing this file by hand requires strict adherence to specific formatting.
+# This file (config-(dbname).txt) must exists and must be located in the conf subdirectory of the program directory.
+# This form will create the file if it is found to be missing or is a new configuration.
+# To complete a new configuration you will need catImages in place under the dir "catImages/(dbname)"
+# The dir is automatically created and a default img is provided.
 #
-
-
+# In order to use the convert2jpg feature you will need to install the Imagemagick 'convert' utility and any
+# required support files in the 3t/convert directory. This location is hardcoded because I found that at least
+# some windows installations already have a convert.exe file (filesystem conversion). Ghostscript will also need to 
+# be installed on your system.
+#
 # start of configuration
+#
 ## Enter a name to print on top of the logo image (no default).
-displayname=READ
+displayname=
 
 ## Enter a location for the displayname (top,middle,bottom).
-displaynamelocation=top
+displaynamelocation=
 
 ## Enter the name of the image to use as your logo (a default is provided).
-displaylogo=read.jpg
+displaylogo=
 
 ## Enter the name of the image to use as the popup background (default=displaylogo).
-popupbackground=auto.jpg
+popupbackground=
 
 ## Enter the email contact address (no default is provided).
-emailcontact=witscher@gmail.com
+emailcontact=
 
 ## Enter the database name for the mysql server (no default).
-dbname=read
+dbname=
 
 ## Enter the hostname for the mysql server (default is localhost).
-selectedHost=localhost
+selectedHost=
 
 ## Enter the name of the category table (no default).
-catTable=readit
+catTable=
 
 ## Enter the name of the item table (no default).
-itemTable=author
+itemTable=
 
 ## Enter the name of the media table (no default).
-mediaTable=note
+mediaTable=
 
 ## Enter the catTable catagory field (enumeration field).
-catField=kind
+catField=
 
 ## Enter the catTable informational field (no default).
 ## Used to visually provide a relatationship for media info.
-catInfo=title_
+catInfo=
 
 ## Enter the category table column that results will be sorted by (default ?).
-orderbyField=date
+orderbyField=
 
 ## Enter a space seperated list of item table column names
 ## that will uniquely identify an item (no default).
-itemUniqueID=firstname_ lastname_
+itemUniqueID=
 
 ## Enter a space seperated list of item table column names
 ## that will comprise the All_Items table (no default).
-allItems=firstname_ lastname_ othername date
+allItems=
 
 ## Enter a space seperated list of category table column names
-## that you want included in combination search results (no default).
-catSearchFields=title_ subtitle kind date
+## that you want included in boolean search results (no default).
+catSearchFields=
 
 ## On startup display the last record entered (no default).
 ## Any value will enable, leave blank to disable.
-lastupdate=1
+lastupdate=
 
+## Convert PDF, Postscript and TIFF files to JPG, details above.
+## Any value will enable, leave blank to disable.
+convert2jpg=yes
 
 # end of configuration file

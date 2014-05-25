@@ -6,9 +6,14 @@
 # To complete a new configuration you will need catImages in place under the dir "catImages/(dbname)"
 # The dir is automatically created and a default img is provided.
 #
-
-
+# In order to use the convert2jpg feature you will need to install the Imagemagick convert utility and any
+# required support files in the 3t/convert directory. This location is hardcoded because I found that at least
+# some windows installations already have a convert.exe file (filesystem conversion). Ghostscript will also need to 
+# be installed on your system.
+#
+#
 # start of configuration
+#
 ## Enter a name to print on top of the logo image (no default).
 displayname=My Junk Pile
 
@@ -19,7 +24,7 @@ displaynamelocation=bottom
 displaylogo=auto.jpg
 
 ## Enter the name of the image to use as the popup background (default=displaylogo).
-popupbackground=auto.jpg
+popupbackground=
 
 ## Enter the email contact address (no default is provided).
 emailcontact=witscher@gmail.com
@@ -58,12 +63,17 @@ itemUniqueID=year make_ model_
 allItems=year make_ model_ vln vin
 
 ## Enter a space seperated list of category table column names
-## that you want included in combination search results (no default).
+## that you want included in boolean search results (no default).
 catSearchFields=sys service_ date vendor
 
 ## On startup display the last record entered (no default).
 ## Any value will enable, leave blank to disable.
-lastupdate=1
+lastupdate=yes
+
+## Convert PDF, Postscript and TIFF files to JPG, details above.
+## Any value will enable, leave blank to disable.
+convert2jpg=yes
+
 
 
 # end of configuration file

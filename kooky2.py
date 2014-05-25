@@ -122,6 +122,8 @@ def myCookies(req,action,data,kookyDB,selectedHost):
             q='insert into '+str(kookyTable)+' \
             (_kookyID,kookyData,remoteHost) values (%s,"%s","%s")'%(kookyID,pData,remoteHost)
 
+            #~ util.redirect(req,"testValue.py/testvalue?test="+"kooky"+repr(kookyDB))
+            
             qinsert=db.dbConnect(selectedHost,kookyDB,q,-1)
             #~ util.redirect(req,"testValue.py/testvalue?test="+"kooky"+repr(qinsert))
     #
