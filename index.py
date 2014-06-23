@@ -123,10 +123,12 @@ def index(req,currentCat=0,currentItem=1,action=0):
             config=myFunctions.getConfig(req,"")
 
     # check for a config error
-    if config['configError']: #=="configError":
+    if config['configError']=="configError":
         action=100
-#         util.redirect(req,"?error="+config['configError'])
-        
+#        util.redirect(req,"?error="+config['configError'])
+#    elif config['configError']:
+#        # just for debugging where the error occurred
+#        pass
 #        util.redirect(req,"testValue.py/testvalue?test="+repr(config['configError']))
     else:
         # write item images to disk for now until I can use them from the db
@@ -383,16 +385,18 @@ def index(req,currentCat=0,currentItem=1,action=0):
         resultData=results[2]
 
         headerWidths=getMediaColWidths(req,config)
-#        util.redirect(req,"testValue.py/testvalue?test="+repr(cookieID))
 #        resultTable=mediaTable(resultData,cookieID['kookyID'],mediaID,config)
-        resultTable=mediaTable(resultData,cookieID,mediaID,config)
-
+        result=mediaTable(resultData,cookieID,mediaID,config)
+#        util.redirect(req,"testValue.py/testvalue?test="+repr(result[1]))
+        resultTable=result[0]
+        
     elif action==16:     # edit media
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
 #        catImage=catImages[currentCat][1]
         search=searchForm(searchText,searchMode)
         result=editMedia(mediaID,catID,item,config)
+#        util.redirect(req,"testValue.py/testvalue?test="+repr(result[-1]))
 
         # parse the results list
         caption=result[0]
@@ -2037,6 +2041,8 @@ def mediaQuery(record,config):
             pass
         elif config['owner'] in thisCol[0]:
             pass
+        elif config['invisible'] in thisCol[0]:
+            pass
         else:
             if 'date'in thisCol[1]:
                 orderby=thisCol[0]
@@ -2089,13 +2095,26 @@ def mediaQuery(record,config):
     return (mediaCaption,mediaHeader,qresult,'media')
 
 def mediaTable(mediaData,cookieID,record,config):
-
+    test=repr(mediaData)
+    fileType=''
+    blobToolTip=''
+    fieldTypes=[]
+    fieldNames=[]
+    isBlob=0
+    isImg=""
     endWidth=16
+    
     mediaTable=strict401gen.TableLite(border=0,CLASS='resultstable',cellpadding="10",cellspacing="0")
+    # get a list of the fieltypes so I can branch on blob fields
+    q="show columns from `"+config['mediaTable']+"`"
+    qresult=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
+    for thisResult in qresult:
+        fieldNames.append(thisResult[0])
+        fieldTypes.append(thisResult[1])
 
     rowcolor='#FFFF99'
     imageCount=0
-
+    
     for thisRecord in mediaData:
 
         # display the owner at the top of the media if available
@@ -2133,35 +2152,44 @@ def mediaTable(mediaData,cookieID,record,config):
 
         mediaRow=strict401gen.TR(style="background-color:"+rowcolor)
 
-        # record the number of cols with values
-        colValues=0
-        for thisCol in thisRecord:
-            if thisCol:
-                colValues=colValues+1
+        # record the number of cols with values - notused afaict
+#        colValues=0
+#        for thisCol in thisRecord:
+#            if thisCol:
+#                colValues=colValues+1
 
         # go through the cols, insert the data into the table
         for thisCol in range(0,len(thisRecord)):
 
             # if this col is an image set the image type
             try:
-                imgType=imghdr.what('',thisRecord[thisCol])
-                # force 3 char extention for windows
-                if len(imgType)>3:
-                    imgType="."+imgType[0:2]+imgType[-1:]
-                else:
-                    imgType="."+imgType
+                isImg="."+imghdr.what('',thisRecord[thisCol])
+                if isImg not in (".png",".jpeg",".gif",".bmp"):
+                    isImg=''
             except:
-                imgType=''
-
-            # test if col is binary - defaults to not binary
-            isBinary=0
-            try:
-                if "\0" in thisRecord[thisCol]:
-                    isBinary=1
+                isImg=''
+                
+            # if this col is a blob supply a icon and link
+            if 'blob' in fieldTypes[thisCol]:
+                isBlob=1
+                q='select `'+config['mediaTable']+'`.`'+config['invisible']+'` from `'+config['mediaTable']+'`'+\
+                ' where `'+config['mediaTable']+'`.`'+config["mediaIDfield"]+'`'+'="'+str(thisRecord[0])+'"'
+                qresult=db.dbConnect(config['selectedHost'],config['dbname'],q,1)
+                test=test+"***************"+str(q)
+                filename=qresult[0]
+                if filename:
+                    fileType=getFileType2(filename)
+                    iconName=fileType+".png"
+                    if fileType=="unknown":
+                        blobToolTip="This is an unknown file type."
+                    else:
+                        blobToolTip="This is a "+fileType+" file."
                 else:
-                    isBinary=0
-            except:
-                isBinary=0
+                    isBlob=0
+            else:
+                isBlob=0
+                
+#            test=test+"      "+str(thisCol)+"-B"+str(isBlob)+"-I"+str(isImg)+"q= "+str(q)
 
 
             if thisCol==0:
@@ -2180,7 +2208,7 @@ def mediaTable(mediaData,cookieID,record,config):
                 # add the buttons at col one
                 mediaRow.append(strict401gen.TD(toolTable,valign='top',colspan="1",Class="mediacol0"))
 
-            elif imgType :
+            elif isImg :
                 # if it's an image write it to disk so the program can load it
                 if os.path.exists(config['mediaPath']+cookieID):
                     pass
@@ -2188,36 +2216,37 @@ def mediaTable(mediaData,cookieID,record,config):
                     os.mkdir(config['mediaPath']+cookieID)
                 imageCount=imageCount+1
                 # imagename must be unique
-                imagename=config['dbname']+'-'+str(thisRecord[0])+'-'+str(imageCount)+imgType
+                imagename=config['dbname']+'-'+str(thisRecord[0])+'-'+str(imageCount)+isImg
                 imgFile=open(config['mediaPath']+cookieID+'/'+imagename,"wb")
                 imgFile.write(thisRecord[thisCol])
                 imgFile.close()
 
                 columns=1
 
-                imageLink=strict401gen.Href("tmp/"+cookieID+'/'+imagename,strict401gen.Image("tmp/"+cookieID+'/'+imagename,alt="alt.img",Class="mediaimage"),onClick="window.open(this.href);return false;")
+                imageLink=strict401gen.Href("tmp/"+cookieID+'/'+imagename,strict401gen.Image("tmp/"+cookieID+'/'+imagename,title="Click to view full size image",alt="This is a "+isImg+" file.",Class="mediaimage"),onClick="window.open(this.href);return false;")
                 mediaRow.append(strict401gen.TD(imageLink,colspan=str(columns),align="right",valign='top',Class="mediaimage"))
 
-            elif isBinary:
+            elif isBlob:
                 # this is a minimal branching for binary files not recognized as images
                 # I've read that it gives false results for utf16 files, possibly other files too.
-                # I just provide a download link
+                # I just provide a icon that allows downloading of the data.
+
                 if os.path.exists(config['mediaPath']+cookieID):
                     pass
                 else:
                     os.mkdir(config['mediaPath']+cookieID)
                 imageCount=imageCount+1
                 # name must be unique
-                binaryname=config['dbname']+'-'+str(thisRecord[0])+'-'+str(imageCount)+imgType
-                binFile=open(config['mediaPath']+cookieID+'/'+binaryname,"wb")
-                binFile.write(thisRecord[thisCol])
-                binFile.close()
+                blobName=config['dbname']+'-'+str(thisRecord[0])+'-'+str(imageCount)+"-"+filename
+                blobFile=open(config['mediaPath']+cookieID+'/'+blobName,"wb")
+                blobFile.write(thisRecord[thisCol])
+                blobFile.close()
 
                 columns=1
 
-                text="Download Binary File"
-                binaryLink=strict401gen.Href("tmp/"+cookieID+'/'+binaryname,text,onClick="window.open(this.href);return false;")
-                mediaRow.append(strict401gen.TD(binaryLink,colspan=str(columns),align="right",valign='top',Class="mediaimage"))
+#                binaryLink=strict401gen.Href("tmp/"+cookieID+'/'+binaryname,text,onClick="window.open(this.href);return false;")
+                blobLink=strict401gen.Href("tmp/"+cookieID+'/'+blobName,strict401gen.Image("images/fileTypes/"+iconName,title=blobToolTip,alt=iconName,Class="mediaimage"),onClick="window.open(this.href);return false;")
+                mediaRow.append(strict401gen.TD(blobLink,colspan=str(columns),align="right",valign='top',Class="mediaimage"))
 
             else:                           #thisRecord[thisCol]:
                 # it's not an image, it's text or it's empty
@@ -2253,7 +2282,7 @@ def mediaTable(mediaData,cookieID,record,config):
     # add row to main table
     mediaTable.append(mediaRow)
 
-    return (mediaTable)
+    return (mediaTable,str(test))
 
 def mediaTable2(mediaData,cookieID,colWidths,config):
     # this function is not in use, experimental
@@ -2411,6 +2440,8 @@ def createMedia(mediaID,catID,item,config):
             pass
         elif config['owner'] in thisCol[0]:
             pass
+        elif config['invisible'] in thisCol[0]:
+            pass
         else:
             cols.append(thisCol)
 
@@ -2498,6 +2529,7 @@ def createMedia(mediaID,catID,item,config):
 def editMedia(mediaID,catID,item,config):
 
     cols=[]
+    test=''
     colNames=[]
     if mediaID[0]=='I':
         mediaID=mediaID[1:]
@@ -2515,6 +2547,14 @@ def editMedia(mediaID,catID,item,config):
             pass
         elif config['owner'] in thisCol[0]:
             pass
+        elif config['invisible'] in thisCol[0]:
+            q="select "+thisCol[0]+" from "+config['mediaTable']+\
+            " where "+config['mediaIDfield']+"='"+mediaID+"'"
+            result=db.dbConnect(config['selectedHost'],config['dbname'],q,1)
+            if result[0]:
+                filename="<b> [ "+str(result[0])+" ]</b>"
+            else:
+                filename=""
         else:
             cols.append(thisCol)
             colNames.append(thisCol[0])
@@ -2556,11 +2596,11 @@ def editMedia(mediaID,catID,item,config):
 
         elif 'text' in cols[thisField][1]:
             mediaRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            mediaRow.append(strict401gen.TD(strict401gen.Textarea(values[0][thisField],name=cols[thisField][0],rows='10',cols='50',Class="editfield dataInput")))
+            mediaRow.append(strict401gen.TD(strict401gen.Textarea(values[0][thisField],name=cols[thisField][0],rows='10',cols='60',Class="editfield dataInput")))
 
         elif 'blob' in cols[thisField][1]:
             mediaRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            mediaRow.append(strict401gen.TD(strict401gen.Input(type='file',name=cols[thisField][0],Class="editfield",size="10"),Class="editfield"))
+            mediaRow.append(strict401gen.TD(strict401gen.Input(type='file',name=cols[thisField][0],rlabel=filename,Class="editfield",size="30"),Class="editfield"))
 
         elif 'date' in cols[thisField][1]:
             if not values[0][thisField] or values[0][thisField]=="None":
@@ -2580,8 +2620,12 @@ def editMedia(mediaID,catID,item,config):
             mediaRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[0][thisField],name=cols[thisField][0],maxlength="6",Class="editfield dataInput")))
 
         else: # char fields
-            mediaRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            mediaRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[0][thisField],name=cols[thisField][0],maxlength=maxlen,Class="editfield dataInput")))
+            if cols[thisField][0] in config['invisible']:
+                mediaRow.append(strict401gen.TD("",Class="editlabel"))
+                mediaRow.append(strict401gen.TD(values[0][thisField],Class="editlabel"))               
+            else:
+                mediaRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
+                mediaRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[0][thisField],name=cols[thisField][0],maxlength=maxlen,Class="editfield dataInput")))
 
         if not count%2:
             mediaTable.append(mediaRow)
@@ -2614,7 +2658,7 @@ def editMedia(mediaID,catID,item,config):
 
     header=formbuttons('update')
 
-    return(caption,header,mediaTable,mediaType,catID)
+    return(caption,header,mediaTable,mediaType,catID,test)
 
 ############ support functions
 
@@ -3172,3 +3216,65 @@ def createConfig(req,config):
 
     return (caption,header,configTable,'writeConfig')
 
+def getFileType(fileData):
+    error=""
+    fileType=""
+    # keep pk test to first as odf files are also pk files, matches are case sensitive
+    # tiff signatures "II" and "MM" or 0x49 0x49 0x2a 0x00 and 0x4d 0x4d 0x00 0x2a
+    # checking a str here, so don't know how to check the hex code for tiff.
+    # a significant certainty could be established using hex instead of ascii and by setting a start/stop byte location for each filetype
+    fileTypes={
+               ("PK",):"zip",               
+               ("II*","MM.*"):"tiff",
+               ("%PDF",):"pdf",
+               ("%!PS",):"ps",
+               ("MSWordDoc",):"doc",
+               ("RIFF","AVI","LISTR","ftyp","matroska","moov","MPEG"):"video",
+               ("opendocument.text","opendocument.spreadsheet"):"odf",
+               ("ID3","OggS","WMA"):"audio",
+               ("!DOCTYPE","<HTML>","<html>","<BODY>","<body>"):"html",
+               }
+    # apparently id's can be deeply imbedded, like MSWordDoc could need 240 bytes or more.
+    # I branch to this based on a minumum of 128 bytes and I'd like to test less
+    # but opendocument needs at least 90, so here I am caught between a rock and a hard spot.
+    # this seems to get most files id'd.
+    fileSample=fileData[0:128] 
+    fileMagic=fileTypes.keys()
+    for thisType in fileMagic:
+        for thisMagic in thisType:
+            if thisMagic in fileSample:
+                fileType=fileTypes[thisType]
+
+    if fileType=="":
+        fileType="unknown"
+        
+    return fileType
+
+def getFileType2(fileName):
+    error=""
+    fileExt=fileName.split(".")[-1].lower()
+    
+    fileType=""
+    # assigning files an icon based on file extension
+    fileTypes={
+               ("zip","tar","gz","tgz"):"archived",               
+               ("tiff"):"tiff",
+               ("pdf",):"pdf",
+               ("ps",):"ps",
+               ("doc","docx",'txt'):"doc",
+               ("mp4","avi","mkv","mov","flv","wmv"):"video",
+               ("odf","odt","ods","odp"):"odf",
+               ("mp3","ogg","wma","wav"):"audio",
+               ("html","htm","xml"):"web",
+               ("py","sh","css","js","conf","cfg","config"):"source",
+               }
+    
+    typeKeys=fileTypes.keys()
+    for thisType in typeKeys:
+        if fileExt in thisType:
+            fileType=fileTypes[thisType]
+
+    if fileType=="":
+        fileType="unknown"
+        
+    return fileType

@@ -8,12 +8,11 @@
 #
 # In order to use the convert2jpg feature you will need to install the Imagemagick convert utility and any
 # required support files in the 3t/convert directory. This location is hardcoded because I found that at least
-# some windows installations already have a convert.exe file (filesystem conversion). Ghostscript will also need to 
+# some windows installations already have a convert.exe file (filesystem conversion). Ghostscript will also need to
 # be installed on your system.
 #
 #
 # start of configuration
-#
 ## Enter a name to print on top of the logo image (no default).
 displayname=My Junk Pile
 

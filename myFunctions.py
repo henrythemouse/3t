@@ -6,7 +6,7 @@ import shutil
 import kooky2
 import MySQLdb
 
-from mod_python import util #@UnresolvedImport
+from mod_python import util
 
 # use this call to check variable values
 # util.redirect(req,"../testValue.py/testvalue?test="+repr(qresult))
@@ -102,7 +102,7 @@ def dogin(req):
 def getConfig(req,dbname):
     aqresult=''
     config={}
-    config['configError']=''
+    config['configError']='no1'
 
     try:
         if dbname:
@@ -141,13 +141,7 @@ def getConfig(req,dbname):
                     config['catIDfield']=thisCol[0]
                     primaries.append(thisCol[0])
                 elif 'text' in thisCol[1]:
-                    config['catNoteField']=thisCol[0]
-    
-            # just a quick check to see if the mysql info is correct
-            # this will fail everytime, why did I put it here???
-#             for thisCol in qresult:
-#                 if config['catField'] in thisCol[0]:
-#                     config['configError']='Query failed: '+q
+                    config['catNoteField']=thisCol[0]    
         except:
             config['configError']='Query failed: '+q
             
@@ -173,6 +167,8 @@ def getConfig(req,dbname):
                 if 'PRI' in thisCol[3]:
                     config['mediaIDfield']=thisCol[0]
                     primaries.append(thisCol[0])
+                elif "blob" in thisCol[1]:
+                    config['mediaBlob']=thisCol[0]
         except:
             config['configError']='Query failed: '+q
 
@@ -183,18 +179,17 @@ def getConfig(req,dbname):
         config['itemUniqueID']=config['itemUniqueID'].split()
         config['allItems']=config['allItems'].split(" ")
         config['catSearchFields']=config['catSearchFields'].split()
-        # windows users will need to provide a fixed path to convert.exe
-#         config['convertExe']=rootPath+"/convert/convert.exe"
-        config['convertExe']='convert'
+        config['convertExe']=rootPath+"/convert/convert.exe"
         config['owner']='owner'
+        config['invisible']='filename'
 
         # config defaults
         if not config['displaylogo']:
             config['displaylogo']='displaylogo.png'
         if not config['popupbackground']:
             config['popupbackground']=config['displaylogo']
-            
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(config['configError']))
+#        if not config['convert2jpg']:
+#            config['convert2jpg']=''
 
     except:
         config['configError']="configError"
@@ -230,12 +225,8 @@ def writeConfig(req):
         '# To complete a new configuration you will need catImages in place under the dir "catImages/(dbname)"',\
         '# The dir is automatically created and a default img is provided.',\
         '#',\
-        '# In order to use the convert2jpg feature you will need to install the Imagemagick convert utility and any',\
-        '# required support files in the 3t/convert directory. This location is hardcoded because I found that at least',\
-        '# some windows installations already have a convert.exe file (filesystem conversion). Ghostscript will also need to',\
-        '# be installed on your system.',\
-        '#',\
-        '#',\
+        '',\
+        '',\
         '# start of configuration'\
         ]
 
@@ -296,15 +287,15 @@ def writeConfig(req):
             '## Any value will enable, leave blank to disable.',\
             'lastupdate='+req.form['lastupdate'].strip(),\
             '',\
-            '## Convert PDF, Postscript and TIFF files to JPG, details above.',\
+            '## Convert pdf,tiff and postscript files to jpg (no default).',\
             '## Any value will enable, leave blank to disable.',\
             'convert2jpg='+req.form['convert2jpg'].strip(),\
-            '',\
+
             ]
 
         fileFooter=[\
-            '',\
-            '',\
+            '',
+            '',
             '# end of configuration file'\
             ]
 
@@ -336,22 +327,7 @@ def writeConfig(req):
         else:
             try:
                 os.mkdir(catDBdir)
-                os.chmod(catDBdir,0777)
-            except:
-                pass
-        # create the dbImages dbname dir if not found
-        # but you will still need to populate it with images
-        # allthough the default image is copied over.
-        dbImagesDir=config['rootPath']+"/images/"+dbname+"/"
-        if os.path.isdir(dbImagesDir):
-            try:
-                os.chmod(dbImagesDir,0777)
-            except:
-                pass
-        else:
-            try:
-                os.mkdir(dbImagesDir)
-                os.chmod(dbImagesDir,0777)
+                os.chmod(catDBdir,16895)
             except:
                 pass
 
@@ -367,10 +343,10 @@ def writeConfig(req):
 
         # copy the default logo image file to images/dbname
         defaultLogoFile=config['rootPath']+'/images/defaultlogo.png'
-        dbImageDir=config['rootPath']+'/images/'+dbname
+        logoImageDir=config['rootPath']+'/images/'+dbname
 #        util.redirect(req,"../testValue.py/testvalue?test="+repr(defaultLogoFile)+" "+repr(logoImageDir))
         try:
-            shutil.copy(defaultLogoFile,dbImageDir)
+            shutil.copy(defaultLogoFile,logoImageDir)
         except:
             pass
 
@@ -484,8 +460,12 @@ def media(req):
 
     # get the column names and column types for tableName
     cols={}
+    filename=''
+    q=''
     fieldInfo=getFieldInfo3(req,config['selectedHost'],config['dbname'],config['mediaTable'])
     fieldNames=fieldInfo['fieldNames']
+
+    test=[]
     for col in fieldNames:
         try:
             cols[col]=req.form[col].value
@@ -494,7 +474,25 @@ def media(req):
                 cols[col]=req.form[col]
             except:
                 pass
+    try:
+        filename=req.form[config['mediaBlob']].filename
+    except:
+        pass
+        
+    # if no filename was passed use the old filename (if there is one) because the file hasn't changed
+    if filename=="":
+        try:
+            q="select `"+config['invisible']+"` from `"+config['mediaTable']+"`"+\
+            ' where `'+config['mediaTable']+'`.`'+config["mediaIDfield"]+'`'+'="'+req.form['mediaID'].value+'"'
+            qresult=db.dbConnect(config['selectedHost'],config['dbname'],q,1)
+            cols[config['invisible']]=qresult[0]
+        except:
+            cols[config['invisible']]=""
+    else:
+        cols[config['invisible']]=filename
 
+#    util.redirect(req,"../testValue.py/testvalue?test="+repr(cols)+repr(filename)+str(qresult))
+        
     try:                # SAVE clicked
         action=req.form['savebutton.x']
         action='insert'
@@ -508,14 +506,13 @@ def media(req):
         except:
             action='cancel'
 
-#    util.redirect(req,"../testValue.py/testvalue?test="+repr(req.form.list))
-
     #  set the realted table, so this returns to the correct data
     tableID=req.form['catID']
 
     if action!='cancel':
 
         what=doSql(req,action,cols,config['mediaIDfield'],config['dbname'],config['mediaTable'],config['selectedHost'],config['owner'])
+#        util.redirect(req,"../testValue.py/testvalue?test="+repr(what))
 
         if what[0]:
             parameter="?error="+what[0]
@@ -535,9 +532,12 @@ def media(req):
 def Imedia(req):
 
     config=getConfig(req,req.form['dbname'].value)
+#    util.redirect(req,"../testValue.py/testvalue?test="+repr(req.form.list))
 
     # get the column names and column types for tableName
     cols={}
+    filename=''
+    q=''
     fieldInfo=getFieldInfo3(req,config['selectedHost'],config['dbname'],config['mediaTable'])
     fieldNames=fieldInfo['fieldNames']
     for col in fieldNames:
@@ -549,6 +549,24 @@ def Imedia(req):
                     cols[col]=req.form[col]
                 except:
                     pass
+    try:
+        filename=req.form[config['mediaBlob']].filename
+    except:
+        pass
+        
+    # if no filename was passed use the old filename (if there is one) because the file hasn't changed
+    if filename=="":
+        try:
+            q="select "+config['invisible']+" from `"+config['mediaTable']+"`"+\
+            ' where `'+config['mediaTable']+'`.`'+config["mediaIDfield"]+'`'+'="'+req.form['mediaID'][1:]+'"'
+            qresult=db.dbConnect(config['selectedHost'],config['dbname'],q,1)
+            cols[config['invisible']]=qresult[0]
+        except:
+            cols[config['invisible']]=""
+    else:
+        cols[config['invisible']]=filename
+
+#    util.redirect(req,"../testValue.py/testvalue?test="+repr(cols)+repr(filename)+str(q))
 
     try:                # SAVE clicked
         action=req.form['savebutton.x']
@@ -575,6 +593,8 @@ def Imedia(req):
 #        util.redirect(req,"../testValue.py/testvalue?test="+repr(cols))##+repr(cols[config['mediaIDfield']]))
 
         what=doSql(req,action,cols,config['mediaIDfield'],config['dbname'],config['mediaTable'],config['selectedHost'],config['owner'])
+#        util.redirect(req,"../testValue.py/testvalue?test="+repr(what))
+
         if what[0]:
             parameter="?error="+what[0]
         else:
@@ -798,7 +818,8 @@ def doSql(req,action,cols,idField,dbname,tableName,selectedHost,owner):
         except:
 #            qstr=q.replace('%s','value')
             error='Insert error for '+tableName  +" and user "+str(username)+".\\n\\n Perhaps you are not the owner of this record or are not logged in"
-            #~ error=" q="+str(setValues)
+#            error=str(q)+"   "+str(setValues)
+#            error=str(q)
         try:
             xcursor.close()
         except:
@@ -853,8 +874,8 @@ def doSql(req,action,cols,idField,dbname,tableName,selectedHost,owner):
 
             else:
                 # Not a blob, so it's not binary.
-                if colvalue=='None':
-                    colvalue='NULL'
+                if colvalue==None:
+                    colvalue=''
                 else:
                     colvalue=quoteHandler(colvalue)
                     colvalue=colvalue.strip()
@@ -894,14 +915,14 @@ def doSql(req,action,cols,idField,dbname,tableName,selectedHost,owner):
 
         ########### this works
         q="update `"+tableName+"` set "+str(setCols)+" where `"+idField+"`='"+str(idValue)+"'"
-#        util.redirect(req,"../testValue.py/testvalue?test="+repr(q))
+#        util.redirect(req,"../testValue.py/testvalue?test="+repr(q)+repr(setValues))
 
         try:
             dbconnection = MySQLdb.connect(host=selectedHost,user=username,passwd=userpass,db=dbname)
             cursor = dbconnection.cursor()
             cursor.execute(q,setValues)
         except:
-            error="Update error for "+tableName +" and user "+str(username)+".\\n\\n Perhaps you are not the owner of this record or are not logged in"
+            error="Update error for "+tableName +" and user "+str(username)+".\\n\\n Perhaps you are not the owner of this record or are not logged in.\\n\n Otherwise check that the data you are submitting is valid IAW the database design."
 
         try:
             xcursor.close()
@@ -929,7 +950,7 @@ def doSql(req,action,cols,idField,dbname,tableName,selectedHost,owner):
             cursor = dbconnection.cursor()
             cursor.execute(q)
         except:
-            error="Delete error for "+tableName  +" and user "+str(username)+".\\n\\n Perhaps you are not the owner of this record or are not logged in"
+            error="Delete error for "+tableName  +" and user "+str(username)+".\\n\\n Perhaps you are not the owner of this record or are not logged in.\\n\n Otherwise check that the data you are submitting is valid IAW the database design."
 
         try:
             xcursor.close()
@@ -1031,31 +1052,33 @@ def getFieldInfo3(req,selectedHost,dbname,tableName):
 # ***************** dougs quote handler 10-23-02 *****************************
 
 def quoteHandler(tmp):
-    # replace all occurances of ascii quotes in a string
-    # with the upper ascii right and left quote characters
-    # so that they won't affect the insert/update query
-    theLetters = list(string.letters) + list(string.digits)+list('})]*!.,;')
-    theString = list(tmp)
-    sind = 0
-    quotecount = 0
-    for i in theString:
-        if i == '"':
-            quotecount = quotecount + 1
-            # if there is a 'Letter' or a left hand quote in
-            # front of the quote it's a right hand quote
-            if sind > 0 and (string.count(theLetters, theString[sind-1]) >0 or theString[sind-1]=='\xe2\x80\x9c'):
-##                       or theString[sind-1]=='&ldquo;'):
-##                            theString[sind]='&rdquo;'
-                theString[sind]='\xe2\x80\x9d'
-            # if there's not a 'Letter' in front of the quote
-            # or if it's the first character then it's a left quote.
-            else:
-##                            theString[sind]='&ldquo;'
-                theString[sind]='\xe2\x80\x9c'
+    if tmp:
+        # replace all occurances of ascii quotes in a string
+        # with the upper ascii right and left quote characters
+        # so that they won't affect the insert/update query
+        theLetters = list(string.letters) + list(string.digits)+list('})]*!.,;')
+        theString = list(tmp)
+        sind = 0
+        quotecount = 0
+        for i in theString:
+            if i == '"':
+                quotecount = quotecount + 1
+                # if there is a 'Letter' or a left hand quote in
+                # front of the quote it's a right hand quote
+                if sind > 0 and (string.count(theLetters, theString[sind-1]) >0 or theString[sind-1]=='\xe2\x80\x9c'):
+    ##                       or theString[sind-1]=='&ldquo;'):
+    ##                            theString[sind]='&rdquo;'
+                    theString[sind]='\xe2\x80\x9d'
+                # if there's not a 'Letter' in front of the quote
+                # or if it's the first character then it's a left quote.
+                else:
+    ##                            theString[sind]='&ldquo;'
+                    theString[sind]='\xe2\x80\x9c'
+    
+            sind = sind +1
+    
+        tmp=string.join(theString,"")
 
-        sind = sind +1
-
-    tmp=string.join(theString,"")
     return tmp
 
 def convertImg(config,colvalue):
@@ -1071,27 +1094,28 @@ def convertImg(config,colvalue):
         if thisType in fileSample:
             fileType=fileTypes[thisType]
 
-    # convert a file to jpg
+    # convert a file to jpg if a known filetype has been detected.
     # requires gostscript to be installed and in exe path                            
     # requires imagemagick convert to be installed. Location to convert exe
     # is hard coded in config because some windows systems have other "convert" executables
-    try:
-        imagename=config['mediaPath']+'/convert'
-        convertFile=imagename+"."+fileType
-        jpgFile=imagename+".jpg"
-        convertExe=config['convertExe']
-        imgFile=open(convertFile,"wb")
-        imgFile.write(colvalue)
-        imgFile.close()
-        convertCommand=convertExe+" "+convertFile+" "+jpgFile
-        os.system(convertCommand)
-        imgFile=open(jpgFile,"rb")
-        colvalue=imgFile.read()
-        imgFile.close()
-#        x=2/0
-    except:
-        colvalue=""
-        error="Could not convert "+fileType.upper() +" to JPG!\\nAre ghostscript and IM convert installed? The location of IM convert is hardcoded in getConfig.\\nOnly single page PDF docs are allowed."
-        
+    if fileType:
+        try:
+            imagename=config['mediaPath']+'/convert'
+            convertFile=imagename+"."+fileType
+            jpgFile=imagename+".jpg"
+            convertExe=config['convertExe']
+            imgFile=open(convertFile,"wb")
+            imgFile.write(colvalue)
+            imgFile.close()
+            convertCommand=convertExe+" "+convertFile+" "+jpgFile
+            os.system(convertCommand)
+            imgFile=open(jpgFile,"rb")
+            colvalue=imgFile.read()
+            imgFile.close()
+    #        x=2/0
+        except:
+            error="Could not convert "+fileType.upper() +" to JPG!\\nAre ghostscript and IM convert installed? The location of IM convert is hardcoded in getConfig.\\nOnly single page PDF docs are allowed."
+    else:
+        pass
         
     return(colvalue,error)   
