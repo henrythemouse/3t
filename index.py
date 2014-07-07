@@ -3632,8 +3632,8 @@ def aboutInfo(config):
     header=""
     result=[\
     ["Author: Gary M Witscher"],
-    ["Date: 2009-08-08"],
-    ["Version: 1.2"],
+    ["Date: 2014-07-07"],
+    ["Version: 1.4"],
     ["License: Free (as in beer and chicken)"],
     ["W3C Markup Validation: HTML 4.01 Strict"],
     ["W3C CSS Validation: CSS2"],
