@@ -17,7 +17,7 @@ from mod_python import psp,util #@UnresolvedImport
 
 '''
 $LastChangedDate$
-$Rev:$
+$LastChangedRevision:$
 '''
 '''
 BUG FIXES THAT NEED TO PROPIGATE TO 2TABLE
@@ -98,10 +98,11 @@ def index(req,currentCat=0,currentItem=1,action=0):
     userpass=''
     searchMode=''
     dbname=''
-
+    supportTableName=''
+    
     try:
         x=req.form.list
-#        util.redirect(req,"testValue.py/testvalue?test="+repr(x))
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(x))
     except:
         pass
 
@@ -189,7 +190,6 @@ def index(req,currentCat=0,currentItem=1,action=0):
             except:
                 catID=''
 
-
         try:                # if available, get the cat record formdata - media display
             mediaID=req.form['media']
             action=15
@@ -203,11 +203,35 @@ def index(req,currentCat=0,currentItem=1,action=0):
                 action=16
             except:
                 mediaID=''
-
+        try:
+            supportTableName=req.form['supportTableName']
+            if supportTableName=="View Support Tables":
+                supportTableName=''
+                action=1
+            else:
+                action=23
+        except:
+            pass
+        
+        try:
+            supportTableName=req.form['supportedit']
+            supportID=req.form['supportID']
+            action=24
+        except:
+            supportID=0
+        
+        try:
+            supportTableName=req.form['supportcreate']
+            action=25
+        except:
+            pass
+        
+            
         try:
             popup=req.form['popup'].value
         except:
             popup=''
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(action)+"***"+str(supportID))
 
         #~ if action:          # load saved data
         # if I set this back to 'if action' then the login is reset on startup
@@ -223,6 +247,8 @@ def index(req,currentCat=0,currentItem=1,action=0):
             cancelAction=data['cancelAction']
             username=data['username']
             userpass=data['userpass']
+#             supportTableName=data['supportTableName']
+            
             try:
                 # is search button clicked?
                 req.form['searchbutton.x'].value
@@ -242,7 +268,9 @@ def index(req,currentCat=0,currentItem=1,action=0):
             #~ util.redirect(req,"testValue.py/testvalue?test="+repr(data))
             pass
 
-#    util.redirect(req,"testValue.py/testvalue?test="+repr(action))
+#     util.redirect(req,"testValue.py/testvalue?test="+repr(supportTableName)+str(action))
+    
+    
 #    itemSelected=1
     # *******************************************
     # item image and navagation
@@ -256,6 +284,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         item=itemData(currentItem,config)
         itemSelect=itemForm(item[4],currentItem)
         itemImage=itemImg(itemImage,item,config)
+        supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
         results=itemQuery(currentItem,item,config)
         cleanTmp(config)
@@ -284,6 +313,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         currentCat=indexCat(currentCat,catImages,catSelected,action)
         catSelect=catForm(catImages,currentCat)
 #        catImage=catImages[currentCat][1]
+        supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
         results=catQuery(req,catImages[currentCat][0],item[1],config)
         cleanTmp(config)
@@ -293,14 +323,17 @@ def index(req,currentCat=0,currentItem=1,action=0):
         resultHeader=results[1]
         resultData=results[2]
         cancelAction=7
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(results[1]))
 
         headerWidths=getCatColWidths(resultHeader,config)
         resultTable=catTable(resultData,catImages[currentCat][0],resultHeader,headerWidths,config)
+#         util.redirect(req,"testValue.py/testvalue?test="+str(resultTable))
 
     elif action==10:     # edit item
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
 #        catImage=catImages[currentCat][1]
+        supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
         # not that in all insert/update forms I use 'result' and not 'results'
         # this way the binary data is not save to the cookie table
@@ -315,6 +348,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
 #        catImage=catImages[currentCat][1]
+        supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
         result=createItem(currentCat,item,config)
 
@@ -327,8 +361,10 @@ def index(req,currentCat=0,currentItem=1,action=0):
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
 #        catImage=catImages[currentCat][1]
+        supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
         result=editCat(catImages[currentCat][0],catID,config)
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(result[-1]))
 
         # parse the results list
         caption=result[0]
@@ -339,6 +375,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
 #        catImage=catImages[currentCat][1]
+        supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
         result=createCat(catImages[currentCat][0],catID,config)
 
@@ -353,6 +390,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
 #        catImage=catImages[currentCat][1]
+        supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
 
         results=searchQuery(searchText,searchMode,catImages[currentCat][0],item[1],config)
@@ -376,6 +414,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
 #        catImage=catImages[currentCat][1]
+        supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
         results=mediaQuery(mediaID,config)
 
@@ -387,13 +426,14 @@ def index(req,currentCat=0,currentItem=1,action=0):
         headerWidths=getMediaColWidths(req,config)
 #        resultTable=mediaTable(resultData,cookieID['kookyID'],mediaID,config)
         result=mediaTable(resultData,cookieID,mediaID,config)
-#        util.redirect(req,"testValue.py/testvalue?test="+repr(result[1]))
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(result[1]))
         resultTable=result[0]
         
     elif action==16:     # edit media
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
 #        catImage=catImages[currentCat][1]
+        supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
         result=editMedia(mediaID,catID,item,config)
 #        util.redirect(req,"testValue.py/testvalue?test="+repr(result[-1]))
@@ -408,6 +448,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
 #        catImage=catImages[currentCat][1]
+        supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
         result=createMedia(mediaID,catID,item,config)
         #~ util.redirect(req,"testValue.py/testvalue?test="+repr(result))
@@ -422,6 +463,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
 #        catImage=catImages[currentCat][1]
+        supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
 
         results=aboutInfo(config)
@@ -436,6 +478,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
 #        catImage=catImages[currentCat][1]
+        supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
         result=editConfig(req,config)
 
@@ -448,6 +491,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
 #        catImage=catImages[currentCat][1]
+        supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
         result=createConfig(req,config)
 
@@ -455,6 +499,53 @@ def index(req,currentCat=0,currentItem=1,action=0):
         caption=result[0]
         resultHeader=result[1]
         resultTable=result[2]
+
+    elif action==23:     #show support table
+        itemSelect=itemForm(item[4],currentItem)
+        catSelect=catForm(catImages,currentCat)
+#        catImage=catImages[currentCat][1]
+        supportSelect=supportForm(supportTableName,config)
+        search=searchForm(searchText,searchMode)
+        
+        result=supportTable(supportTableName,config)
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(req.form.list)+" "+str(supportTableName))
+
+        # parse the results list
+        caption='supportTableHeader'
+        resultTable=result[0]
+        headerWidths=result[1]
+        resultHeader=result[2]
+
+    elif action==24:     #edit support record
+        itemSelect=itemForm(item[4],currentItem)
+        catSelect=catForm(catImages,currentCat)
+#        catImage=catImages[currentCat][1]
+        supportSelect=supportForm(supportTableName,config)
+        search=searchForm(searchText,searchMode)
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(req.form.list)+" "+str(supportID))
+
+        result=editSupport(supportTableName,supportID,config)
+
+        # parse the results list
+        caption=result[0]
+        resultHeader=result[1]
+        resultTable=result[2]
+
+    elif action==25:     #create support record
+        itemSelect=itemForm(item[4],currentItem)
+        catSelect=catForm(catImages,currentCat)
+#        catImage=catImages[currentCat][1]
+        supportSelect=supportForm(supportTableName,config)
+        search=searchForm(searchText,searchMode)
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(req.form.list))
+
+        result=createSupport(supportTableName,config)
+
+        # parse the results list
+        caption=result[0]
+        resultHeader=result[1]
+        resultTable=result[2]
+
 
     elif action==100:     # configure dialog
         # the emergency configuration dialog
@@ -474,6 +565,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
             catImages=catImgs(config)
             catSelect=catForm(catImages,currentCat)
 #            catImage=catImages[currentCat][1]
+            supportSelect=supportForm(supportTableName,config)
             search=searchForm(searchText,searchMode)
             results=itemQuery(currentItem,item,config)
             cleanTmp(config)
@@ -497,6 +589,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
             currentCat=0
             catSelect=catForm(catImages,currentCat)
 #            catImage=catImages[currentCat][1]
+            supportSelect=supportForm(supportTableName,config)
             search=searchForm(searchText,searchMode)
             results=mediaQuery(mediaID,config)
 
@@ -511,8 +604,9 @@ def index(req,currentCat=0,currentItem=1,action=0):
             #~ data=kooky2.myCookies(req,'get','',config['dbname'],config['selectedHost'])
             #~ username=data['username']
             #~ util.redirect(req,"testValue.py/testvalue?test="+repr(data))
-            resultTable=mediaTable(resultData,cookieID,mediaID,config)
-
+            result=mediaTable(resultData,cookieID,mediaID,config)
+            resultTable=result[0]
+            
         else:
 
 #            item=itemData2(itemID,config)
@@ -524,6 +618,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
             catImages=catImgs(config)
             catSelect=catForm(catImages,currentCat)
 #            catImage=catImages[currentCat][1]
+            supportSelect=supportForm(supportTableName,config)
             search=searchForm(searchText,searchMode)
             results=itemQuery(currentItem,item,config)
             cleanTmp(config)
@@ -566,7 +661,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         # check for an item related cat record to enable/disable delete function
         relatedCat=relatedRecords(item[1],config)
 #        relatedCat=relatedRecords(currentItem,config)
-#        util.redirect(req,"testValue.py/testvalue?test="+"kooky "+repr((relatedCat)+repr(currentItem)))
+#         util.redirect(req,"testValue.py/testvalue?test="+"kooky "+repr((relatedCat)+repr(currentItem)))
 
         # the dic of values to pass to the html page
         v['itemSelected']=itemSelected
@@ -581,6 +676,8 @@ def index(req,currentCat=0,currentItem=1,action=0):
         v['mediaTable']=config['mediaTable']
         v['catSelect']=catSelect
         v['itemSelect']=itemSelect
+        v['supportSelect']=supportSelect
+        v['supportTableName']=supportTableName
         v['catImages']=catImages
         v['itemImage']=itemImage
         v['caption']=caption
@@ -591,6 +688,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         v['mediaID']=mediaID
         v['itemID']=item[1]
         v['catID']=catID
+        v['supportID']=supportID
         v['currentItem']=str(currentItem)
         v['currentCat']=str(currentCat)
         v['search']=search
@@ -1235,9 +1333,13 @@ def itemTable(itemID,itemData,config):
 
             itemRow=strict401gen.TR(style="background-color:"+rowcolor)
             itemRow.append(strict401gen.TD(colNames[thisCol],style="width:385px;"))
-
+                            
             if itemData[thisCol]:
-                itemRow.append(strict401gen.TD(itemData[thisCol],style="width:383px;"))
+                if colNames[thisCol] in config['supportTables']:
+                    titleData=getToolTip(colNames[thisCol],itemData[thisCol],config)
+                    itemRow.append(strict401gen.TD(itemData[thisCol],title=titleData,style="width:383px;color:red;"))                    
+                else:
+                    itemRow.append(strict401gen.TD(itemData[thisCol],style="width:383px;"))
             else:
                 itemRow.append(strict401gen.TD(strict401gen.RawText("&nbsp;"),style="width:400px;"))
 
@@ -1320,6 +1422,13 @@ def createItem(currentItem,item,config):
         elif 'blob' in thisField[1]:
             itemRow.append(strict401gen.TD(thisField[0],Class='editLabel'))
             itemRow.append(strict401gen.TD(strict401gen.Input(type='file',name=thisField[0],size="10",Class="editfield")))
+
+        elif thisField[0] in config['supportTables']:
+            #we have a support table, used to generate a selecet field
+            shortList,longList=getPickList(thisField[0],config)
+#             test=str(cols[thisField][0])+"  short: "+str(shortList)+"   long: "+str(longList)
+            itemRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
+            itemRow.append(strict401gen.TD(strict401gen.Select(shortList,name=thisField[0],Class="editfield")))            
 
         else:
             itemRow.append(strict401gen.TD(thisField[0],Class='editLabel'))
@@ -1406,6 +1515,13 @@ def editItem(currentItem,item,config):
         elif 'blob' in cols[thisField][1]:
             itemRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
             itemRow.append(strict401gen.TD(strict401gen.Input(type='file',name=cols[thisField][0],size="10",Class="editfield")))
+
+        elif cols[thisField][0] in config['supportTables']:
+            #we have a support table, used to generate a selecet field
+            shortList,longList=getPickList(cols[thisField][0],config)
+#             test=str(cols[thisField][0])+"  short: "+str(shortList)+"   long: "+str(longList)
+            itemRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
+            itemRow.append(strict401gen.TD(strict401gen.Select(shortList,selected=values[0][thisField],name=cols[thisField][0],Class="editfield")))            
 
         else:
             itemRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
@@ -1541,7 +1657,7 @@ def catQuery(req,categoryName,itemID,config):
             +' and '+config['catTable']+'.'+config['itemIDfield']+'="'+itemID+'"'\
             +" order by "+config['orderbyField']+" desc"
 
-    qresult1=db.dbConnect(config['selectedHost'],config['dbname'],str(q),0)
+    qresult1=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
 
     if itemID=='0':
         qresult2=[]
@@ -1566,6 +1682,9 @@ def catQuery(req,categoryName,itemID,config):
     return (catCaption,catHeader,qresult2,'cat')
 
 def catTable(catData,categoryName,header,colWidths,config):
+    
+    q="show columns from "+config['catTable']
+    cols=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
 
     endWidth="20"
 
@@ -1636,9 +1755,15 @@ def catTable(catData,categoryName,header,colWidths,config):
                     catRow.append(strict401gen.TD(toolTable,valign='top',colspan="1",Class="toolcol0"))
 
                 elif thisRecord[thisCol]:
-                    catRow.append(strict401gen.TD(thisRecord[thisCol],Class="resultcol"+str(thisCol)))
+                    
+                    if header[thisCol-1].lower() in config['supportTables']:
+                        titleData=getToolTip(header[thisCol-1].lower(),thisRecord[thisCol],config)
+                        catRow.append(strict401gen.TD(thisRecord[thisCol],title=titleData,style="color:red;",Class="resultcol"+str(thisCol)))
+                    else:
+                        catRow.append(strict401gen.TD(thisRecord[thisCol],Class="resultcol"+str(thisCol)))
                 else:
                     catRow.append(strict401gen.TD(strict401gen.RawText("&nbsp;"),Class="resultcol"+str(thisCol)))
+#                     catRow.append(strict401gen.TD(str(config['supportTables']),Class="resultcol"+str(thisCol)))
 
             if not note:
                 noteimage=strict401gen.Image(("images/add.png","16","16"),alt="Add",title="Add a "+config['mediaTable'])
@@ -1668,7 +1793,8 @@ def catTable(catData,categoryName,header,colWidths,config):
         else:
             catRow.append(strict401gen.TD(strict401gen.RawText("No records found for "+categoryName),colspan="1"))
         catTable.append(catRow)
-
+        
+#     return catData
     return catTable
 
 def catColumns(categoryName,itemID,config):
@@ -1897,6 +2023,13 @@ def createCat(categoryName,item,config):
             catRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
             catRow.append(strict401gen.TD(strict401gen.Input(type="text",name=thisField[0],maxlength="6",Class="editfield dataInput")))
 
+        elif thisField[0] in config['supportTables']:
+            #we have a support table, used to generate a selecet field
+            shortList,longList=getPickList(thisField[0],config)
+#             test=str(cols[thisField][0])+"  short: "+str(shortList)+"   long: "+str(longList)
+            catRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
+            catRow.append(strict401gen.TD(strict401gen.Select(shortList,name=thisField[0],Class="editfield")))            
+
         else: # char fields
             if thisField[4]:
                 defaultValue=thisField[4]
@@ -1921,7 +2054,8 @@ def editCat(categoryName,catID,config):
 
     cols=[]
     colNames=[]
-
+    test=''
+    
     # get the column  names
     q="show columns from "+config['catTable']
     allCols=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
@@ -2007,6 +2141,13 @@ def editCat(categoryName,catID,config):
             catRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
             catRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[0][thisField],name=cols[thisField][0],maxlength="6",Class="editfield dataInput")))
 
+        elif cols[thisField][0] in config['supportTables']:
+            #we have a support table, used to generate a selecet field
+            shortList,longList=getPickList(cols[thisField][0],config)
+#             test=str(cols[thisField][0])+"  short: "+str(shortList)+"   long: "+str(longList)
+            catRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
+            catRow.append(strict401gen.TD(strict401gen.Select(shortList,selected=values[0][thisField],name=cols[thisField][0],Class="editfield")))            
+            
         else: # char fields
             catRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
             catRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[0][thisField],name=cols[thisField][0],maxlength=maxlen,Class="editfield dataInput")))
@@ -2095,13 +2236,233 @@ def mediaQuery(record,config):
     return (mediaCaption,mediaHeader,qresult,'media')
 
 def mediaTable(mediaData,cookieID,record,config):
-    test=repr(mediaData)
+    
+    test=''
     fileType=''
+    filename=''
     blobToolTip=''
     fieldTypes=[]
     fieldNames=[]
     isBlob=0
     isImg=""
+    isText=0
+    endWidth=16
+    
+    mediaTable=strict401gen.TableLite(border=0,CLASS='resultstable',cellpadding="10",cellspacing="0")
+    
+    # get a list of the fieltypes so I can branch on blob fields
+    q="show columns from `"+config['mediaTable']+"`"
+    qresult=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
+    for thisResult in qresult:
+        fieldNames.append(thisResult[0])
+        fieldTypes.append(thisResult[1])
+
+    rowcolor='#FFFF99'
+    imageCount=0
+    
+    for thisRecord in mediaData:
+
+        # display the owner at the top of the media if available
+        # enabled for the 'read' db specifically
+        if record[0]=="I":
+            # this is an item note
+            q='select '+config['owner'] +' from '+config['mediaTable']+\
+            ' where '+config['mediaTable']+'.'+config["mediaIDfield"]+'="'+str(thisRecord[0])+'"'
+        else:
+            # this is a category note
+            q='select '+config['owner']+' from '+config['mediaTable']+\
+            ' where '+config['mediaTable']+'.'+config["mediaIDfield"]+'="'+str(thisRecord[0])+'"'
+
+        owner=db.dbConnect(config['selectedHost'],config['dbname'],q,1)
+        # try will fail if the table doesn't have an owner field
+        try:
+            owner=owner[0]
+        except:
+            owner=''
+
+        if rowcolor=='#FFFF99':
+            rowcolor='#FFFFCC'
+        else:
+            rowcolor='#FFFF99'
+
+        # check to see if it's an Item record
+        q="select "+config['itemIDfield']+" from "+config['mediaTable']+\
+        " where "+config['mediaIDfield']+'="'+str(thisRecord[0])+'"'
+
+        qresult=db.dbConnect(config['selectedHost'],config['dbname'],q,1)
+        if qresult[0]:
+            mediaType="I"
+        else:
+            mediaType=""
+
+        mediaRow=strict401gen.TR(style="background-color:"+rowcolor)
+        charTable=strict401gen.TableLite(border=1,CLASS='',cellpadding="10",cellspacing="0")
+        
+        # go through the cols, insert the data into the table
+        for thisCol in range(0,len(thisRecord)):
+
+            # if this col is an image set the image type
+            try:
+                isImg="."+imghdr.what('',thisRecord[thisCol])
+                if isImg not in (".png",".jpeg",".gif",".bmp"):
+                    isImg=''
+            except:
+                isImg=''
+                
+            # if this col is a blob supply a icon and link
+            if 'blob' in fieldTypes[thisCol]:
+                isBlob=1
+                q='select `'+config['mediaTable']+'`.`'+config['invisible']+'` from `'+config['mediaTable']+'`'+\
+                ' where `'+config['mediaTable']+'`.`'+config["mediaIDfield"]+'`'+'="'+str(thisRecord[0])+'"'
+                qresult=db.dbConnect(config['selectedHost'],config['dbname'],q,1)
+                test=test+"***************"+str(q)
+                try:
+                    filename=qresult[0]
+                except:
+                    filename=''
+                if filename:
+                    fileType=getFileType2(filename)
+                    iconName=fileType+".png"
+                    if fileType=="unknown":
+                        blobToolTip="This is an unknown file type."
+                    else:
+                        blobToolTip="This is a "+fileType+" file."
+                else:
+                    isBlob=0
+            else:
+                isBlob=0
+            
+            if "text" in fieldTypes[thisCol]:
+                isText=1
+            else:
+                isText=0
+                
+            test="fieldtypes "+str(fieldTypes)+"fieldNames "+str(fieldNames)
+
+
+            if thisCol==0:
+
+                toolTable=strict401gen.TableLite(border=0,CLASS='',cellpadding="0",cellspacing="0")
+                # column for the edit button if not a All search
+                toolRow=strict401gen.TR(style="background-color:"+rowcolor)
+                edimage=strict401gen.Image(("images/edit.png",str(endWidth),str(endWidth)),alt="Edit",name="Edit",title="Edit Record")
+                toolRow.append(strict401gen.TD(strict401gen.Href("index?medit="+mediaType+str(thisRecord[thisCol]),edimage),valign='top',colspan="1",Class="mediacol0"))
+                toolTable.append(toolRow)
+                # column for the delete button if not a All search
+                toolRow=strict401gen.TR(style="background-color:"+rowcolor)
+                delimage=strict401gen.Image(("images/delete.png",str(endWidth),str(endWidth)),alt="Del",name="Del",title="Del Record")
+                toolRow.append(strict401gen.TD(strict401gen.Href("index?popup=97"+"&mediaID="+str(thisRecord[thisCol])+"&media="+str(record),delimage),valign='top',colspan="1",Class="mediacol0"))
+                toolTable.append(toolRow)
+                # add the buttons at col one
+                mediaRow.append(strict401gen.TD(toolTable,valign='top',colspan="1",Class="mediacol0"))
+                # add the charTable for a verticle list of character fields
+                mediaRow.append(strict401gen.TD(charTable,valign='top',colspan="1",Class="mediacol0"))
+
+            elif isImg:
+                # if it's an image write it to disk so the program can load it
+                if os.path.exists(config['mediaPath']+cookieID):
+                    pass
+                else:
+                    os.mkdir(config['mediaPath']+cookieID)
+                imageCount=imageCount+1
+                # imagename must be unique
+                imagename=config['dbname']+'-'+str(thisRecord[0])+'-'+str(imageCount)+isImg
+                imgFile=open(config['mediaPath']+cookieID+'/'+imagename,"wb")
+                imgFile.write(thisRecord[thisCol])
+                imgFile.close()
+
+                columns=1
+
+                imageLink=strict401gen.Href("tmp/"+cookieID+'/'+imagename,strict401gen.Image("tmp/"+cookieID+'/'+imagename,title="Click to view full size image",alt="This is a "+isImg+" file.",Class="mediaimage"),onClick="window.open(this.href);return false;")
+                mediaRow.append(strict401gen.TD(imageLink,colspan=str(columns),align="right",valign='top',Class="mediaimage"))
+
+            elif isBlob:
+                # this is a minimal branching for binary files not recognized as images
+                # I've read that it gives false results for utf16 files, possibly other files too.
+                # I just provide a icon that allows downloading of the data.
+
+                if os.path.exists(config['mediaPath']+cookieID):
+                    pass
+                else:
+                    os.mkdir(config['mediaPath']+cookieID)
+                imageCount=imageCount+1
+                # name must be unique
+                blobName=config['dbname']+'-'+str(thisRecord[0])+'-'+str(imageCount)+"-"+filename
+                blobFile=open(config['mediaPath']+cookieID+'/'+blobName,"wb")
+                blobFile.write(thisRecord[thisCol])
+                blobFile.close()
+
+                columns=1
+
+#                binaryLink=strict401gen.Href("tmp/"+cookieID+'/'+binaryname,text,onClick="window.open(this.href);return false;")
+                blobLink=strict401gen.Href("tmp/"+cookieID+'/'+blobName,strict401gen.Image("images/fileTypes/"+iconName,title=blobToolTip,alt=iconName,Class="mediaimage"),onClick="window.open(this.href);return false;")
+                mediaRow.append(strict401gen.TD(blobLink,colspan=str(columns),align="right",valign='top',Class="mediaimage"))
+
+            elif isText:
+
+                # it's a text field
+                if thisRecord[thisCol]==None:
+                    value=""
+                else:
+                    value=thisRecord[thisCol]
+
+                columns=1
+
+                text1=str(value)
+                text2=text1.replace('\r\n','<BR>')
+                text3=text2.replace('\n','<BR>')
+                text=text3.replace('\r','<BR>')
+                # make more room for large text cols
+                if len(text)>15:
+                    colClass="mediaCol1"
+                else:
+                    colClass="mediaCol2"
+                if owner:  # special concern for the 'read' db
+                    if thisCol==1:
+                        text=owner.capitalize()+' writes:<BR><BR>'+text
+#                mediaRow.append(strict401gen.TD(strict401gen.RawText(text),colspan=str(columns),valign='top',Class="mediacol1"))
+                
+                mediaRow.append(strict401gen.TD(strict401gen.RawText(text),colspan=str(columns),valign='top',Class=colClass))
+            
+            else:
+                charRow=strict401gen.TR(style="background-color:"+rowcolor)
+                if thisRecord[thisCol]:
+                
+                    # just a char field
+                    if fieldNames[thisCol].lower() in config['supportTables']:
+                        titleData=getToolTip(fieldNames[thisCol].lower(),thisRecord[thisCol],config)                     
+                        charRow.append(strict401gen.TD(thisRecord[thisCol],title=titleData,style="color:red;",Class="resultcol"+str(thisCol)))
+                    else:
+                        charRow.append(strict401gen.TD(thisRecord[thisCol],Class="resultcol"+str(thisCol)))
+                    
+                    charTable.append(charRow)
+                else:
+                    charRow.append(strict401gen.TD(strict401gen.RawText("&nbsp;"),Class="resultcol"+str(thisCol)))
+                    
+                                
+        # add the row to the table
+        mediaTable.append(mediaRow)
+
+        # add a row to make sure the scroll will go beyond the bottom
+        mediaRow=strict401gen.TR()
+        mediaRow.append(strict401gen.TD(strict401gen.RawText("&nbsp"),colspan=str(len(thisRecord))))
+
+    # add row to main table
+    mediaTable.append(mediaRow)
+
+    return (mediaTable,str(test))
+
+def mediaTable_working(mediaData,cookieID,record,config):
+    
+    test=''
+    fileType=''
+    filename=''
+    blobToolTip=''
+    fieldTypes=[]
+    fieldNames=[]
+    isBlob=0
+    isImg=""
+    isText=0
     endWidth=16
     
     mediaTable=strict401gen.TableLite(border=0,CLASS='resultstable',cellpadding="10",cellspacing="0")
@@ -2152,12 +2513,6 @@ def mediaTable(mediaData,cookieID,record,config):
 
         mediaRow=strict401gen.TR(style="background-color:"+rowcolor)
 
-        # record the number of cols with values - notused afaict
-#        colValues=0
-#        for thisCol in thisRecord:
-#            if thisCol:
-#                colValues=colValues+1
-
         # go through the cols, insert the data into the table
         for thisCol in range(0,len(thisRecord)):
 
@@ -2176,7 +2531,10 @@ def mediaTable(mediaData,cookieID,record,config):
                 ' where `'+config['mediaTable']+'`.`'+config["mediaIDfield"]+'`'+'="'+str(thisRecord[0])+'"'
                 qresult=db.dbConnect(config['selectedHost'],config['dbname'],q,1)
                 test=test+"***************"+str(q)
-                filename=qresult[0]
+                try:
+                    filename=qresult[0]
+                except:
+                    filename=''
                 if filename:
                     fileType=getFileType2(filename)
                     iconName=fileType+".png"
@@ -2188,8 +2546,13 @@ def mediaTable(mediaData,cookieID,record,config):
                     isBlob=0
             else:
                 isBlob=0
+            
+            if "text" in fieldTypes[thisCol]:
+                isText=1
+            else:
+                isText=0
                 
-#            test=test+"      "+str(thisCol)+"-B"+str(isBlob)+"-I"+str(isImg)+"q= "+str(q)
+            test="fieldtypes "+str(fieldTypes)+"fieldNames "+str(fieldNames)
 
 
             if thisCol==0:
@@ -2208,7 +2571,7 @@ def mediaTable(mediaData,cookieID,record,config):
                 # add the buttons at col one
                 mediaRow.append(strict401gen.TD(toolTable,valign='top',colspan="1",Class="mediacol0"))
 
-            elif isImg :
+            elif isImg:
                 # if it's an image write it to disk so the program can load it
                 if os.path.exists(config['mediaPath']+cookieID):
                     pass
@@ -2248,8 +2611,9 @@ def mediaTable(mediaData,cookieID,record,config):
                 blobLink=strict401gen.Href("tmp/"+cookieID+'/'+blobName,strict401gen.Image("images/fileTypes/"+iconName,title=blobToolTip,alt=iconName,Class="mediaimage"),onClick="window.open(this.href);return false;")
                 mediaRow.append(strict401gen.TD(blobLink,colspan=str(columns),align="right",valign='top',Class="mediaimage"))
 
-            else:                           #thisRecord[thisCol]:
-                # it's not an image, it's text or it's empty
+            elif isText:
+
+                # it's a text field
                 if thisRecord[thisCol]==None:
                     value=""
                 else:
@@ -2270,8 +2634,19 @@ def mediaTable(mediaData,cookieID,record,config):
                     if thisCol==1:
                         text=owner.capitalize()+' writes:<BR><BR>'+text
 #                mediaRow.append(strict401gen.TD(strict401gen.RawText(text),colspan=str(columns),valign='top',Class="mediacol1"))
+                
                 mediaRow.append(strict401gen.TD(strict401gen.RawText(text),colspan=str(columns),valign='top',Class=colClass))
-
+            
+            else:
+                # just a char field
+                if fieldNames[thisCol].lower() in config['supportTables']:
+                    titleData=getToolTip(fieldNames[thisCol].lower(),thisRecord[thisCol],config)
+                    mediaRow.append(strict401gen.TD(thisRecord[thisCol],title=titleData,style="color:red;",Class="resultcol"+str(thisCol)))
+                else:
+                    mediaRow.append(strict401gen.TD(thisRecord[thisCol],Class="resultcol"+str(thisCol)))
+#                 mediaRow.append(strict401gen.TD(strict401gen.RawText(text),colspan=str(columns),valign='top',Class=colClass))
+                
+                
         # add the row to the table
         mediaTable.append(mediaRow)
 
@@ -2495,6 +2870,13 @@ def createMedia(mediaID,catID,item,config):
             mediaRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
             mediaRow.append(strict401gen.TD(strict401gen.Input(type="text",name=thisField[0],maxlength="6",Class="editfield dataInput")))
 
+        elif thisField[0] in config['supportTables']:
+            #we have a support table, used to generate a selecet field
+            shortList,longList=getPickList(thisField[0],config)
+#             test=str(cols[thisField][0])+"  short: "+str(shortList)+"   long: "+str(longList)
+            mediaRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
+            mediaRow.append(strict401gen.TD(strict401gen.Select(shortList,name=thisField[0],Class="editfield")))            
+
         else:
             mediaRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
             mediaRow.append(strict401gen.TD(strict401gen.Input(type="text",name=thisField[0],maxlength=maxlen,Class="editfield dataInput")))
@@ -2530,6 +2912,7 @@ def editMedia(mediaID,catID,item,config):
 
     cols=[]
     test=''
+    filename=''
     colNames=[]
     if mediaID[0]=='I':
         mediaID=mediaID[1:]
@@ -2619,6 +3002,13 @@ def editMedia(mediaID,catID,item,config):
             mediaRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
             mediaRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[0][thisField],name=cols[thisField][0],maxlength="6",Class="editfield dataInput")))
 
+        elif cols[thisField][0] in config['supportTables']:
+            #we have a support table, used to generate a selecet field
+            shortList,longList=getPickList(cols[thisField][0],config)
+#             test=str(cols[thisField][0])+"  short: "+str(shortList)+"   long: "+str(longList)
+            mediaRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
+            mediaRow.append(strict401gen.TD(strict401gen.Select(shortList,selected=values[0][thisField],name=cols[thisField][0],Class="editfield")))            
+
         else: # char fields
             if cols[thisField][0] in config['invisible']:
                 mediaRow.append(strict401gen.TD("",Class="editlabel"))
@@ -2660,7 +3050,209 @@ def editMedia(mediaID,catID,item,config):
 
     return(caption,header,mediaTable,mediaType,catID,test)
 
-############ support functions
+############ suport Table functions
+
+def supportTable(supportTableName,config):
+
+    test=''
+    endWidth="20"
+
+    colWidths,colInfo=getSupportColWidths(supportTableName,config)
+    
+    # get all records for all items
+    # all_items, all_cats, NO searchText
+    q='select * from '+supportTableName
+    result=db.dbConnect(config['selectedHost'],config['dbname'],q,0)    
+    
+    supportTable=strict401gen.TableLite(border=0,CLASS='resultstable',cellpadding="",cellspacing="1")
+
+    try:
+        result[0]  # fail text for empty table
+
+        rowcolor='#FFFF99'
+
+        for thisRecord in result:
+
+            if rowcolor=='#FFFF99':
+                rowcolor='#FFFFCC'
+            else:
+                rowcolor='#FFFF99'
+
+            supportRow=strict401gen.TR(style="background-color:"+rowcolor)
+            recNum=''
+
+            deleteImg="images/delete.png"
+            delToolTip="Delete Record"
+
+            for thisCol in range(0,len(thisRecord)):
+
+                if thisCol==0:
+                    recNum=str(thisRecord[thisCol])
+
+                    toolTable=strict401gen.TableLite(border=0,CLASS='',cellpadding="0",cellspacing="0")
+                    toolRow=strict401gen.TR(style="background-color:"+rowcolor)
+                    # column for the edit button
+                    editImage=strict401gen.Image(("images/edit.png","16","16"),alt="Edit",name="Edit",title="Edit Record")
+                    toolRow.append(strict401gen.TD(strict401gen.Href("index?supportedit="+supportTableName+"&supportID="+str(thisRecord[thisCol]),editImage),valign='top',colspan="1",Class="toolcol0"))
+                    toolTable.append(toolRow)
+                    toolRow=strict401gen.TR(style="background-color:"+rowcolor)
+
+                    # column for the delete link
+                    delimage=strict401gen.Image((deleteImg,str(endWidth),str(endWidth)),alt="Del",name="Del",title=delToolTip)
+                    if delToolTip:
+                        toolRow.append(strict401gen.TD(strict401gen.Href("index?popup=94&supportTableName="+supportTableName+"&supportID="+str(thisRecord[thisCol]),delimage),valign='top',colspan="1",Class="toolcol0"))
+                        #&supportTableName="+supportTableName+"&supportID="+str(thisRecord[thisCol])
+                    else:
+                        toolRow.append(strict401gen.TD(delimage,valign='top',colspan="1",Class="toolcol0"))
+                    toolTable.append(toolRow)
+                    supportRow.append(strict401gen.TD(toolTable,valign='top',colspan="1",Class="toolcol0"))
+
+                elif thisRecord[thisCol]:
+                    supportRow.append(strict401gen.TD(thisRecord[thisCol],Class="resultcol"+str(thisCol)))
+                else:
+                    supportRow.append(strict401gen.TD(strict401gen.RawText("&nbsp;"),Class="resultcol"+str(thisCol)))
+
+            supportTable.append(supportRow)
+
+        # last row first col
+        supportRow=strict401gen.TR()
+        supportRow.append(strict401gen.TD(strict401gen.Image(("images/shim.gif",endWidth,"10"),alt="Edit")))
+        # last row middle cols
+        for thisCol in colWidths:
+            supportRow.append(strict401gen.TD(strict401gen.Image(("images/shim.gif",str(int(thisCol)-2),"10"),alt="Edit")))
+        # last row last col
+        supportRow.append(strict401gen.TD(strict401gen.Image(("images/shim.gif",endWidth,"10"),alt="Edit")))
+        supportTable.append(supportRow)
+
+    except:
+        rowcolor='#FFFF99'
+
+        supportRow=strict401gen.TR(style="background-color:"+rowcolor)
+        supportRow.append(strict401gen.TD(strict401gen.RawText("No records found for "+supportTableName),colspan="1"))
+        supportTable.append(supportRow)
+    
+    header=[]
+    caption=''
+    for thisCol in colInfo:
+        if "char" in thisCol[1]:
+            header.append(thisCol[0])
+        
+    return (supportTable,colWidths,header,test)
+
+def editSupport(tableName,supportID,config):
+
+    cols=[]
+    test=''
+    filename=''
+    colNames=[]
+
+    # get the column  names
+    q="show columns from "+tableName
+    allCols=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
+    
+    for thisCol in allCols:
+        if 'PRI' in thisCol[3]:
+            supportIDfield=thisCol[0]
+            pass
+        else:
+            cols.append(thisCol)
+            colNames.append(thisCol[0])
+
+    # get col values
+    selectCols=string.join(colNames,",")
+    q="select "+selectCols+" from "+tableName+\
+    " where "+supportIDfield+"='"+supportID+"'"
+
+    values=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
+
+    supportTable=strict401gen.TableLite(border="0",Class="edittable")
+
+    count=0
+    supportRow=strict401gen.TR()
+
+    for thisField in range(0,len(cols)):
+        try:
+            fieldlen=cols[thisField][1]
+            maxlen=fieldlen[fieldlen.index("(")+1:fieldlen.index(")")]
+        except:
+            maxlen=''
+
+        count=count+1
+
+        supportRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
+        supportRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[0][thisField],name=cols[thisField][0],maxlength=maxlen,Class="editfield dataInput")))
+
+        if not count%2:
+            supportTable.append(supportRow)
+            supportRow=strict401gen.TR()
+        elif count==len(cols):
+            supportRow.append(strict401gen.TD(strict401gen.RawText("&nbsp"),colspan="2"))
+            supportTable.append(supportRow)
+
+    caption='Update '+tableName
+
+    header=formbuttons('update')
+
+    return(caption,header,supportTable,'support')
+
+def createSupport(tableName,config):
+
+
+    cols=[]
+    colNames=[]
+    
+    q="show columns from "+tableName
+    allCols=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
+
+    for thisCol in allCols:
+        if 'PRI' in thisCol[3]:
+#             supportIDfield=thisCol[0]
+            pass
+        else:
+            cols.append(thisCol)
+            colNames.append(thisCol[0])
+
+    supportTable=strict401gen.TableLite(border="0",Class="edittable")
+
+    count=0
+    supportRow=strict401gen.TR()
+
+    for thisField in range(0,len(cols)):
+        try:
+            fieldlen=cols[thisField][1]
+            maxlen=fieldlen[fieldlen.index("(")+1:fieldlen.index(")")]
+        except:
+            maxlen=''
+
+        count=count+1
+
+        supportRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
+        supportRow.append(strict401gen.TD(strict401gen.Input(type="text",name=cols[thisField][0],maxlength=maxlen,Class="editfield dataInput")))
+
+        if not count%2:
+            supportTable.append(supportRow)
+            supportRow=strict401gen.TR()
+        elif count==len(cols):
+            supportRow.append(strict401gen.TD(strict401gen.RawText("&nbsp"),colspan="2"))
+            supportTable.append(supportRow)
+
+    caption='Insert into '+tableName
+
+    header=formbuttons('create')
+
+    return(caption,header,supportTable,'support')
+
+def supportForm(supportTableName,config):
+    
+    tables=config['supportTables']
+    tables.insert(0,"View Support Tables")
+    supportList=strict401gen.Select(config['supportTables'],selected=supportTableName,onChange="javascript:document.newSupport.submit();",size=1,name='supportTableName',Class="topfield")
+    form=strict401gen.Form(submit="",name='newSupport',cgi='index?action=23')
+    form.append(supportList)
+
+    return(form)
+
+############ misc functions
 
 def relatedRecords(itemID,config):
 
@@ -2992,6 +3584,36 @@ def getMediaColWidths(req,config):
 
     return colWidths
 
+def getSupportColWidths(tableName,config):
+    
+    tableWidth=755
+
+    # column lengths for the item table
+    q="show columns from "+tableName
+    colInfo=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
+
+    totalColLength=0
+    colLengths=[]
+    colPercents=[]
+    for thisCol in colInfo:
+        if 'PRI' in thisCol[3]:
+            pass
+        else:
+            
+            colLength=thisCol[1][thisCol[1].index("(")+1:thisCol[1].index(")")]
+            colLen=int(colLength)
+            colLengths.append(colLen)
+            totalColLength=totalColLength+int(colLen)
+            
+    for thisCol in colLengths:
+        colPercents.append(thisCol*100/totalColLength)
+            
+    colWidths=[]            
+    for thisPercent in colPercents:
+        colWidths.append(tableWidth*thisPercent/100)
+    
+    return (colWidths,colInfo)
+
 def updateCookie(req,name,value,config):
 
     data=kooky2.myCookies(req,'get','',config['dbname'],config['selectedHost'])
@@ -3278,3 +3900,102 @@ def getFileType2(fileName):
         fileType="unknown"
         
     return fileType
+
+def getPickList(tableName,config):
+    
+    # get table rows
+    q="select * from "+tableName
+    rows=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
+    q="show columns from "+tableName
+    cols=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
+    
+    # make a short list of values to display in the pick list
+    # the short list is keyed to fields that end in _, falling back to the first str field
+    # make a long list of complete info to display
+    shortList=[]
+    longList=[]
+    try:
+        for thisRow in rows:
+            shortTxt=''
+            longTxt=''
+            for thisCol in range(0,len(cols)):
+                if isinstance(thisRow[thisCol],str):
+                    if cols[thisCol][0][-1]=="_":
+                        shortTxt=shortTxt+" "+thisRow[thisCol]
+                    longTxt=longTxt+" "+str(thisRow[thisCol])
+                       
+            shortList.append(shortTxt.strip())
+            longList.append(longTxt.strip())
+    except:
+        pass
+    
+    # no fields ended in _ so just use the first string field as a fallback
+    if len(''.join(shortList).strip())==0:
+        shortList=[]
+        for thisRow in rows:
+            if isinstance(thisRow[1],str):
+                shortList.append(thisRow[1])
+            else:
+                shortList.append('Empty column')
+                    
+    if shortList:
+        pass
+    else:
+        shortList.append('Empty List')
+    if longList:
+        pass
+    else:
+        longList.append('Empty List')
+                
+    return (shortList,longList)
+
+def getToolTip(colName,colValue,config):
+    
+    toolTip="unknown"
+    tableName=colName
+    
+    # get table cols
+    q="show columns from "+tableName
+    cols=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
+     
+    orderedCols=[]
+    shortCols=[]
+    # extract the '_' fields and insert then at the begining
+    # so that the short text value will match 
+    for thisCol in cols:
+        if thisCol[0][-1]=="_":
+            shortCols.insert(0,thisCol[0])
+        else:
+            if 'PRI' not in thisCol[3]:
+                orderedCols.append(thisCol[0])
+            
+    for thisCol in shortCols:
+        orderedCols.insert(0,thisCol)
+    
+    # use the sorted columns to get the full row values
+    selectText=''
+    for thisCol in orderedCols:
+        selectText=selectText+"`"+thisCol+"`,"
+    selectText=selectText[:-1]
+    
+    q="select "+selectText+" from "+tableName
+    rows=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
+    
+    # join the row values into text and look for a short text match
+    rowText=[]
+    for thisRow in rows:
+        rowText.append(" ".join(thisRow))
+    
+    for thisText in rowText:
+        try:
+            if colValue in thisText:
+                toolTip=thisText
+        except:
+            pass
+        
+    # for debuging
+#     if toolTip=="unknown":
+#         toolTip=str(rowText)
+    
+            
+    return toolTip
