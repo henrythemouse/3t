@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+<%
+dbname=config['dbname']
+mode="Rows Displayed: "+str(len(resultTable)-1)
+caption='supportTableHeader'
+p2="&action=1"
+if dogleg:
+    loginlogout='logout'
+else:
+    loginlogout='login'
+
+
+%>
+	<HEAD>
+		<title> <%=dbname.upper()%> </title>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+		<LINK rel="stylesheet" href="style/base.css" type="text/css">
+        <LINK rel="stylesheet" href="style/default.css" type="text/css">
+		</HEAD>
+	<BODY>
+	    <DIV CLASS="PAGE pagecolor">
+		    <!-- start the top div -->
+		    <DIV CLASS="TOP topcolor">
+		        <DIV>
+		            <B><H3><center>!!!!! NO CONFIGURATION FOUND - COMPLETE THIS FORM !!!!!</center></H3></B>
+					<H4><p style="margin:20px">
+					# configuration for all 3 table dbs (3t)<BR>
+					#<BR>
+					# To complete a new and fully functional configuration you<BR> 
+					# will need a properly created mysql database and tables first.<BR>
+					<BR>
+					# There are many features that depend on the accurate completion of<BR>
+					# of this form. Read the documentation in the program directory.<BR>
+					</p></H4>
+		        </DIV>
+		        
+            <!-- end of top div-->
+            </DIV>
+            
+            <DIV CLASS='BOTTOM'>
+            <!-- start of bottom div -->
+        
+            
+ 		        <DIV CLASS='HEADER headercolor'>
+ 		             <DIV CLASS='caption'>
+                      <B>Database: <%=dbname%></B>
+ 		             </DIV>
+		        </DIV>
+		
+		        <FORM method="post" id='saveConfig' name="saveConfig" enctype="multipart/form-data" action="myFunctions/support">
+		        <DIV CLASS="RESULTTABLE restulttablecolor">
+		        
+		             <!-- result table -->
+		            <DIV CLASS="resulttable">
+		                <%=resultTable%>
+		            </DIV>		
+		        </DIV>
+            <!-- end of bottom div -->
+            </DIV>        
+            <DIV>
+            <!-- star of toolbar div -->            	
+	            <DIV CLASS='TOOLBAR toolbarcolor'>
+		            <DIV CLASS='mode'>
+		                <%=mode%>
+		            </DIV>
+		            
+		            <DIV CLASS='contact'>
+		                <A HREF="MAILTO:<%=emailcontact%>?subject=3tdb">Contact</A>
+		            </DIV>
+		            <DIV CLASS='submitconf'>
+		                <input type="submit" name="newConfig" value="Submit" />
+		            </DIV>
+		        </DIV>
+		            <DIV>
+		                <INPUT TYPE="hidden" NAME="dbname" VALUE="<%=dbname%>">
+		                <INPUT TYPE="hidden" NAME="supportTableName" VALUE="_config">               
+	                </DIV>
+            <!-- end of toolbar div -->
+	        </DIV>
+	        
+			    </FORM>
+        
+        <!-- end of page div -->
+	    </DIV>   
+    </BODY> 
+</HTML>

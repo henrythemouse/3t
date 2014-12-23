@@ -1,0 +1,47 @@
+# 
+# Change the file path ( '/www/auto') to the correct one for your setup.
+# 
+
+LoadModule python_module modules/mod_python.so
+
+<Directory /www/auto>
+    Order allow,deny
+    Allow from all
+</Directory>
+
+# the sethandler directive applies to 
+# the stated dir and all subdirs unless 
+# overriden by subsequent directives
+
+<Directory /www/auto>
+	SetHandler mod_python
+	PythonHandler mod_python.publisher
+   	PythonDebug On
+	PythonPath "sys.path+['/www/auto']"
+	Order allow,deny
+	Allow from all
+</Directory>
+
+
+# have to sethandler to none in order
+# for images and other dirs to be useable
+# as just data dirs
+
+<Directory /www/auto/images>
+	SetHandler none
+</Directory>
+<Directory /www/auto/itemimages>
+	SetHandler none
+</Directory>
+<Directory /www/auto/catimages>
+	SetHandler none
+</Directory>
+<Directory /www/auto/style>
+	SetHandler none
+</Directory>
+<Directory /www/auto/tmp>
+	SetHandler none
+</Directory>
+<Directory /www/auto/conf>
+	SetHandler none
+</Directory>

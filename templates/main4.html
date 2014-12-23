@@ -1,0 +1,751 @@
+<!DOCTYPE HTML> 
+<HTML>
+
+<%itemImage='itemimages/'+dbname+'/'+itemImage%>
+<%catImage='catimages/'+dbname+'/'+catImages[int(currentCat)][1]%>
+<%catTitle=catImages[int(currentCat)][0]%>
+<%searchImage="images/search.jpeg"%>
+
+
+<%
+exitAction=0
+if action in (1,2,3,4,10,11,12,13,16,17):
+    mode="Rows Displayed: "+str(len(resultTable))
+else:
+    mode="Rows Displayed: "+str(len(resultTable)-1)
+if 'default' in catImage:
+    catImage='catimages/'+dbname+'/default.png'
+
+# set the displayname locatoin
+if displaynamelocation=='TOP':
+    location="top:1%"
+elif displaynamelocation=='MIDDLE':
+    location="top:40%"
+else:
+    location="BOTTOM:1%"
+
+# if logged in show logout link
+if dogleg:
+    loginlogout='logout'
+else:
+    loginlogout='login'
+
+# action determines logout/in link parameters
+if action in (15,):
+    p2="popup=99&amp;media="+str(mediaID)
+else:
+    if action in (1,2,3,4):
+        exitAction=3
+    elif action in (5,6,7,8):
+        exitAction=7
+    elif action in (23,):
+        exitAction=20
+    else:
+        exitAction=action
+    p2="popup=99&amp;action="+str(exitAction)
+
+# nix login/logout link for edit/create actions
+if action in (10,11,12,13,16,17,21,22,24,25) or popup!="":
+    logoutloginLink=""
+else:
+    logoutloginLink='<A HREF="index?'+p2+'"> '+loginlogout+' '+dogleg+'</a>'
+
+# if not logged in then ghost edit button
+if loginValue=="":
+    itemEdit='<img src="images/edit3-inactive.png" alt="Edit" title="Not logged in" CLASS="itemeditimage">'
+else:
+    itemEdit='<a href="index?action=10" ><img src="images/edit3.png" alt="Edit" title="Edit" CLASS="itemeditimage"></a>'
+    
+# if there are related records ghost the delete icon
+if loginValue=="":
+    itemDelete='<img src="images/delete-inactive2.png" alt="Delete" title="Not logged in" CLASS="itemdeleteimage">'
+elif relatedCat=="1":
+    itemDelete='<img src="images/delete-inactive2.png" alt="Delete" title="Other records depend on this record" CLASS="itemdeleteimage">'
+else:
+    itemDelete='<a href="index?popup=95&amp;action='+str(action)+'"'+'><img src="images/delete.png" alt="Delete" title="Delete" CLASS="itemdeleteimage"></a>'
+
+# if there are notes available use an arrow icon, otherwise use an add icon in the right side of the item header
+
+if action in (0,1,2,3,4) and resultHeader[0]=='empty':
+    if loginValue=='':
+        itemRightButton='<img src="images/add3-inactive.png" alt="Note" title="Not logged in" CLASS="mediaaddimage">'  
+    else:
+        itemRightButton='<a href="index?media=Inew" ><img src="images/add3.png" alt="Note" title="Add a note"'+mediaTable+'"'+' CLASS="mediaaddimage"></a>'  
+elif action in (0,1,2,3,4):
+    noteID=str(resultHeader[0])
+    itemRightButton='<a href="index?media=I'+str(noteID)+'"'+'><img src="images/right3.png" alt="Note" title="View '+mediaTable+'"'+' CLASS="mediaviewimage"></a>'
+else:
+    itemRightButton=''
+    
+# Insert the relivant ID into the view media table header right side button    
+
+try:
+	if loginValue=="":
+	    mediaRightButton='<img src="images/add3-inactive.png" alt="Note" title="Not logged in" CLASS="mediaaddimage">'
+	elif resultHeader[0]=='Imedia':
+	    mediaRightButton='<a href="index?media=Inew'+itemID+'" ><img src="images/add3.png" alt="Note" title="Add '+mediaTable+'" CLASS="mediaaddimage"></a>'
+	elif resultHeader[0]=='media':
+	    mediaRightButton='<a href="index?media=new'+catID+'" ><img src="images/add3.png" alt="Note" title="Add a '+mediaTable+'" CLASS="mediaaddimage"></a>'
+	else:
+	    mediaRightButton=''
+except:
+    mediaRightButton=''
+    
+# manage the add button for new item
+
+if loginValue=="":
+    newItemButtonClass=""
+    newItemButton='<IMG src="images/add-inactive.png" alt="Add" id="itemCreate" CLASS="itemadd" title="Not logged in">'
+else:
+    newItemButtonClass="imggo"
+    newItemButton='<A HREF="index?action=11"><IMG src="images/add.png" alt="Add" id="itemCreate"  CLASS="itemadd" title="Create a New Item"></A>'
+    
+# manage the add button for new cat
+
+if loginValue=="":
+    newCatButtonClass=""
+    newCatButton='<IMG src="images/add-inactive.png" alt="Add" id="minorNew" CLASS="catadd" title="Not logged in">'
+else:
+    newCatButtonClass="imggo"
+    newCatButton='<A HREF="index?action=13"><IMG src="images/add.png" alt="Add" id="minorNew" CLASS="catadd" title="Create a New Record"></A>'
+    
+# manage the add button for support tables
+
+if loginValue=="":
+    newSupportButtonClass="headerright"
+    newSupportButton='<IMG src="images/add3-inactive.png" alt="Add" id="supportCreate"  CLASS="mediaaddimage" title="Not logged in">'
+else:
+    newSupportButtonClass=" headerright imggo"
+    newSupportButton='<A HREF="index?supportcreate='+supportTableName+'"><IMG src="images/add3.png" alt="Add" id="supportCreate"  CLASS="mediaaddimage" title="Create a New record"></A>'
+    
+if loginValue=="":
+    editConfigSettings='<img src="images/settingsBasic2-inactive.png" alt="Edit" title="Not logged in" CLASS="settingsimage">'
+else:
+    editConfigSettings='<a href="index?supportedit=_config&amp;supportID=1" ><img src="images/settingsBasic2.png" alt="Edit" title="Edit Configuration" CLASS="settingsimage"></a>'
+    
+
+# can use the mode varible for debug messages
+#mode=repr(popup)+"---"+str(resultHeader)+"---"+repr(action)
+#mode=str(action)+"---"+str(exitAction)
+#mode=str(loginValue)+'---'+repr(newSupportButtonClass)
+%>
+
+<% 
+#end
+%>
+<HEAD>
+<title> <%=dbname.upper()%> </title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+<LINK rel="stylesheet" href="style/base.css" type="text/css">
+<LINK rel="stylesheet" href="style/<%=theme%>.css" type="text/css">
+    <script type="text/javascript">
+        function setFocus()
+            {
+            document.getElementById('dogit').style.backgroundColor="#FFFF99"
+            document.getElementById('dogleg').focus()
+            }
+        function openError(errorText) 
+            {
+            errorWindow=window.alert(errorText)
+            }
+            
+    </script>
+
+</HEAD>
+<% 
+if error:
+%>
+
+<BODY onload='javascript:openError("<%=error%>")'>
+<% 
+else:
+%>
+<BODY onload="setFocus()">
+
+<DIV CLASS="PAGE pagecolor">
+<% 
+#end
+%>
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+<!--  ****** START TOP DIV (ITEM CAT SEARCH PICKERS) ****            -->
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+    <!-- start the top div -->
+    <DIV CLASS="TOP topcolor">
+
+
+        <!-- start item table selection -->
+        <DIV CLASS="itemdiv hilite itemcolor">
+            <!-- main image to run the query -->
+            <A HREF="index?action=3">
+            <IMG src="<%=itemImage%>" alt="itemImage" id="itemImage" CLASS="itemimage" title="Show Data Specific to this Item">
+            </A>
+
+            <!-- index the image up one -->
+            <DIV CLASS="imgpassive">
+            <A HREF="index?action=2">
+            <IMG src="images/up1.png" alt="Prev" id="itemArrowMinus" CLASS="itemup" title="Go To Prev Item">
+            </A>
+            </DIV>
+
+            <!-- index the image down one -->
+            <DIV CLASS="imgpassive">
+            <A HREF="index?action=1">
+            <IMG src="images/down1.png" alt="Next" id="itemArrowPlus" CLASS="itemdown" title="Go To Next Item">
+            </A>
+            </DIV>
+
+<% 
+if itemID!='0':
+%>            <!-- add a new main record -->
+            <DIV CLASS="<%=newItemButtonClass%>">
+                <%=newItemButton%>
+            </DIV>
+<%
+#end
+%>
+            
+        <!-- end item table selection -->
+        </DIV>
+        
+        <!-- major select list -->
+        <DIV CLASS="itemselect list" title="Select an Item and show the data.">
+            <%=itemSelect%>
+        </DIV>
+        
+        <!-- start catagory table selection -->
+        <DIV CLASS="catdiv hilite catcolor">
+            <!-- minor image to run the query -->
+            <A HREF="index?action=7">
+            <IMG src="<%=catImage%>" alt="minor Image" id="catImage" CLASS="catimage" title="Show Data Specific to this Catagory"></A>
+
+            <!-- index the image up one -->
+            <DIV CLASS="imgpassive">
+            <A HREF="index?action=6">
+            <IMG src="images/up1.png" alt="Prev" id="minorArrowMinus" CLASS="catup" title="Go To Prev Catagory"></A>
+            </DIV>
+
+            <!-- index the image down one -->
+            <DIV CLASS="imgpassive">
+            <A HREF="index?action=5">
+            <IMG src="images/down1.png" alt="Next" id="minorArrowPlus"  CLASS="catdown" title="Go To Next Catagory"></A>
+            </DIV>
+<% 
+if catTitle[:3] !="All":
+    if itemID!='0':
+%>
+            <!-- add a minor record based on selection -->
+            <DIV CLASS="<%=newCatButtonClass%>">
+                <%=newCatButton%>
+            </DIV>
+<%
+#end
+%>
+        <!-- end catagory table selection -->
+        </DIV>
+        
+        <!-- minor select list -->
+        <DIV CLASS="catselect" title="Select a Category and show the data">
+            <%=catSelect%>
+        </DIV>
+        
+        <!-- start logo division -->
+        <DIV id='logodiv' CLASS="logodiv hilite">
+            <A HREF="index?action=20" >
+                <IMG src="images/<%=dbname%>/<%=displaylogo%>" alt="Logo Image" id="logoImage" CLASS="logoimage" title="About">
+            </A>
+            <DIV CLASS='displayname displaynamecolor' style="position:absolute;<%=location%>;left:5px;width:290px;height:35px;">
+                 <%=displayname%> 
+            </DIV>
+        <!-- end logo division -->
+        </DIV>
+        
+        <!-- search input -->
+        <DIV CLASS="searchdiv">
+           <%=search%>
+        </DIV>
+    <!-- end of top div-->
+    </DIV>
+
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+<!--  **** END OF TOP DIV (ITEM CAT SEARCH PICKERS) *****            -->
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+
+
+
+
+
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+<!--  ************** START OF BOTTOM DIV  ***************            -->
+<!--  **(ITEM INFO,SEARCH RESULTS,ABOUT,SUPPORT TABLES)**            -->
+<!--  ***************************************************            -->
+    <DIV CLASS="BOTTOM bottomcolor">
+<% 
+if (action in (5,6,7,8,14,23)) or (action in (1,2,3,4) and itemID=='0'):
+%>
+        <!-- start the heaader for table display -->
+        <DIV CLASS="HEADER headercolor">        
+<%
+#end
+%>
+
+
+
+<%
+if (action in (5,6,7,8,14,23)) or (action in (1,2,3,4) and itemID=='0'):
+
+    #or caption=='supportTableHeader':
+    leftStart=40
+    x=len(resultHeader)
+    for thisCol in range(0,len(resultHeader)):
+%>
+            <!-- header for item and cat result table-->
+            <DIV style='position:absolute;top:0px;height:30px;left:<%=leftStart%>px;'>
+                 <%=resultHeader[thisCol]%>
+            </DIV>
+        
+<%
+        leftStart=leftStart+int(headerWidths[thisCol])
+#end
+%>
+
+<% 
+if caption=='supportTableHeader':
+%>
+            <!-- tack this on to the end of the header just for support table -->
+            <!-- add a new support table record button-->
+            <DIV CLASS="<%=newSupportButtonClass%>">
+                <%=newSupportButton%>
+            </DIV>
+            <!-- end of header div for support tables an search results -->
+<!--         </DIV> -->
+
+<%
+if (action in (5,6,7,8,14,23)) or (action in (1,2,3,4) and itemID=='0'):
+
+%>
+			</DIV>
+            <!-- result table x-->
+			<DIV CLASS="RESULTTABLE resulttablecolor scrollbarcolor">
+			    <%=resultTable%>
+			</DIV>
+<%
+#end
+%>
+
+
+<% 
+if action in (5,6,7,8,14):
+%>
+        <!--end header here after checking for support table and finding none-->
+<!--         </DIV> -->
+
+<%
+#end
+%>
+        
+<% 
+if action in (10,11,12,13,16,17,21,22,24,25):
+%>
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+<!--  ****** START OF EDIT TABLES  **********************            -->
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+
+		    <!--start of form - the Edit table area-->
+		    <FORM method="post" id="dataForm" name="dataForm" enctype="multipart/form-data" action="myFunctions.py/<%=activeForm%>">
+		        
+		        <!-- result header (defaults to save/update because of button order) -->
+                <DIV  CLASS="HEADER headercolor">        
+			        <DIV CLASS="headerleft imgwarn">
+			            <%=resultHeader[1]%>
+			        </DIV>
+			        <DIV CLASS="caption">
+			            <B><%=caption%></B>
+			        </DIV>
+			        <DIV CLASS="headerright imggo">
+			            <%=resultHeader[0]%>
+			        </DIV>
+                <!-- end of header div-->
+    	        </DIV>
+	                                        
+		        <!-- edit table -->
+		        <DIV CLASS="RESULTTABLE resulttablecolor scrollbarcolor">
+		            <%=resultTable%>
+		        </DIV>
+	    
+		        <DIV>
+		            <INPUT TYPE="hidden" NAME="itemID" VALUE="<%=itemID%>">
+		            <INPUT TYPE="hidden" NAME="catID" VALUE="<%=catID%>">
+		            <INPUT TYPE="hidden" NAME="mediaID" VALUE="<%=mediaID%>">
+		            <INPUT TYPE="hidden" NAME="supportID" VALUE="<%=supportID%>">
+		            <INPUT TYPE="hidden" NAME="system" VALUE="<%=catTitle%>">
+		            <INPUT TYPE="hidden" NAME="dbname" VALUE="<%=dbname%>">
+		            <INPUT TYPE="hidden" NAME="supportTableName" VALUE="<%=supportTableName%>">
+		            <INPUT TYPE="hidden" NAME="cancelAction" VALUE="<%=cancelAction%>">
+                    <INPUT TYPE="hidden" NAME="itemSelected" VALUE="<%=itemSelected%>">
+		        </DIV>
+	        
+	        <!-- end of form-->
+	        </FORM>
+    
+    <!-- end of bottom div-->
+<!--     </DIV> -->
+    
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+<!--  ******* END OF EDIT TABLES ONLY *******************            -->
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+    
+<% 
+elif "About" in caption:
+%>
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+<!--  ****** START OF ABOUT TABLE, CONFIG LINK **********            -->
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+        
+        <!-- start of header div-->
+        <DIV CLASS='HEADER headercolor'>
+            <DIV CLASS="headerleft imggo">
+                <%=editConfigSettings%>
+            </DIV>
+            <DIV CLASS="caption">
+                <B><%=caption%></B>
+
+            </DIV>
+            <DIV CLASS="headerright2 imggo" title="Edit support tables">
+                <%=supportSelect%>        
+            </DIV>
+        </DIV>        
+        <!-- end of header div-->
+        
+         <!-- result table -->
+        <DIV CLASS="ABOUTTABLE abouttablecolor scrollbarcolor">
+            <%=resultTable%>
+        </DIV>
+                    
+    <!-- end of bottom div-->
+<!--     </DIV> -->
+    
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+<!--  ******** END OF ABOUT TABLE, CONFIG LINK **********            -->
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+
+<% 
+elif action in (0,1,2,3,4) and itemID!='0':
+%>
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+<!--  ********* START OF ITEM INFORMATION ***************            -->
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+
+        <!--  start the header div - while viewing the item details-->
+        <DIV CLASS='HEADER headercolor'>
+            <DIV CLASS="headerleft imggo">
+                <%=itemEdit%>
+            </DIV>
+            <DIV CLASS="headerleft2 imgcaution">
+                <%=itemDelete%>
+            </DIV>
+            <DIV CLASS="caption">
+                <B><%=caption%></B>
+            </DIV>
+            <DIV CLASS="headerright imggo">
+                <%=itemRightButton%>
+            </DIV>
+            <!-- end of header div-->            
+        </DIV>
+    
+        <!-- result table -->
+        <DIV CLASS="RESULTTABLE resulttablecolor scrollbarcolor">
+            <%=resultTable%>
+        </DIV>
+                    
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+<!--  ********** END OF ITEM INFORMATION ****************            -->
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+
+<% 
+elif resultHeader[0]=='Imedia' or resultHeader[0]=='media':
+%>
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+<!--  ****** START OF CATEGORY MEDIA TABLE **************            -->
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+
+	        <!--  start the header div - while viewing the media details-->
+	        <DIV CLASS='HEADER headercolor'>
+	        
+	            <DIV CLASS="headerleft">
+	            </DIV>
+	            <DIV CLASS="caption">
+	                <B><%=caption%></B>
+	            </DIV>
+	            <DIV CLASS="headerright imggo">
+                    <%=mediaRightButton%>
+	            </DIV>
+	        
+	        <!-- end of header div-->
+	        </DIV>
+    
+             <!-- result table -->
+            <DIV CLASS="RESULTTABLE resulttablecolor scrollbarcolor">
+                <%=resultTable%>
+            </DIV>
+            
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+<!--  ******* END OF CATEGORY MEDIA TABLE ***************            -->
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+            
+<%
+#end
+%>
+<!--  ***************************************************            -->
+<!--  ************* END OF BOTTOM DIV *******************            -->
+<!--  ************* START OF TOOLBAR DIV ****************            -->
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+        <!-- end of bottom div-->
+        </DIV>
+
+
+	    <!-- start of toolbar div -->
+	    <DIV CLASS='TOOLBAR toolbarcolor'>
+	        <DIV CLASS='mode'>
+	            <%=mode%>
+	        </DIV>   
+	        <DIV CLASS='contact'>
+	            <A HREF="MAILTO:<%=emailcontact%>?subject=3tdb">Contact</A>
+	        </DIV>
+	        <DIV CLASS='loginlogout'>
+                <%=logoutloginLink%>	            
+	        </DIV>
+	    
+	    <!-- end of toolbar div -->
+	    </DIV>
+
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+<!--  ************** END OF TOOLBAR DIV *****************            -->
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+
+
+
+
+
+
+
+<%
+if popup in ('99','98','97','96','95','94'):
+    if popup=='98':
+        loginmsg="Failed login, try again?"
+    elif popup=='97':
+        loginmsg="DELETE THIS RECORD?!"
+        mediaID=req.form['mediaID']
+        mediaRecord=req.form['media']
+        loginlogout="deleteMedia"
+    elif popup=='96':
+        loginmsg="DELETE THIS RECORD?!"
+        catID=req.form['catID']        
+        loginlogout="deleteCat"
+    elif popup=='95':
+        loginmsg="DELETE THIS RECORD?!"
+        loginlogout="deleteItem"
+    elif popup=='94':
+        loginmsg="DELETE THIS RECORD?!"
+        supportID=req.form['supportID']
+        supportTableName=req.form['supportTableName']
+        loginlogout="deleteSupport"
+    else:
+        loginmsg=""
+
+    if loginlogout=='login':
+%>
+<DIV CLASS='loginbox' STYLE="width:400;height:300;box-shadow: 10px 10px 4px #161616;background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
+        <DIV>
+            <!--start of form - the Edit table area-->
+            <FORM method="post" id="dogForm" name="dogForm" action="myFunctions.py/dogin">
+            
+            <DIV CLASS='loginmsg loginmsgcolor'>
+                <%=loginmsg%>
+            </DIV>
+            
+            <DIV CLASS='loginName'>
+                Name: <INPUT TYPE="text" NAME="dogleg" id='dogleg' VALUE="" size="20" CLASS='inputfield dataInput'>
+            </DIV>
+            
+            <DIV CLASS='loginPass'>
+                Password: <INPUT TYPE="password" NAME="cattail" id='cattail' VALUE="" size="20" CLASS='inputfield dataInput'>
+            </DIV>
+            
+            <DIV CLASS='login'>
+                <INPUT TYPE="submit" NAME="dogin" id='dogin' VALUE="LOGIN" style="background-color:lightgreen;color:black;font:16px sans-serif;">
+            </DIV>
+            <DIV CLASS='logincancel'>
+                <INPUT TYPE="submit" NAME="cancel" VALUE="CANCEL" CLASS='inputfield'>
+            </DIV>
+            
+            <INPUT TYPE="hidden" NAME="dbname" VALUE="<%=dbname%>">
+            <INPUT TYPE="hidden" NAME="action" VALUE="<%=action%>">
+            <INPUT TYPE="hidden" NAME="media" VALUE="<%=mediaID%>">
+            <INPUT TYPE="hidden" NAME="medit" VALUE="<%=mediaID%>">
+            <!-- end of form-->
+            </FORM>
+        </DIV>
+</DIV>
+
+
+<%
+    elif loginlogout=='logout':
+%>
+<DIV CLASS='loginbox' STYLE="width:400;height:300;box-shadow: 10px 10px 4px #161616;background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
+        <DIV>
+            <!--start of form - the Edit table area-->
+            <FORM method="post" id="dogForm" name="dogForm" enctype="multipart/form-data" action="myFunctions.py/dogout">
+                <DIV CLASS='logout'>
+                    <INPUT TYPE="submit" NAME="dogout" id='dogout' VALUE="LOGOUT" CLASS='inputfield'>
+                </DIV>
+                <DIV CLASS='logoutcancel'>
+                    <INPUT TYPE="submit" NAME="cancel" id='cancel' VALUE="CANCEL" CLASS='inputfield'>
+                </DIV>
+            <INPUT TYPE="hidden" NAME="dbname" VALUE="<%=dbname%>">
+            <INPUT TYPE="hidden" NAME="mediaID" VALUE="<%=mediaID%>">
+            <INPUT TYPE="hidden" NAME="action" VALUE="<%=action%>">
+            <INPUT TYPE="hidden" NAME="media" VALUE="<%=mediaID%>">
+            <INPUT TYPE="hidden" NAME="medit" VALUE="<%=mediaID%>">
+            <!-- end of form-->
+            </FORM>
+        </DIV>
+
+</DIV>
+
+<%
+    elif loginlogout=='deleteMedia':
+%>
+<DIV CLASS='loginbox' STYLE="width:400;height:300;box-shadow: 10px 10px 4px #161616;background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
+        <DIV>
+            <!--start of form - the Edit table area-->
+            <FORM method="post" id="dogForm" name="dogForm" enctype="multipart/form-data" action="myFunctions.py/delMedia">
+            
+                <DIV CLASS='loginmsg loginmsgcolor'>
+                    <%=loginmsg%>
+                </DIV>
+                 <DIV CLASS='logout'>
+                    <INPUT TYPE="submit" NAME="delMedia" id='delMedia' VALUE="DELETE" CLASS='inputfield'>
+                </DIV>
+                <DIV CLASS='logoutcancel'>
+                    <INPUT TYPE="submit" NAME="cancel" id='cancel' VALUE="CANCEL" CLASS='inputfield'>
+                </DIV>
+            <INPUT TYPE="hidden" NAME="dbname" VALUE="<%=dbname%>">
+            <INPUT TYPE="hidden" NAME="mediaID" VALUE="<%=mediaID%>">
+            <INPUT TYPE="hidden" NAME="media" VALUE="<%=mediaRecord%>">
+            <INPUT TYPE="hidden" NAME="action" VALUE="<%=action%>">
+            <INPUT TYPE="hidden" NAME="medit" VALUE="<%=mediaID%>">
+            <INPUT TYPE="hidden" NAME="itemID" VALUE="<%=itemID%>">
+            <!-- end of form-->
+            </FORM>
+        </DIV>
+
+</DIV>
+
+
+<%
+    elif loginlogout=='deleteCat':
+%>
+<DIV CLASS='loginbox' STYLE="width:400;height:300;box-shadow: 10px 10px 4px #161616;background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
+        <DIV>
+            <!--start of form - the Edit table area-->
+            <FORM method="post" id="dogForm" name="dogForm" enctype="multipart/form-data" action="myFunctions.py/delCat">
+            
+                <DIV CLASS='loginmsg loginmsgcolor'>
+                    <%=loginmsg%>
+                </DIV>
+                 <DIV CLASS='logout'>
+                    <INPUT TYPE="submit" NAME="delCat" id='delCat' VALUE="DELETE" CLASS='inputfield'>
+                </DIV>
+                <DIV CLASS='logoutcancel'>
+                    <INPUT TYPE="submit" NAME="cancel" id='cancel' VALUE="CANCEL" CLASS='inputfield'>
+                </DIV>
+            <INPUT TYPE="hidden" NAME="dbname" VALUE="<%=dbname%>">
+            <INPUT TYPE="hidden" NAME="catID" VALUE="<%=catID%>">
+            <INPUT TYPE="hidden" NAME="action" VALUE="<%=action%>">
+            <INPUT TYPE="hidden" NAME="itemID" VALUE="<%=itemID%>">
+            <INPUT TYPE="hidden" NAME="currentCat" VALUE="<%=currentCat%>">
+            <!-- end of form-->
+            </FORM>
+        </DIV>
+
+
+<%
+    elif loginlogout=='deleteItem':
+%>
+<DIV CLASS='loginbox'  STYLE="width:400;height:300;box-shadow: 10px 10px 4px #161616;background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
+        <DIV>
+            <!--start of form - the Edit table area-->
+            <FORM method="post" id="dogForm" name="dogForm" enctype="multipart/form-data" action="myFunctions.py/delItem">
+            
+                <DIV CLASS='loginmsg loginmsgcolor'>
+                    <%=loginmsg%>
+                </DIV>
+                 <DIV CLASS='logout'>
+                    <INPUT TYPE="submit" NAME="delItem" id='delItem' VALUE="DELETE" CLASS='inputfield'>
+                </DIV>
+                <DIV CLASS='logoutcancel'>
+                    <INPUT TYPE="submit" NAME="cancel" id='cancel' VALUE="CANCEL" CLASS='inputfield'>
+                </DIV>
+            <INPUT TYPE="hidden" NAME="dbname" VALUE="<%=dbname%>">
+            <INPUT TYPE="hidden" NAME="itemID" VALUE="<%=itemID%>">
+            <!-- end of form-->
+            </FORM>
+        </DIV>
+</DIV>
+<%
+    elif loginlogout=='deleteSupport':
+%>
+<DIV CLASS='loginbox'  STYLE="width:400;height:300;box-shadow: 10px 10px 4px #161616;background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
+        <DIV>
+            <!--start of form - the Edit table area-->
+            <FORM method="post" id="dogForm" name="dogForm" enctype="multipart/form-data" action="myFunctions.py/delSupport">
+            
+                <DIV CLASS='loginmsg loginmsgcolor'>
+                    <%=loginmsg%>
+                </DIV>
+                 <DIV CLASS='logout'>
+                    <INPUT TYPE="submit" NAME="delSupport" id='delSupport' VALUE="DELETE" CLASS='inputfield'>
+                </DIV>
+                <DIV CLASS='logoutcancel'>
+                    <INPUT TYPE="submit" NAME="cancel" id='cancel' VALUE="CANCEL" CLASS='inputfield'>
+                </DIV>
+            <INPUT TYPE="hidden" NAME="dbname" VALUE="<%=dbname%>">
+            <INPUT TYPE="hidden" NAME="supportID" VALUE="<%=supportID%>">
+            <INPUT TYPE="hidden" NAME="supportTableName" VALUE="<%=supportTableName%>">
+            <!-- end of form-->
+            </FORM>
+        </DIV>
+</DIV>
+
+<%
+#end
+%>
+
+    
+        </DIV>
+    </BODY> 
+</HTML>

@@ -1,0 +1,55 @@
+/* **************************** */
+/* THEME - CSS COLOR ASSIGNMENTS*/
+
+BODY {background-color:#248c8c;color:black;}
+
+/* DIV colors*/
+
+.pagecolor{background-color:#248c8c;color:black;border: 5px double #864A1C}
+.topcolor{background-color:#cc9933;color:black;}
+.itemcolor{background-color:#cc9933;color:black}
+.catcolor{background-color:#cc9933;color:black}
+.bottomcolor{background-color:#005630;color:black;}
+.bottomcolor{background-color:#DEB887;color:black;}
+.headercolor{background-color:#F5D0A9;color:black;}
+.toolbarcolor{background-color:#F5D0A9;color:black;}
+/* just for IE */
+.scrollbarcolor{scrollbar-base-color: #DEB887;scrollbar-arrow-color: #DEB887;scrollbar-DarkShadow-Color: blue;}
+
+/* TABLE colors */
+
+.oddrow {background-color:#FFFF99;color:#000000}
+.evenrow{background-color:#FFFFCC;color:#000000}
+/* .header {height:10mm;background-color:#5faba1;color:#000000} */
+.resulttablecolor{background-color:#DEB887;color:black;}
+.abouttablecolor{background-color:#FFFF99;color:black;}
+.edittablecolor{    background-color:#FFFFcc;color:black;}
+.dataInput:focus {background-color:#FFFF99;color:black;border: red solid thin;}
+
+/* hover colors*/
+
+.imggo img:hover{background-color: #ADFF2F;color: black;}
+.imggo input:hover{background-color: #ADFF2F;color: black;}
+.imgwarn img:hover {background-color: #FF4500;color: black;}
+.imgwarn input:hover {background-color: #FF4500;color: black;}
+.imgcaution img:hover {  background-color:#FFFF99;color: black;}
+.imgcaution input:hover {  background-color:#FFFF99;color: black;}
+.imgpassive img:hover {  background-color:#E7CE94;color: black;}
+.imgpassive input:hover {  background-color:#E7CE94;color: black;}
+.hilite img:hover {border: red solid thin;}
+.list select:hover {background-color:#FFFF99;color:black;border: red solid thin;}
+.searchSubmit:hover {background-color:#E7CE94;color:black;border: red solid thin;}
+.searchInput:hover {background-color:#E7CE94;color:black;border: red solid thin;}
+
+/* MISC colors - some font settings needed? */
+
+.supporttooltip {font:12pt Times, serif;text-align:left;color:red;}
+.displaynamecolor{color:white;}
+.searchfieldcolor{background-color:#FFFF99;color:black;}
+.editfield {background-color:#ffe2aa;color:black;font:10pt Times, sans;}
+.topfield {background-color:#FFFF99;color:black;font:10pt Times, sans;}
+.inputfield {background-color:#ffe2aa;color:black;font:16px sans-serif;}
+.inputdefault {background-color:lightgreen;color:black;font:16px sans-serif;}
+.loginmsgcolor{color:red;background-color:transparent;}
+.resultcol {font:10pt Times, serif;text-align:left;color:#000000}
+

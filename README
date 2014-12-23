@@ -1,0 +1,8 @@
+Directories that must be writable by the apache server:
+catimages
+catimages/'dbname'
+conf
+itemimages
+tmp
+images
+images/'dbname'

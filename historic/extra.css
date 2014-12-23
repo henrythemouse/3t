@@ -1,0 +1,15 @@
+.hilite img:hover {
+	outline: red solid medium;
+}
+.text input:hover {
+	outline: red solid medium;
+}
+textarea:hover {
+	outline: red solid medium;
+}
+select:hover {
+	outline: red solid medium;
+}
+input:hover {
+	background-color:white;color:black;border: red solid thin;
+}

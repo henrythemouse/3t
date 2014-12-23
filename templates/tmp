@@ -1,0 +1,169 @@
+<%
+#end
+%>
+
+
+
+<%
+if len(resultHeader)>3 or caption=='supportTableHeader':
+%>
+            
+        
+             <!-- result table -->
+            <DIV CLASS="RESULTTABLE">
+                <%=resultTable%>
+            </DIV>
+
+        <!-- end HEADER div -->
+        </DIV>
+
+    <!-- end bottom div -->
+    </DIV>
+
+    
+<% 
+if len(resultHeader)>3 or caption=='supportTableHeader':
+%>
+        <!-- start result header for results with more than 3 columns-->
+        <!-- (table searches, all items, all categories, and support tables) -->
+        <DIV CLASS="HEADER">        
+<%
+#end
+%>
+    
+    
+<% 
+if caption=='supportTableHeader':
+%>
+            <!-- end for header just for support tables -->
+            <!-- add a new main record button-->
+            <DIV CLASS="supportright imgyellow">
+                <A HREF="index?supportcreate=<%=supportTableName%>">
+                    <IMG src="images/add.png" alt="Add" id="supportCreate"  CLASS="supportadd" title="Create a New record">
+                </A>
+            </DIV>
+            <!-- end of header div for support tables an search results -->
+        </DIV>
+
+
+
+                    <INPUT TYPE="hidden" NAME="selectedItem" VALUE="<%=selectedItem%>">
+    
+    
+    
+#    rightButton='<a href="index?media=Inew" ><img src="images/add3.png" alt="Note" title="Add? <%=mediaTable%>" CLASS="mediaaddimage"></a>'  
+#    rightButton='<a href="index?media=I<%=noteID%>" ><img src="images/right3.png" alt="Note" title="View <%=mediaTable%>" CLASS="mediaviewimage"></a>'
+
+
+<%
+elif isinstance(resultHeader[0],(int,long)):
+# won't work in python3
+    noteID=str(resultHeader[0])
+%>
+
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+<!--  ****** START OF ITEM INFORMATION ******************            -->
+<!--  ******* HAS LINKED MEDIA **************************            -->
+<!--  ***************************************************            -->
+
+<!--             start of header div - view media header for item table -->
+            <DIV CLASS='HEADER'>
+                <DIV CLASS="headerleft imgyellow">
+                    <a href="index?action=10" ><img src="images/edit3.png" alt="Edit" title="Edit" CLASS="itemeditimage"></a>
+                </DIV>
+                <DIV CLASS="headerleft2 imgbrightyellow">
+                    <img src="images/delete-inactive.png" alt="Delete" title="Delete" CLASS="itemdeleteimage">
+                </DIV>
+                <DIV CLASS="headercenter">
+                    <B><%=caption%></B>
+                </DIV>
+                <DIV CLASS="headerright imggreen">
+                    <a href="index?media=I<%=noteID%>" ><img src="images/right3.png" alt="Note" title="View <%=mediaTable%>" CLASS="mediaviewimage"></a>
+                </DIV>
+            
+<!--            end of header div -->
+            </DIV>
+    
+             <!-- result table -->
+            <DIV CLASS="RESULTTABLE">
+                <%=resultTable%>
+            </DIV>
+
+        <!-- end of bottom div-->
+<!--         </DIV> -->
+    
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+<!--  ******* END OF ITEM INFORMATION *******************            -->
+<!--  ********* HAS LINKED MEDIA ************************            -->
+<!--  ***************************************************            -->
+
+<%
+#end
+%>
+
+<% 
+elif resultHeader[0]=='Imedia':
+%>
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+<!--  ****** START OF ITEM MEDIA ************************            -->
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+
+            <!--  start the header div - while viewing the media details-->
+            <DIV CLASS='HEADER'>
+            
+                <DIV CLASS="headerleft">
+                </DIV>
+                <DIV CLASS="headercenter">
+                    <B><%=caption%></B>
+                </DIV>
+                <DIV CLASS="headerright imggreen">
+                    <a href="index?media=Inew" ><img src="images/add3.png" alt="Note" title="Add <%=mediaTable%>" CLASS="mediaaddimage"></a>
+                </DIV>
+            
+            <!-- end of header div-->
+            </DIV>
+    
+             <!-- result table -->
+            <DIV CLASS="RESULTTABLE">
+                <%=resultTable%>
+            </DIV>
+
+        <!-- end of bottom div-->
+<!--         </DIV> -->
+    
+    
+    
+
+<!-- <%  -->
+<!-- if caption=='supportTableHeader': -->
+<!-- %> -->
+<!--             start header with this button just for support tables -->
+<!--             add a return to about page button -->
+<!--             <DIV CLASS="supportleft imgyellow"> -->
+<!--                 <A HREF="index?action=20"> -->
+<!--                     <IMG src="images/left2.png" alt="Return" id="return2about"  CLASS="supportreturn" title="Return to About Page"> -->
+<!--                 </A> -->
+<!--             </DIV> -->
+<!-- <% -->
+<!-- #end -->
+<!-- %> -->
+
+
+
+/*  ************************************************ */
+/* new settings test for table results HTML5? and general settings */
+
+th, td { padding: 1px; }
+table { border-collapse: colapse; border-spacing: 1; border:0px}
+td { vertical-align: top; text-align:left;}
+/* img { display: block; } */
+toolTable {padding:1px;border-collapse: colapse; border-spacing: 2;vertical-align: middle;}
+P {margin: 0 0 0 0;}
+
+
+<!--                <%=loginlogout%> <%=dogleg%> </a> -->
+    
