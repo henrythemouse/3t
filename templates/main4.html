@@ -58,11 +58,11 @@ else:
     
 # if there are related records ghost the delete icon
 if loginValue=="":
-    itemDelete='<img src="images/delete-inactive2.png" alt="Delete" title="Not logged in" CLASS="itemdeleteimage">'
+    itemDelete='<img src="images/delete2-inactive.png" alt="Delete" title="Not logged in" CLASS="itemdeleteimage">'
 elif relatedCat=="1":
-    itemDelete='<img src="images/delete-inactive2.png" alt="Delete" title="Other records depend on this record" CLASS="itemdeleteimage">'
+    itemDelete='<img src="images/delete2-inactive.png" alt="Delete" title="Other records depend on this record" CLASS="itemdeleteimage">'
 else:
-    itemDelete='<a href="index?popup=95&amp;action='+str(action)+'"'+'><img src="images/delete.png" alt="Delete" title="Delete" CLASS="itemdeleteimage"></a>'
+    itemDelete='<a href="index?popup=95&amp;action='+str(action)+'"'+'><img src="images/delete2.png" alt="Delete" title="Delete" CLASS="itemdeleteimage"></a>'
 
 # if there are notes available use an arrow icon, otherwise use an add icon in the right side of the item header
 

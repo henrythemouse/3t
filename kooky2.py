@@ -6,16 +6,23 @@ import os
 import types
 import db
 import testValue
-from mod_python import Cookie, apache,util
+from mod_python import Cookie, apache,util #@UnresolvedImport
 
 
-def myCookies(req,action,data,kookyDB,selectedHost):
+def myCookies(req,action,data,dbname,selectedHost):
         
+    # here I manage the browser cookies as well as the mysql kooky table
+    # the browser stores an id and a dbanme
+    # the kooky table has records storing lots of data identified by the cookieID
+    # this enables each host to have their own information and thus multiple hosts may use the same installation
+    # ONLY ONE DB CAN BE ACCESSED PER BROWSER/HOST OR KOOKY DATA WILL BE MIXED UP
+    
     #~ util.redirect(req,"testValue.py/testvalue?test="+action+" "+kookyDB)
     #~ action="save"
     
-    kookyID=''
-    kookyData={}
+    cookieID=''
+    cookieDB=''
+    cookieData={}
     qupdate="no"
     kookyTable='kooky'
     qinsert="no"
@@ -25,27 +32,28 @@ def myCookies(req,action,data,kookyDB,selectedHost):
     # name of the web dir + '_id'
     apacheConfig=req.get_config()
     rootPath=apacheConfig['PythonPath'][11:-2]
-    kookyName=rootPath.split("/")[-1]+'_id'
+    cookieName=rootPath.split("/")[-1]+'_id'
     remoteHost=req.get_remote_host()
     
     # get the browser cookie
-    kooky=Cookie.get_cookies(req)
-
-        
+    getCookie=Cookie.get_cookies(req)
+    
     try:
         # get the current kooky values
-        kookyID,kookyDB2=kooky[kookyName].value.split()
+        cookieID,cookieDB=getCookie[cookieName].value.split()
         
         # if I passed a dbname update the data only
-        if kookyDB:
-            kooky = Cookie.Cookie(kookyName, kookyID+' '+kookyDB)
-            kooky.expires = time.time() + 31449600 # one year
-            Cookie.add_cookie(req, kooky)
+        if dbname:
+            newCookie = Cookie.Cookie(cookieName, cookieID+' '+dbname)
+            newCookie.expires = time.time() + 31449600 # one year
+            Cookie.add_cookie(req, newCookie)
         # if no name passed then just get the stored data
         else:
-            kookyData['kookyID']=kookyID
-            kookyData['kookyDB']=kookyDB2
-            #~ util.redirect(req,"testValue.py/testvalue?test="+repr(kookyDB2))
+            cookieData['kookyID']=cookieID
+            cookieData['kookyDB']=cookieDB
+            
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(cookieDB))
+        
     except:
         # no cookie found so create one
         for i in time.localtime()[:6]:
@@ -53,26 +61,29 @@ def myCookies(req,action,data,kookyDB,selectedHost):
                     digit='0'+str(i)
             else:
                     digit=str(i)
-            kookyID=kookyID+digit
+            cookieID=cookieID+digit
     
-        kooky = Cookie.Cookie(kookyName, kookyID+' '+kookyDB)
-        kooky.expires = time.time() + 31449600 # one year
-        Cookie.add_cookie(req, kooky)
-        #~ util.redirect(req,"testValue.py/testvalue?test="+repr(kookyID))
+        newCookie = Cookie.Cookie(cookieName, cookieID+' '+dbname)
+        newCookie.expires = time.time() + 31449600 # one year
+        Cookie.add_cookie(req, newCookie)
+    
+#     util.redirect(req,"testValue.py/testvalue?test="+repr(getKooky)[1:-1])
     #
-    #
+    # above is all about browser cookies
     #*********************************************
         
     
     #*********************************************
+    # below is all about the 3t kooky table
+    
     if action=='':     
         # just used for initial startup, when lastUpdate is enabled
         # just return the kookyID
-        kookyData=kookyID
+        kookyData=cookieID
         
     elif action=='db':
         # just return the dbname for getting the config
-        kookyData=kookyData['kookyDB']
+        kookyData=cookieDB #kookyData['kookyDB']
     #
     #*********************************************
         
@@ -85,9 +96,9 @@ def myCookies(req,action,data,kookyDB,selectedHost):
         #
 
         q='select kookyData from '+str(kookyTable)+ \
-        ' where _kookyID='+str(kookyID)
+        ' where _kookyID='+str(cookieID)
 
-        kookyData=db.dbConnect(selectedHost,kookyDB,q,1)
+        kookyData=db.dbConnect(selectedHost,cookieDB,q,1)
         
         # trap an unsuccessful query
         if kookyData<1:
@@ -112,20 +123,20 @@ def myCookies(req,action,data,kookyDB,selectedHost):
             
             # when a prev kooky is found update it
             q='update '+str(kookyTable)+' set \
-            kookyData="%s",remoteHost="%s" where _kookyID=%s'%(pData,remoteHost,kookyID)
+            kookyData="%s",remoteHost="%s" where _kookyID=%s'%(pData,remoteHost,cookieID)
             
             #~ util.redirect(req,"testValue.py/testvalue?test="+"kooky"+repr(q))
-            qupdate=db.dbConnect(selectedHost,kookyDB,q,-1)
+            qupdate=db.dbConnect(selectedHost,cookieDB,q,-1)
             
         # Insert new kooky
         else:
             q='insert into '+str(kookyTable)+' \
-            (_kookyID,kookyData,remoteHost) values (%s,"%s","%s")'%(kookyID,pData,remoteHost)
+            (_kookyID,kookyData,remoteHost) values (%s,"%s","%s")'%(cookieID,pData,remoteHost)
 
             #~ util.redirect(req,"testValue.py/testvalue?test="+"kooky"+repr(kookyDB))
             
-            qinsert=db.dbConnect(selectedHost,kookyDB,q,-1)
-            #~ util.redirect(req,"testValue.py/testvalue?test="+"kooky"+repr(qinsert))
+            qinsert=db.dbConnect(selectedHost,cookieDB,q,-1)
+#             util.redirect(req,"testValue.py/testvalue?test="+"kooky"+repr(qinsert))
     #
     #
     #*********************************************
@@ -138,11 +149,11 @@ def myCookies(req,action,data,kookyDB,selectedHost):
         # see if a kooky is already stored
         #
         q='select kookyData from '+str(kookyTable)+\
-           ' where _kookyID="'+kookyID+'"' ##%s'%(kookyID)
+           ' where _kookyID="'+cookieID+'"' ##%s'%(kookyID)
            
         #~ util.redirect(req,"testValue.py/testvalue?test="+repr(q))
            
-        kookyData=db.dbConnect(selectedHost,kookyDB,q,1)
+        kookyData=db.dbConnect(selectedHost,cookieDB,q,1)
         
         #~ util.redirect(req,"testValue.py/testvalue?test="+repr(kookyData)+'---'+q)
 

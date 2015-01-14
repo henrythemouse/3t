@@ -431,22 +431,21 @@ def media(req):
                 cols[col]=req.form[col]
             except:
                 pass
-    try:
+
+    if 'filename' in fieldNames:
         filename=req.form[config['mediaBlob']].filename
-    except:
-        pass
         
-    # if no filename was passed use the old filename (if there is one) because the file hasn't changed
-    if filename=="":
-        try:
-            q="select `"+config['invisible']+"` from `"+config['mediaTable']+\
-            '` where `'+config['mediaTable']+'`.`'+config["mediaIDfield"]+'`'+'="'+req.form['mediaID'].value+'"'
-            qresult=db.dbConnect(config['selectedHost'],config['dbname'],q,1)
-            cols[config['invisible']]=qresult[0]
-        except:
-            cols[config['invisible']]=""
-    else:
-        cols[config['invisible']]=filename
+        # if no filename was passed use the old filename (if there is one) because the file hasn't changed
+        if filename=="":
+            try:
+                q="select `"+config['invisible']+"` from `"+config['mediaTable']+\
+                '` where `'+config['mediaTable']+'`.`'+config["mediaIDfield"]+'`'+'="'+req.form['mediaID'].value+'"'
+                qresult=db.dbConnect(config['selectedHost'],config['dbname'],q,1)
+                cols[config['invisible']]=qresult[0]
+            except:
+                cols[config['invisible']]=""
+        else:
+            cols[config['invisible']]=filename
         
     try:                # SAVE clicked
         action=req.form['savebutton.x']
@@ -464,7 +463,7 @@ def media(req):
     #  set the realted table, so this returns to the correct data
     tableID=req.form['catID']
 
-#     util.redirect(req,"../testValue.py/testvalue?test="+repr(cols)+repr(filename)+str(req.form))
+#     util.redirect(req,"../testValue.py/testvalue?test="+repr(cols)+repr(filename))
 
     if action!='cancel':
 
@@ -804,7 +803,7 @@ def doSql(req,action,cols,idField,dbname,tableName,selectedHost,owner):
     # this handles all insert, update, and delete sql
     # So, if the user is not logged in or doesn't have permission then this will fail
     # the default user (dbname) should only have select permission
-#     util.redirect(req,"../testValue.py/testvalue?test="+repr(cols))
+#     util.redirect(req,"../testValue.py/testvalue?test="+"doSql"+repr(cols))
     
     error=""
     insertID=''
@@ -1026,8 +1025,8 @@ def doSql(req,action,cols,idField,dbname,tableName,selectedHost,owner):
         try:
             dbconnection = MySQLdb.connect(host=selectedHost,user=username,passwd=userpass,db=dbname)
             cursor = dbconnection.cursor()
-#             util.redirect(req,"../testValue.py/testvalue?test="+repr(dbconnection)+str(username+" "+userpass+" "+dbname))
             cursor.execute(q,setValues)
+#             util.redirect(req,"../testValue.py/testvalue?test="+repr(q)+str(username+" "+userpass+" "+dbname))
         except:
             error="Update error for "+tableName +" and user "+str(username)+".\\n\\n Perhaps you are not the owner of this record or are not logged in.\\n\n Otherwise check that the data you are submitting is valid IAW the database design."
 #             error=str(q)+"   "+str(setValues)

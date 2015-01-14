@@ -112,17 +112,18 @@ def index(req,currentCat=0,currentItem=1,action=0):
     except:
         pass
 
-    # if the url has a config name passed I use it to select
-    # a specific config file written for the db of the same name.
-    # Hopefully I also supply a default config file that will load
-    # a default db in the case where a config name is not passed with the url.
+    # if the url has a config name passed I use it to get config data from _config table
+    # if no config name is passed then I have to use the value stored in the browser cookie
+    # this is why the browser cookie must have a generic name not dependent on the dbname
+    # which is why only one db can be accessed per browser at a time
     try:
         dbname=req.form['config'].value
         config=myFunctions.getConfig(req,dbname)
-        setDBkooky=kooky2.myCookies(req,"","",dbname,"")
+        kookyDB=kooky2.myCookies(req,"","",dbname,"")
     except:
         # all I want here is the dbname from the browser cookie
         # which gives me the config name to retrieve the configuration
+        #
         kookyDB=kooky2.myCookies(req,"db","","","")
         try:
             config=myFunctions.getConfig(req,kookyDB)
@@ -130,7 +131,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
             config=myFunctions.getConfig(req,"")
 
 
-#     util.redirect(req,"testValue.py/testvalue?test="+repr(config))
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(kookyDB))
     
     # check for a config error
     if config['configError']=="configError":
@@ -245,7 +246,8 @@ def index(req,currentCat=0,currentItem=1,action=0):
             popup=req.form['popup'].value
         except:
             popup=''
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(action)+"***"+str(supportID))
+            
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(config['dbname'])+"***"+str(dbname))
 
         #~ if action:          # load saved data
         # if I set this back to 'if action' then the login is reset on startup
@@ -656,9 +658,11 @@ def index(req,currentCat=0,currentItem=1,action=0):
             
         else:
 
-#            item=itemData2(itemID,config)
+#             item=itemData2(1,config)
             item=itemData(currentItem,config)
+            util.redirect(req,"testValue.py/testvalue?test="+repr(currentItem)+"----"+str(item))
             currentItem=indexItem(item,itemSelected,action)
+#             util.redirect(req,"testValue.py/testvalue?test="+repr(currentItem)+"----"+str(item[4]))
             itemSelect=itemForm(item[4],currentItem)
             itemImage=itemImg(itemImage,item,config)
             catImages=catImgs(config)
@@ -708,7 +712,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         # check for an item relate cat record to enable/disable delete function
         relatedCat=relatedRecords(item[1],config)
 #        relatedCat=relatedRecords(currentItem,config)
-#         util.redirect(req,"testValue.py/testvalue?test="+"kooky "+repr((relatedCat)+repr(currentItem)))
+#         util.redirect(req,"testValue.py/testvalue?test="+"kooky "+repr((kookied)+repr(currentItem)))
 
         # the dic of values to pass to the html page
         v['loginValue']=config['login']
@@ -1147,89 +1151,91 @@ def itemData(currentItem,config):
     +"`"+config['itemTable']+"`.`"+config['itemIDfield']+"` from `"+config['itemTable']+"`"
 
     qresult=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
-
+ 
     items=[]
-
+ 
     # a list of numeric ID's and a list of text with the numeric ID at the end
     for thisItem in qresult:
         items.append(list(thisItem))
-
+ 
     items.sort()
     items.reverse()
     itemList=[]
-
+ 
     # fill in a default value for empty values
     for thisItem in items:
         for thisField in range(0,len(thisItem)-1):
             if not thisItem[thisField]:
                 thisItem[thisField]="Empty"
-
+ 
         itemList.append((string.join(thisItem[0:len(thisItem)-1]),str(thisItem[-1])))
-
+ 
     itemList.insert(0,("All Items","0"))
+ 
+#     ## Really need to account for zero items in table
+#     ## Need to branch at some point to create the first item !!!
+#     mainTitle=''
+#     for thisItem in range(0,len(itemList[0])-1):
+#         mainTitle=mainTitle+" "+str(itemList[currentItem][thisItem])
+# 
+#     itemID=itemList[currentItem][-1]
+#     imgName=itemList[currentItem][-1]
+#     itemCount=len(itemList)
+# 
+#     item=[mainTitle,itemID,imgName,itemCount,itemList,currentItem]
 
-    ## Really need to account for zero items in table
-    ## Need to branch at some point to create the first item !!!
-    mainTitle=''
-    for thisItem in range(0,len(itemList[0])-1):
-        mainTitle=mainTitle+" "+str(itemList[currentItem][thisItem])
-
-    itemID=itemList[currentItem][-1]
-    imgName=itemList[currentItem][-1]
-    itemCount=len(itemList)
-
-    item=[mainTitle,itemID,imgName,itemCount,itemList,currentItem]
-
-    return item
-    #~ return q
+#     return item
+    return itemList
 
 def itemData2(itemID,config):
 
     selected=""
     for thisField in config['itemListColumns']:
         selected=selected+"`"+config['itemTable']+"`.`"+thisField+"`,"
-
+#     selected=selected[:-1]
+    
     # get item item data
     q="select "+selected\
     +"`"+config['itemTable']+"`.`"+config['itemIDfield']+"` from `"+config['itemTable']+"`"
 
     qresult=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
- 
+  
     items=[]
- 
+  
     # a list of numeric ID's and a list of text with the numeric ID at the end
     for thisItem in qresult:
         items.append(list(thisItem))
- 
+  
     items.sort()
     items.reverse()
     itemList=[]
- 
+  
     # fill in a default value for empty values
     for thisItem in items:
         for thisField in range(0,len(thisItem)-1):
             if not thisItem[thisField]:
                 thisItem[thisField]="Empty"
- 
+  
         itemList.append((string.join(thisItem[0:len(thisItem)-1]),str(thisItem[-1])))
- 
+  
     itemList.insert(0,("All Items","0"))
- 
+  
     for thisItem in range(0,len(itemList)):
         if itemID in itemList[thisItem]:
             currentItem=thisItem
- 
+  
     mainTitle=''
     for thisItem in range(0,len(itemList[0])-1):
         mainTitle=mainTitle+" "+str(itemList[currentItem][thisItem])
- 
+  
     itemID=itemList[currentItem][-1]
     imgName=itemList[currentItem][-1]
     itemCount=len(itemList)
- 
+  
     item=[mainTitle,itemID,imgName,itemCount,itemList,currentItem]
-
+ 
     return item
+#     return q
 
 def itemQuery(currentItem,item,config):
 
