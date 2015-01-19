@@ -11,7 +11,8 @@
 /*  ********** THE PRIMARY DIVS ******************** */
 /*  ************************************************ */
 
-DIV.PAGE {position:absolute;top:20px;left:20px;width:800px;height:515px;}
+/*DIV.PAGE {position:absolute;top:20px;left:20px;width:800px;height:515px;}*/
+DIV.PAGE {position:absolute;top:50%;left:50%;height:515px;width:800px;margin: -257px 0 0 -400px;}
 DIV.TOP {position:absolute;top:0px;width:800px;left:0px;height:220px;}
 DIV.BOTTOM  {position:absolute;top:180px;width:800px;left:0px;height:322px;}
 DIV.HEADER {
@@ -109,6 +110,12 @@ DIV.TOOLBAR {
 .itemdeleteimage {
     height:32px;width:100px;border:0px
 }
+.itemeditimagesmall {
+    height:40px;width:40px;border:0px
+}
+.itemdeleteimagesmall {
+    height:40px;width:40px;border:0px
+}
 
 
 /* header divs */
@@ -116,8 +123,14 @@ DIV.TOOLBAR {
 .headerleft {
     position:absolute;top:0px;left:0px;width:100px;height:38px;z-index:1;
 }
+.headerleft1 {
+    position:absolute;top:0px;left:5px;width:40px;height:40px;z-index:1;
+}
 .headerleft2 {
     position:absolute;top:0px;left:100px;width:50px;height:38px;z-index:1;
+}
+.headerleft3 {
+    position:absolute;top:0px;left:50px;width:40px;height:40px;z-index:1;
 }
 .caption {
     position:absolute;top:0px;left:100px;width:600px;height:40px;font: 18pt Times, serif, bold;line-height:40px;text-align:center;z-index:0;
@@ -141,14 +154,14 @@ option {height:5mm;}
 
 /* media table */
 
-.mediaaddimage {height:32px;width:100px;border:0px;right:0px}
-.mediaviewimage {height:32px;width:100px;border:0px;right:0px}
+.mediaaddimage {height:40px;width:100px;border:0px;right:0px}
+.mediaviewimage {height:40px;width:100px;border:0px;right:0px}
 .mediaedit { position:absolute;top:5px;left:5px;}
 .mediatable {border-collapse: colapse; border-spacing: 0; border:0px}
 .mediacoltools { font:12pt Times, serif;width:16px;height:16px}
 .mediacoltext { font:12pt Times, serif;width:100%;padding:10px}
 .mediacolnote { font:12pt Times, serif;width:100%;padding:5px;border-collapse: colapse; border-spacing: 5;}
-.mediacolimage { width:128px;border:0px;}
+.mediacolimage { width:128px;border:0px;right:0px}
 
 
 
@@ -189,4 +202,4 @@ option {height:5mm;}
     position:absolute;top:5px;left:300px;width:165px;height:20px;font: 8pt Times, sans, bold;
 }
 
-.settingsimage {height:32px;width:100px;border:0px;right:0px} 
+.settingsimage {height:40px;width:100px;border:0px;right:0px} 

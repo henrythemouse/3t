@@ -537,14 +537,20 @@ def index(req,currentCat=0,currentItem=1,action=0):
         resultTable=result[2]
 
     elif action==23:     #show support table
+        currentItem=indexItem(item,itemSelected,action)
+        itemImage=itemImg(itemImage,item,config)
+        catImages=catImgs(config)
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
-#        catImage=catImages[currentCat][1]
+#         catImage=catImages[currentCat][1]
         supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
         
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(action)+" "+str(supportTableName))
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(catImages)+" "+str(supportTableName))
         result=supportTable(supportTableName,config)
+        catImages=catImgs(config)
+        
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(catImages)+" "+str(supportTableName))
 
         # parse the results list
         caption='supportTableHeader'
@@ -660,12 +666,12 @@ def index(req,currentCat=0,currentItem=1,action=0):
 
 #             item=itemData2(1,config)
             item=itemData(currentItem,config)
-            util.redirect(req,"testValue.py/testvalue?test="+repr(currentItem)+"----"+str(item))
+#             util.redirect(req,"testValue.py/testvalue?test="+repr(currentItem)+"----"+str(item))
             currentItem=indexItem(item,itemSelected,action)
-#             util.redirect(req,"testValue.py/testvalue?test="+repr(currentItem)+"----"+str(item[4]))
             itemSelect=itemForm(item[4],currentItem)
             itemImage=itemImg(itemImage,item,config)
             catImages=catImgs(config)
+#             util.redirect(req,"testValue.py/testvalue?test="+repr(catImages)+"----"+str(item[4]))
             catSelect=catForm(catImages,currentCat)
 #            catImage=catImages[currentCat][1]
             supportSelect=supportForm(supportTableName,config)
@@ -1172,20 +1178,20 @@ def itemData(currentItem,config):
  
     itemList.insert(0,("All Items","0"))
  
-#     ## Really need to account for zero items in table
-#     ## Need to branch at some point to create the first item !!!
+    ## Really need to account for zero items in table
+    ## Need to branch at some point to create the first item !!!
 #     mainTitle=''
 #     for thisItem in range(0,len(itemList[0])-1):
 #         mainTitle=mainTitle+" "+str(itemList[currentItem][thisItem])
-# 
-#     itemID=itemList[currentItem][-1]
-#     imgName=itemList[currentItem][-1]
-#     itemCount=len(itemList)
-# 
-#     item=[mainTitle,itemID,imgName,itemCount,itemList,currentItem]
-
-#     return item
-    return itemList
+    mainTitle=str(itemList[currentItem][0])
+    itemID=itemList[currentItem][-1]
+    imgName=itemList[currentItem][-1]
+    itemCount=len(itemList)
+ 
+    item=[mainTitle,itemID,imgName,itemCount,itemList,currentItem]
+   
+    return item
+#     return mainTitle
 
 def itemData2(itemID,config):
 
@@ -2790,13 +2796,28 @@ def supportTable(supportTableName,config):
         colwidth="100%"   
     else:
         # get all records for this table
-        q='select * from `'+supportTableName+"`"
-        supportresult=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
+        selected=''
+        for thisCol in colInfo:
+            # dont' display the filename field 
+            if 'filename' not in thisCol[0]:
+                col='`'+supportTableName+'`.`'+thisCol[0]+'`,'
+                selected=selected+col
+            
+        q4='select '+selected[:-1]+ ' from `'+supportTableName+"`"
+        supportresult=db.dbConnect(config['selectedHost'],config['dbname'],q4,0)
         result=sorted(supportresult, key=itemgetter(1))   # sort by col 1 
-
         colwidth=""
         
     supportTable=strict401gen.TableLite(CLASS='resultstable')
+
+    # get a list of the fieltypes so I can branch on blob fields
+    fieldNames=[]
+    fieldTypes=[]
+    q="show columns from `"+supportTableName+"`"
+    cols=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
+    for thisCol in cols:
+        fieldNames.append(thisCol[0])
+        fieldTypes.append(thisCol[1])
 
     try:
         result[0]  # fail text for empty table
@@ -2812,6 +2833,14 @@ def supportTable(supportTableName,config):
 
             supportRow=strict401gen.TR(Class=row+'row')
             recNum=''
+            rowHasBinaryData='yes'
+
+            for thisCol in range(0,len(thisRecord)):
+                if 'blob' in fieldTypes[thisCol]:
+                    try:
+                        x=len(thisRecord[thisCol])
+                    except:
+                        rowHasBinaryData='no'
 
             editImg="images/edit.png"
             editToolTip="Edit Record"            
@@ -2826,6 +2855,15 @@ def supportTable(supportTableName,config):
 
             for thisCol in range(0,len(thisRecord)):
 
+                # if this col is an image set the image type
+                try:
+                    isImg="."+imghdr.what('',thisRecord[thisCol])
+                    if isImg not in (".png",".jpeg",".gif",".bmp"):
+                        isImg=''
+                    if isImg=='.jpeg':
+                        isImg='.jpg'
+                except:
+                    isImg=''
 
                 if thisCol==0:
                     recNum=str(thisRecord[thisCol])
@@ -2851,6 +2889,24 @@ def supportTable(supportTableName,config):
                     toolTable.append(toolRow)
                     supportRow.append(strict401gen.TD(toolTable,colspan="1",Class="toolcol0"))
 
+                elif isImg:
+                    # if it's an image write it to disk so the program can load it
+                    dir=config['catImagePath']+config['dbname']
+                    if os.path.exists(dir):
+                        for f in os.listdir(dir):
+                            if str(thisRecord[1])+"." in f:
+                                os.remove(dir+"/"+f)
+                        
+                    # imagename must be unique
+                    imagename=config['catImagePath']+config['dbname']+'/'+str(thisRecord[1])+isImg
+                    imgFile=open(imagename,"wb")
+                    imgFile.write(thisRecord[thisCol])
+                    imgFile.close()
+                    
+                    linkPath='catimages/'+config['dbname']+'/'+str(thisRecord[1])+isImg
+                    imageLink=strict401gen.Href(linkPath,strict401gen.Image(linkPath,title="Click to view full size image",alt="This is a "+isImg+" file.",Class="mediacolimage"),onClick="window.open(this.href);return false;")
+                    supportRow.append(strict401gen.TD(imageLink,colspan="1",Class='mediacolimage'))
+                    
                 elif thisRecord[thisCol]:
                     colwidth=str(colWidths[thisCol-1])+"px"
                     supportRow.append(strict401gen.TD(thisRecord[thisCol],style="width:"+colwidth,Class="resultcol"))
@@ -2875,6 +2931,7 @@ def supportTable(supportTableName,config):
 
         supportRow=strict401gen.TR(Class=row+'row')
         supportRow.append(strict401gen.TD(strict401gen.RawText("No records found for "+supportTableName),colspan="1"))
+        supportRow.append(strict401gen.TD(imagename,colspan="1"))
         supportTable.append(supportRow)
     
     header=[]
@@ -2883,9 +2940,10 @@ def supportTable(supportTableName,config):
         header.append('Name of Database')
     else:
         for thisCol in colInfo:
-            if "char" in thisCol[1]:
+            if '_' not in thisCol[0] and 'filename' not in thisCol[0]:
                 header.append(thisCol[0])
-        
+
+
     return (supportTable,colWidths,header,test)
 
 def editSupport(supportTableName,supportID,config):
@@ -2903,6 +2961,15 @@ def editSupport(supportTableName,supportID,config):
         if 'PRI' in thisCol[3]:
             supportIDfield=thisCol[0]
 #             pass
+        elif config['invisible'] in thisCol[0]:
+            q4="select `"+supportTableName+'`.`'+thisCol[0]+"` from `"+supportTableName+\
+            "` where `"+supportIDfield+"`='"+supportID+"'"
+            result4=db.dbConnect(config['selectedHost'],config['dbname'],q4,1)
+            try:
+                result4[0]
+                filename="<br><b> [ "+str(result4[0])+" ]</b>"
+            except:
+                filename="no"
         else:
             cols.append(thisCol)
             colNames.append(thisCol[0])
@@ -2992,9 +3059,18 @@ def editSupport(supportTableName,supportID,config):
         else:
             # for all other support tables    
             count=count+1
-    
-            supportRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            supportRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[thisField],name=cols[thisField][0],id=cols[thisField][0],maxlength=maxlen,Class="editfield dataInput")))
+        
+            if 'blob' in cols[thisField][1]:
+                supportRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
+                supportRow.append(strict401gen.TD(strict401gen.Input(type='file',name=cols[thisField][0],id=cols[thisField][0],rlabel=filename,Class="editfield",size="30"),Class="editfield"))
+                
+            else:
+                if cols[thisField][0] in config['invisible']:
+                    supportRow.append(strict401gen.TD("",Class="editlabel"))
+                    supportRow.append(strict401gen.TD(values[thisField],Class="editlabel"))               
+                else:
+                    supportRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
+                    supportRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[thisField],name=cols[thisField][0],id=cols[thisField][0],maxlength=maxlen,Class="editfield dataInput")))
 
 
         if supportTableName=="_config":
@@ -3029,6 +3105,8 @@ def createSupport(supportTableName,config):
     for thisCol in allCols:
         if 'PRI' in thisCol[3]:
 #             supportIDfield=thisCol[0]
+            pass
+        elif config['invisible'] in thisCol[0]:
             pass
         else:
             cols.append(thisCol)
@@ -3105,8 +3183,13 @@ def createSupport(supportTableName,config):
         else:    
             count=count+1
     
-            supportRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            supportRow.append(strict401gen.TD(strict401gen.Input(type="text",name=cols[thisField][0],id=cols[thisField][0],maxlength=maxlen,Class="editfield dataInput")))
+            if 'blob' in cols[thisField][1]:
+                supportRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
+                supportRow.append(strict401gen.TD(strict401gen.Input(type='file',name=cols[thisField][0],id=cols[thisField][0],size="10",Class="editfield")))
+
+            else:
+                supportRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
+                supportRow.append(strict401gen.TD(strict401gen.Input(type="text",name=cols[thisField][0],id=cols[thisField][0],maxlength=maxlen,Class="editfield dataInput")))
 
         if supportTableName=="_config":
                 supportComment=strict401gen.TR(Class='oddrow')
@@ -3122,7 +3205,7 @@ def createSupport(supportTableName,config):
                 supportRow.append(strict401gen.TD(strict401gen.RawText("&nbsp;"),colspan="2"))
                 supportTable.append(supportRow)
 
-    caption=str(cols[0][0]) #'Insert into '+supportTableName
+    caption='Insert into '+supportTableName
 
     header=formbuttons('create')
 

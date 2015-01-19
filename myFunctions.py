@@ -5,6 +5,7 @@ import os.path
 import shutil
 import kooky2
 import MySQLdb #@UnresolvedImport
+import index
 
 from mod_python import util #@UnresolvedImport
 
@@ -433,7 +434,10 @@ def media(req):
                 pass
 
     if 'filename' in fieldNames:
-        filename=req.form[config['mediaBlob']].filename
+        try:
+            filename=req.form[config['mediaBlob']].filename
+        except:
+            pass
         
         # if no filename was passed use the old filename (if there is one) because the file hasn't changed
         if filename=="":
@@ -506,22 +510,24 @@ def Imedia(req):
                     cols[col]=req.form[col]
                 except:
                     pass
-    try:
-        filename=req.form[config['mediaBlob']].filename
-    except:
-        pass
-        
-    # if no filename was passed use the old filename (if there is one) because the file hasn't changed
-    if filename=="":
+
+    if 'filename' in fieldNames:
         try:
-            q="select "+config['invisible']+" from `"+config['mediaTable']+\
-            '` where `'+config['mediaTable']+'`.`'+config["mediaIDfield"]+'`'+'="'+req.form['mediaID'][1:]+'"'
-            qresult=db.dbConnect(config['selectedHost'],config['dbname'],q,1)
-            cols[config['invisible']]=qresult[0]
+            filename=req.form[config['mediaBlob']].filename
         except:
-            cols[config['invisible']]=""
-    else:
-        cols[config['invisible']]=filename
+            pass
+            
+        # if no filename was passed use the old filename (if there is one) because the file hasn't changed
+        if filename=="":
+            try:
+                q="select "+config['invisible']+" from `"+config['mediaTable']+\
+                '` where `'+config['mediaTable']+'`.`'+config["mediaIDfield"]+'`'+'="'+req.form['mediaID'][1:]+'"'
+                qresult=db.dbConnect(config['selectedHost'],config['dbname'],q,1)
+                cols[config['invisible']]=qresult[0]
+            except:
+                cols[config['invisible']]=""
+        else:
+            cols[config['invisible']]=filename
 
 #    util.redirect(req,"../testValue.py/testvalue?test="+repr(cols)+repr(filename)+str(q))
 
@@ -567,7 +573,6 @@ def Imedia(req):
 def support(req):
 
 #     util.redirect(req,"../testValue.py/testvalue?test="+repr(req.form.list))
-
     
     try:
         dbname=req.form['dbname'].value
@@ -576,18 +581,10 @@ def support(req):
         
     config=getConfig(req,dbname)    
     supportTableName=req.form['supportTableName']
+    config['supportBlob']='image'
     
-#     cols={}
     fieldInfo=getFieldInfo3(req,config['selectedHost'],config['dbname'],supportTableName)
-#     fieldNames=fieldInfo['fieldNames']
-#     for col in fieldNames:
-#         try:
-#             cols[col]=req.form[col].value
-#         except:
-#             try:
-#                 cols[col]=req.form[col]
-#             except:
-#                 pass
+    fieldNames=fieldInfo['fieldNames']
 
     # get the column names and values from the form submission
     # I've changed the method here (only), I parse the form data without regard to the table fieldnames
@@ -599,15 +596,34 @@ def support(req):
     cols={}
     formKeys=req.form.keys()
     for thisKey in formKeys:
-        try:
-            cols[thisKey]=req.form[thisKey].value
-        except:
-            formString=''
-            for thisValue in req.form[thisKey]:
-                formString=formString+" "+(str(thisValue))
-            cols[thisKey]=formString
+        if thisKey in fieldNames:
+            try:
+                cols[thisKey]=req.form[thisKey].value
+            except:
+                formString=''
+                for thisValue in req.form[thisKey]:
+                    formString=formString+" "+(str(thisValue))
+                cols[thisKey]=formString
 
-#     util.redirect(req,"../testValue.py/testvalue?test="+repr(cols))
+#     util.redirect(req,"../testValue.py/testvalue?test="+repr(cols)+"---")
+
+    if 'filename' in fieldNames:
+        try:
+            filename=req.form[config['supportBlob']].filename
+        except:
+            pass
+        
+        # if no filename was passed use the old filename (if there is one) because the file hasn't changed
+        if filename=="":
+            try:
+                q="select `"+config['invisible']+"` from `"+supportTableName+\
+                '` where `'+supportTableName+'`.`_id`'+'="'+req.form['supportID'].value+'"'
+                qresult=db.dbConnect(config['selectedHost'],config['dbname'],q,1)
+                cols[config['invisible']]=qresult[0]
+            except:
+                cols[config['invisible']]=""
+        else:
+            cols[config['invisible']]=filename
 
     try:                # buttons pass xy locations, just test for one
         action=req.form['savebutton.x']
@@ -642,6 +658,8 @@ def support(req):
         else:
             if supportTableName=='_config':
                 parameter="?action=20"
+            elif supportTableName=='_category':
+                parameter="?action=23&amp;supportTableName="+supportTableName
             else:
                 parameter="?action=23&amp;supportTableName="+supportTableName
     else:
@@ -1132,7 +1150,7 @@ def getFieldInfo3(req,selectedHost,dbname,tableName):
                 fieldInfo['idField']=fieldName
 
             # why do I lower the field name?
-            # for matching purposes ?
+            # for matching purposes
             fieldTypes[fieldName.lower()]=fType
             fieldDefaults[fieldName.lower()]=fDefault
 

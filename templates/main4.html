@@ -52,17 +52,17 @@ else:
 
 # if not logged in then ghost edit button
 if loginValue=="":
-    itemEdit='<img src="images/edit3-inactive.png" alt="Edit" title="Not logged in" CLASS="itemeditimage">'
+    itemEdit='<img src="images/edit-inactive.png" alt="Edit" title="Not logged in" CLASS="itemeditimagesmall">'
 else:
-    itemEdit='<a href="index?action=10" ><img src="images/edit3.png" alt="Edit" title="Edit" CLASS="itemeditimage"></a>'
+    itemEdit='<a href="index?action=10" ><img src="images/edit.png" alt="Edit" title="Edit" CLASS="itemeditimagesmall"></a>'
     
 # if there are related records ghost the delete icon
 if loginValue=="":
-    itemDelete='<img src="images/delete2-inactive.png" alt="Delete" title="Not logged in" CLASS="itemdeleteimage">'
+    itemDelete='<img src="images/delete2small-inactive.png" alt="Delete" title="Not logged in" CLASS="itemdeleteimagesmall">'
 elif relatedCat=="1":
-    itemDelete='<img src="images/delete2-inactive.png" alt="Delete" title="Other records depend on this record" CLASS="itemdeleteimage">'
+    itemDelete='<img src="images/delete2small-inactive.png" alt="Delete" title="Other records depend on this record" CLASS="itemdeleteimagesmall">'
 else:
-    itemDelete='<a href="index?popup=95&amp;action='+str(action)+'"'+'><img src="images/delete2.png" alt="Delete" title="Delete" CLASS="itemdeleteimage"></a>'
+    itemDelete='<a href="index?popup=95&amp;action='+str(action)+'"'+'><img src="images/delete2small.png" alt="Delete" title="Delete" CLASS="itemdeleteimagesmall"></a>'
 
 # if there are notes available use an arrow icon, otherwise use an add icon in the right side of the item header
 
@@ -126,7 +126,7 @@ else:
 
 # can use the mode varible for debug messages
 #mode=repr(popup)+"---"+str(resultHeader)+"---"+repr(action)
-#mode=str(action)+"---"+str(exitAction)
+#mode=str(catImages)+"---"+str(currentCat)
 #mode=str(loginValue)+'---'+repr(newSupportButtonClass)
 %>
 
@@ -452,10 +452,10 @@ elif action in (0,1,2,3,4) and itemID!='0':
 
         <!--  start the header div - while viewing the item details-->
         <DIV CLASS='HEADER headercolor'>
-            <DIV CLASS="headerleft imggo">
+            <DIV CLASS="headerleft1 imggo">
                 <%=itemEdit%>
             </DIV>
-            <DIV CLASS="headerleft2 imgcaution">
+            <DIV CLASS="headerleft3 imgcaution">
                 <%=itemDelete%>
             </DIV>
             <DIV CLASS="caption">
