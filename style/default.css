@@ -41,7 +41,18 @@ BODY {background-color:#248c8c;color:black;}
 .searchSubmit:hover {background-color:#E7CE94;color:black;border: red solid thin;}
 .searchInput:hover {background-color:#E7CE94;color:black;border: red solid thin;}
 
-/* MISC colors - some font settings needed? */
+/* FONT Settings */
+
+/* unvisited link */
+a:link {color: #000000;}
+/* visited link */
+a:visited {color: #000000;}
+/* mouse over link */
+a:hover {color: #000000;}
+/* selected link */
+a:active {color: #000000;}
+
+/* MISC colors */
 
 .supporttooltip {font:12pt Times, serif;text-align:left;color:red;}
 .displaynamecolor{color:white;}

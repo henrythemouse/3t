@@ -8,7 +8,7 @@ def dbConnect(selectedHost,dbToOpen,queryText,fetchFlag):
 
     # use these as defaults
     # this function is only used for select statements
-    # the default user should only have select privileges (except with the kooky table)
+    # the default user should only have select privileges (except with the system tables)
     
     hostUser=dbToOpen
     hostPw=dbToOpen

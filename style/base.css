@@ -202,4 +202,5 @@ option {height:5mm;}
     position:absolute;top:5px;left:300px;width:165px;height:20px;font: 8pt Times, sans, bold;
 }
 
-.settingsimage {height:40px;width:100px;border:0px;right:0px} 
+.settingsimage {height:40px;width:40px;border:0px;right:0px} 
+.setcategoryimage {height:40px;width:40px;border:0px;right:45px} 

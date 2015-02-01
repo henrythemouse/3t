@@ -111,6 +111,7 @@ def getConfig(req,dbname):
     config['dbname']=dbname
     config['selectedHost']='localhost'
     config['configTable']='_config'
+    config['categoryTable']='_category'
     config['login']=''
     primaries=[]
     apacheConfig=req.get_config()
@@ -157,7 +158,7 @@ def getConfig(req,dbname):
                 qresult=db.dbConnect(config['selectedHost'],config['dbname'],q1,0)
                 idColCount=0
                 for thisCol in qresult:
-                    if thisCol[0][0]=="_":
+                    if thisCol[0][0]=="_":                # and thisCol[0]!=config['categoryTable']:
                         idColCount=idColCount+1
                 if idColCount==3:
                     config['mediaTable']=thisTable[0]
@@ -210,7 +211,7 @@ def getConfig(req,dbname):
                 elif thisCol[0][-1]=="_":
                     config['catInfoColumn']=thisCol[0]
                     catCols.append(thisCol[0])
-                elif thisCol[0][0]!='_':
+                elif thisCol[0][0]!='_':                      # or thisCol[0]==config['categoryTable']:
                     catCols.append(thisCol[0])
                     
             config['catShowColumns']=catCols
@@ -247,16 +248,19 @@ def getConfig(req,dbname):
             config['supportTables'].remove(config['itemTable'])
             config['supportTables'].remove(config['catTable'])
             config['supportTables'].remove(config['mediaTable'])
-            config['supportTables'].remove('kooky')
+            config['supportTables'].remove('_kooky')
             config['supportTables'].remove('_config')
-            config['tableNames'].remove('kooky')
+            config['supportTables'].remove('_category')
+            config['tableNames'].remove('_kooky')
             config['tableNames'].remove('_config')
+            config['tableNames'].remove('_category')
         except:
             config['configError']='Query failed: '+q
             
 #         util.redirect(req,"testValue.py/testvalue?test="+repr(config)+"before")
         
         try:
+            config['invisible']='filename'
             config['rootPath']=rootPath
             config['primaries']=primaries
             config['dbImagePath']=rootPath+"/images/"
@@ -268,7 +272,6 @@ def getConfig(req,dbname):
             config['itemColumns']=config['itemColumns'].split(" ")
             config['catSearchColumns']=config['catSearchColumns'].split()
             config['owner']='owner'
-            config['invisible']='filename'
         except:
             config['configError']='Assignments failed'
             
@@ -635,9 +638,11 @@ def support(req):
             cols[fieldInfo['idField']]=req.form['supportID'].value
         except:
             try:
-                req.form['newConfig']
-                del cols['newConfig']
-                del cols['supportTableName']
+                formValues=req.form['newConfig']
+                if 'newConfig' in cols:
+                    del cols['newConfig']
+                if 'supportTableName' in cols:
+                    del cols['supportTableName']
                 action='insert'
             except:
                 action='cancel'

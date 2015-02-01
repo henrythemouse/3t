@@ -6,12 +6,12 @@ BODY {background-color:#85A4A3;color:black;}
 /* DIV colors*/
 
 .pagecolor{background-color:#effe7a2;color:black;border: 5px double #CD001D}
-.topcolor{background-color:#e54444;color:black;}
-.itemcolor{background-color:#F45D5D;color:black}
-.catcolor{background-color:#F45D5D;color:black}
+.topcolor{background-color:#AC0D0D;color:black;}
+.itemcolor{background-color:#820000;color:black}
+.catcolor{background-color:#820000;color:black}
 .bottomcolor{background-color:#FFB9A0;color:black;}
-.headercolor{background-image:url('/3t/images/mars-header.jpg');color:black;}
-.toolbarcolor{background:url('../images/mars-toolbar2.jpg');color:black;}
+.headercolor{background-image:url('../images/mars-header.jpg');color:black;}
+.toolbarcolor{background:url('../images/mars-toolbar2.jpg');color:white;}
 /* just for IE */
 .scrollbarcolor{scrollbar-base-color: #DEB887;scrollbar-arrow-color: #DEB887;scrollbar-DarkShadow-Color: blue;}
 
@@ -20,8 +20,8 @@ BODY {background-color:#85A4A3;color:black;}
 .oddrow {background-color:#C3C3C3;color:#000000}
 .evenrow{background-color:#EAEAEA;color:#000000}
 /* tr.header {height:10mm;background-color:#5faba1;color:#000000} */
-.resulttablecolor{background-color:#CD001D;color:black;}
-.abouttablecolor{background-color:#badbad;color:black;}
+.resulttablecolor{background-color:#6A000F;color:black;}
+.abouttablecolor{background-color:#C3C3C3;color:black;}
 .edittablecolor{background-color:#AFAFAF;color:black;}
 .dataInput:focus {background-color:#F7F7F7;color:black;border: red solid thin;}
 
@@ -39,7 +39,6 @@ BODY {background-color:#85A4A3;color:black;}
 .list select:hover {border: red solid thin;}
 .searchSubmit:hover {background-color:#EAEAEA;color:black;border: red solid thin;}
 .searchInput:hover {background-color:#EAEAEA;color:black;border: red solid thin;}
-
 
 /* FONT Settings */
 

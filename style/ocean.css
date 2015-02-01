@@ -1,0 +1,66 @@
+/* **************************** */
+/* THEME - CSS COLOR ASSIGNMENTS*/
+
+BODY {background-color:#85A4A3;color:black;}
+
+/* DIV colors*/
+
+.pagecolor{background-color:#effe7a2;color:black;border: 5px double #263B48}
+.topcolor{background-color:#048977;color:black;}
+.itemcolor{background-color:#3f8a80;color:black}
+.catcolor{background-color:#3f8a80;color:black}
+.bottomcolor{background-color:#005630;color:black;}
+.headercolor{background-color:#72CACF;color:black;}
+.toolbarcolor{background-color:#72CACF;color:black;}
+/* just for IE */
+.scrollbarcolor{scrollbar-base-color: #DEB887;scrollbar-arrow-color: #DEB887;scrollbar-DarkShadow-Color: blue;}
+
+/* TABLE colors */
+
+.oddrow {background-color:#badbad;color:#000000}
+.evenrow{background-color:#ddefed;color:#000000}
+/* tr.header {height:10mm;background-color:#5faba1;color:#000000} */
+.resulttablecolor{background-color:#005630;color:black;}
+.abouttablecolor{background-color:#badbad;color:black;}
+.edittablecolor{background-color:#64C199;color:black;}
+.dataInput:focus {background-color:#E9F1F1;color:black;border: red solid thin;}
+
+/* hover colors*/
+
+.imggo img:hover{background-color: #54EB51;color: black;}
+.imggo input:hover{background-color: #54EB51;color: black;}
+.imgwarn img:hover {background-color: #FF4500;color: black;}
+.imgwarn input:hover {background-color: #FF4500;color: black;}
+.imgcaution img:hover {background-color:#DDF75C;color: black;}
+.imgcaution input:hover {background-color:#DDF75C;color: black;}
+.imgpassive img:hover {background-color:#53AFB6;color: black;}
+.imgpassive input:hover {background-color:#53AFB6;color: black;}
+.hilite img:hover {border: red solid thin;}
+.list select:hover {border: red solid thin;}
+.searchSubmit:hover {background-color:#53AFB6;color:black;border: red solid thin;}
+.searchInput:hover {background-color:#53AFB6;color:black;border: red solid thin;}
+
+/* FONT Settings */
+
+/* unvisited link */
+a:link {color: #000000;}
+/* visited link */
+a:visited {color: #000000;}
+/* mouse over link */
+a:hover {color: #000000;}
+/* selected link */
+a:active {color: #000000;}
+
+
+/* MISC colors */
+
+.supporttooltip {font:12pt Times, serif;text-align:left;color:red;}
+.displaynamecolor{color:white;}
+.searchfieldcolor{background-color:#C6E3E4;color:black;}
+.editfield {background-color:#B5D5C7;color:black;font:10pt Times, sans;}
+.topfield {background-color:#C6E3E4;color:black;font:10pt Times, sans;}
+.inputfield {background-color:#ffe2aa;color:black;font:16px sans-serif;}
+.inputdefault {background-color:lightgreen;color:black;font:16px sans-serif;}
+.loginmsgcolor{color:red;background-color:transparent;}
+.resultcol {font:10pt Times, serif;text-align:left;color:#000000}
+

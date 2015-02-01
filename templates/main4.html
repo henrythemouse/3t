@@ -119,9 +119,11 @@ else:
     newSupportButton='<A HREF="index?supportcreate='+supportTableName+'"><IMG src="images/add3.png" alt="Add" id="supportCreate"  CLASS="mediaaddimage" title="Create a New record"></A>'
     
 if loginValue=="":
-    editConfigSettings='<img src="images/settingsBasic2-inactive.png" alt="Edit" title="Not logged in" CLASS="settingsimage">'
+    editConfigSettings='<img src="images/settingsBasic2-inactive-small.png" alt="Edit" title="Not logged in" CLASS="settingsimage">'
+    editCategorySettings='<img src="images/category-inactive.png" alt="Edit" title="Not logged in" CLASS="setcategoryimage">'
 else:
-    editConfigSettings='<a href="index?supportedit=_config&amp;supportID=1" ><img src="images/settingsBasic2.png" alt="Edit" title="Edit Configuration" CLASS="settingsimage"></a>'
+    editConfigSettings='<a href="index?supportedit=_config&amp;supportID=1" ><img src="images/settingsBasic2-small.png" alt="Edit" title="Edit Configuration" CLASS="settingsimage"></a>'
+    editCategorySettings='<a href="index?action=23&amp;supportTableName=_category" ><img src="images/category.png" alt="Edit" title="Edit Categories" CLASS="setcategoryimage"></a>'
     
 
 # can use the mode varible for debug messages
@@ -414,8 +416,11 @@ elif "About" in caption:
         
         <!-- start of header div-->
         <DIV CLASS='HEADER headercolor'>
-            <DIV CLASS="headerleft imggo">
+            <DIV CLASS="headerleft1 imggo">
                 <%=editConfigSettings%>
+            </DIV>
+            <DIV CLASS="headerleft3 imggo">
+                <%=editCategorySettings%>
             </DIV>
             <DIV CLASS="caption">
                 <B><%=caption%></B>

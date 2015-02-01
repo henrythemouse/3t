@@ -119,7 +119,8 @@ def index(req,currentCat=0,currentItem=1,action=0):
     try:
         dbname=req.form['config'].value
         config=myFunctions.getConfig(req,dbname)
-        kookyDB=kooky2.myCookies(req,"","",dbname,"")
+#         kookyDB=kooky2.myCookies(req,"","",dbname,"")
+        
     except:
         # all I want here is the dbname from the browser cookie
         # which gives me the config name to retrieve the configuration
@@ -146,9 +147,11 @@ def index(req,currentCat=0,currentItem=1,action=0):
     else:
         # write item images to disk for now until I can use them from the db
         writeImgs(config)
-        cookieID=kooky2.myCookies(req,'','','','')#['kookyID']
+        # just get the cookieID
+        cookieID=kooky2.myCookies(req,"","","","")
 
         try:
+            # try to make the tmp/+cookieID path for storing media in the case it doesn't exist
             os.mkdir(config['mediaPath']+cookieID)
         except:
             pass
@@ -537,9 +540,10 @@ def index(req,currentCat=0,currentItem=1,action=0):
         resultTable=result[2]
 
     elif action==23:     #show support table
-        currentItem=indexItem(item,itemSelected,action)
-        itemImage=itemImg(itemImage,item,config)
-        catImages=catImgs(config)
+        
+#         currentItem=indexItem(item,itemSelected,action)
+#         itemImage=itemImg(itemImage,item,config)
+#         catImages=catImgs(config)
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
 #         catImage=catImages[currentCat][1]
@@ -548,7 +552,8 @@ def index(req,currentCat=0,currentItem=1,action=0):
         
 #         util.redirect(req,"testValue.py/testvalue?test="+repr(catImages)+" "+str(supportTableName))
         result=supportTable(supportTableName,config)
-        catImages=catImgs(config)
+        # in case the _category table has been edited this will refress the images
+        catImages=catImgs2(config)
         
 #         util.redirect(req,"testValue.py/testvalue?test="+repr(catImages)+" "+str(supportTableName))
 
@@ -616,7 +621,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
             currentItem=indexItem(item,itemSelected,action)
             itemSelect=itemForm(item[4],currentItem)
             itemImage=itemImg(itemImage,item,config)
-            catImages=catImgs(config)
+#             catImages=catImgs(config)
             catSelect=catForm(catImages,currentCat)
 #            catImage=catImages[currentCat][1]
             supportSelect=supportForm(supportTableName,config)
@@ -639,7 +644,8 @@ def index(req,currentCat=0,currentItem=1,action=0):
             currentItem=indexItem(item,itemSelected,action)
             itemSelect=itemForm(item[4],currentItem)
             itemImage=itemImg(itemImage,item,config)
-            catImages=catImgs(config)
+            catImages=catImgs2(config)
+#             util.redirect(req,"testValue.py/testvalue?test="+str(catImages)+"----"+str(currentItem))
             currentCat=0
             catSelect=catForm(catImages,currentCat)
 #            catImage=catImages[currentCat][1]
@@ -670,7 +676,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
             currentItem=indexItem(item,itemSelected,action)
             itemSelect=itemForm(item[4],currentItem)
             itemImage=itemImg(itemImage,item,config)
-            catImages=catImgs(config)
+            catImages=catImgs2(config)
 #             util.redirect(req,"testValue.py/testvalue?test="+repr(catImages)+"----"+str(item[4]))
             catSelect=catForm(catImages,currentCat)
 #            catImage=catImages[currentCat][1]
@@ -761,6 +767,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
 
 
 
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(config['configTable']))
         result=createSupport(config['configTable'],config)
         caption='supportTableHeader'
         resultTable=result[2]
@@ -1610,7 +1617,10 @@ def editItem(currentItem,item,config):
             shortList,longList=getPickList(cols[thisField][0],config)
 #             test=str(cols[thisField][0])+"  short: "+str(shortList)+"   long: "+str(longList)
             itemRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            itemRow.append(strict401gen.TD(strict401gen.Select(shortList,selected=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],Class="editfield")))            
+            if not values[0][thisField] or values[0][thisField]=="None":
+                itemRow.append(strict401gen.TD(strict401gen.Select(shortList,name=cols[thisField][0],id=cols[thisField][0],Class="editfield")))            
+            else:
+                itemRow.append(strict401gen.TD(strict401gen.Select(shortList,selected=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],Class="editfield")))            
 
         else:
             itemRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
@@ -1696,6 +1706,57 @@ def catImgs(config):
         catImages.insert(0,("All Records","All_Records.png"))
     else:
         catImages.insert(0,("All Records","default.png"))
+
+    return catImages
+
+def catImgs2(config):
+    
+    # a default list of one tuple will be used
+    # an 'All Records' category is supplied with the default image
+    # seems like it would not have to be in the category table, except to be able to change the image.
+    # and so if a record is found with the category name of 'All Records' it's image will be used.
+    # the text 'All' at the beginning of a category has special meaning in the script and will allways
+    # provide a 'select *' sql, so don't use that text unless you want unpredictable results.
+
+    catImages=[]
+    categoryImagePath=config['catImagePath']+config['dbname']+'/'
+    allRecordsImageName='default.png'
+    
+    q="SELECT * FROM `"+config['dbname']+"`.`_category`;"
+    categoryData=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
+
+    if categoryData:
+        # loop thru each record, write the img to disk
+        for thisRow in categoryData:
+            try:
+                # this will fail if there isn't an image name stored
+                # which will happen if there isn't an image stored
+                # the result will be that this category will not show up in the list
+                
+                fileExt=thisRow[3].split(".")[1]
+                imageName=str(thisRow[1])+'.'+fileExt
+                imgFile=open(categoryImagePath+imageName,"wb")
+                imgFile.write(thisRow[2])
+                imgFile.close()
+                if thisRow[1]=='All Records':
+                    allRecordsImageName=imageName
+                elif thisRow[1]=='default':
+                    pass
+                else:
+                    catImages.append((thisRow[1],imageName))
+    
+            except:
+                pass
+            
+            
+        catImages.sort()
+        catImages.insert(0,('All Records',allRecordsImageName))
+
+    
+    else:
+        # no data in category table, default to:
+        catImages.append(('All Records',allRecordsImageName))
+    
 
     return catImages
 
@@ -2189,19 +2250,22 @@ def editCat(categoryName,catID,config):
             catRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
             catRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],maxlength="6",Class="editfield dataInput")))
 
-        elif colNames[thisField] in config['supportTables']:
-            #we have a support table, used to generate a selecet field
+        elif colNames[thisField] in config['supportTables'] or colNames[thisField]==config['catColumn']:
+            #we have a support table, used to generate a select field
             shortList,longList=getPickList(cols[thisField][0],config)
 #             test=str(cols[thisField][0])+"  short: "+str(shortList)+"   long: "+str(longList)
             catRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            catRow.append(strict401gen.TD(strict401gen.Select(shortList,selected=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],Class="editfield")))            
+            if not values[0][thisField] or values[0][thisField]=="None":            
+                catRow.append(strict401gen.TD(strict401gen.Select(shortList,name=cols[thisField][0],id=cols[thisField][0],Class="editfield")))            
+            else:
+                catRow.append(strict401gen.TD(strict401gen.Select(shortList,selected=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],Class="editfield")))
             
         else: # char fields
             if cols[thisField][0][-1]=="_":
                 relatedName=values[0][thisField]
             catRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
             catRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],maxlength=maxlen,Class="editfield dataInput")))
-
+                
         if not count%2:
             catTable.append(catRow)
             catRow=strict401gen.TR()
@@ -2212,7 +2276,7 @@ def editCat(categoryName,catID,config):
     caption='Update the information for "'+relatedName+'"'
     header=formbuttons('update')
 
-    return (caption,header,catTable,'cat',q)
+    return (caption,header,catTable,'cat',repr(cols))
 
 
 ############ media functions
@@ -2736,8 +2800,11 @@ def editMedia(mediaID,catID,item,config):
             shortList,longList=getPickList(cols[thisField][0],config)
 #             test=str(cols[thisField][0])+"  short: "+str(shortList)+"   long: "+str(longList)
             mediaRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            mediaRow.append(strict401gen.TD(strict401gen.Select(shortList,selected=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],Class="editfield")))            
-
+            if not values[0][thisField] or values[0][thisField]=="None":
+                mediaRow.append(strict401gen.TD(strict401gen.Select(shortList,name=cols[thisField][0],id=cols[thisField][0],Class="editfield")))            
+            else:
+                mediaRow.append(strict401gen.TD(strict401gen.Select(shortList,selected=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],Class="editfield")))            
+                
         else: # char fields
             if cols[thisField][0] in config['invisible']:
                 mediaRow.append(strict401gen.TD("",Class="editlabel"))
@@ -2931,7 +2998,7 @@ def supportTable(supportTableName,config):
 
         supportRow=strict401gen.TR(Class=row+'row')
         supportRow.append(strict401gen.TD(strict401gen.RawText("No records found for "+supportTableName),colspan="1"))
-        supportRow.append(strict401gen.TD(imagename,colspan="1"))
+#         supportRow.append(strict401gen.TD(imagename,colspan="1"))
         supportTable.append(supportRow)
     
     header=[]
@@ -3874,6 +3941,16 @@ def getFileType2(fileName):
 
 def getPickList(tableName,config):
     
+    # This function returns a pick list used for columns that
+    # have a support table by the same name that supplies
+    # a selection of values for that column.
+    # The category table is one exception to that rule
+    # in that the column is supports doesn't need to have
+    # the same name, it needs to be setup as the catColumn in the config.
+    
+    if tableName==config['catColumn']:
+        tableName=config['categoryTable']
+    
     # get table rows
     q="select * from `"+tableName+"`"
     rows=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
@@ -3881,8 +3958,8 @@ def getPickList(tableName,config):
     cols=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
     
     # make a short list of values to display in the pick list
-    # the short list is keyed to fields that end in _, falling back to the first str field
-    # make a long list of complete info to display
+    # the short list is keyed to fields that end in _ (falling back to the first str field)
+    # make a long list of complete info to display on mouse over.
     shortList=[]
     longList=[]
     try:
@@ -3901,6 +3978,8 @@ def getPickList(tableName,config):
         pass
     
     # no fields ended in _ so just use the first string field as a fallback
+    # This will also handle the catColumn list.
+    
     if len(''.join(shortList).strip())==0:
         shortList=[]
         for thisRow in rows:
@@ -3910,7 +3989,9 @@ def getPickList(tableName,config):
                 shortList.append('Empty column')
                     
     if shortList:
-        pass
+        # Remove 'All Records' for catColumn selection
+        if 'All Records' in shortList:
+            shortList.remove('All Records')
     else:
         shortList.append('Empty List')
     if longList:
