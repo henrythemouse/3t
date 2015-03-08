@@ -1,0 +1,32 @@
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# converting enumeration col to support table
+# For example lets use the catTable category field.
+
+1) The _category table (a special support table) is already provided
+    a) in the general case create a support table IAW the instructions provided elsewhere
+    
+2) Populate the _category table with needed category names and images
+    a) in the general case populate the support table with required data
+    b) generally support tables can only have text fields IAW the script design
+    
+4) Switch over to the support table (worked for me).
+    a) Edit the cat table in place
+    b) change the cat col type from enum to varchar(45), 
+    c) apply changes
+    d) delete any existing kooky data, you're done
+
+    
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Converting 3t 2.x to 3t 3.x format.
+
+0) BACKUP DB
+1) create _config, _category and support tables
+2) rename kooky to _kooky and remove all kooky rows
+3) Populate _category table with needed category names and images
+4) change the cat col type from enum to varchar(45), 
+5) populate vendor table with needed vendor information
+6) change the vendor col type from enum to varchar(45), 
+7) make sure user has privileges to all tables
+8) flushprivileges
+

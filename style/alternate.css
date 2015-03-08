@@ -1,15 +1,16 @@
 /* **************************** */
 /* THEME - CSS COLOR ASSIGNMENTS*/
 
+
 BODY {background-color:#85A4A3;color:black;}
 
 /* DIV colors*/
 
-.pagecolor{background-color:#effe7a2;color:black;border: 5px double #CD001D}
+.pagecolor{background-color:#85A4A3;color:black;border: 5px double #CD001D}
 .topcolor{background-color:#e54444;color:black;}
 .itemcolor{background-color:#F45D5D;color:black}
 .catcolor{background-color:#F45D5D;color:black}
-.bottomcolor{background-color:#FFB9A0;color:black;}
+.bottomcolor{background-color:#bfbfbf;color:black;}
 .headercolor{background-image:url('/3t/images/mars-header.jpg');color:black;}
 .toolbarcolor{background:url('../images/mars-toolbar2.jpg');color:black;}
 /* just for IE */
@@ -17,8 +18,8 @@ BODY {background-color:#85A4A3;color:black;}
 
 /* TABLE colors */
 
-.oddrow {background-color:#C3C3C3;color:#000000}
-.evenrow{background-color:#EAEAEA;color:#000000}
+.oddrow {background-color:#B3B3B3;color:#000000}
+.evenrow{background-color:#bfbfbf;color:#000000}
 /* tr.header {height:10mm;background-color:#5faba1;color:#000000} */
 .resulttablecolor{background-color:#CD001D;color:black;}
 .abouttablecolor{background-color:#badbad;color:black;}
@@ -39,6 +40,8 @@ BODY {background-color:#85A4A3;color:black;}
 .list select:hover {border: red solid thin;}
 .searchSubmit:hover {background-color:#EAEAEA;color:black;border: red solid thin;}
 .searchInput:hover {background-color:#EAEAEA;color:black;border: red solid thin;}
+.defaultSubmit {background-color:#47f347;color:black;border: red solid thin;font:16px sans-serif;}
+.alternateSubmit {background-color:#E7CE94;color:black;border: red solid thin;font:16px sans-serif;}
 
 
 /* FONT Settings */
@@ -63,4 +66,32 @@ a:active {color: #add8e6;}
 .inputdefault {background-color:#EAEAEA;color:black;font:16px sans-serif;}
 .loginmsgcolor{color:red;background-color:transparent;}
 .resultcol {font:10pt Times, serif;text-align:left;color:#000000}
+.messagetext {background-color:#F5F5F5;color:#B70303;font: 14pt Times, sans}
+.logintext {background-color:#000000;color:#ffffff;font: 14pt Times, sans}
 
+/* *************************************************** */
+/* documentation division */
+
+.docPageTitle {color:#9b3d27;}
+.docTextDivColor{background-color:#e5e5e5;color:black;}
+.docPagesColor{background-color:#bfbfbf;color:black;}
+.docTitleColor{background-color:#BFBFBF;color:#9b3d27}
+.docChaptersColor{background-color:#aeaeae;color:black;}
+.docChapterTitleColor{background-color:#bfbfbf;color:black;}
+.docChapterTitle:hover{background-color:#999999;color: black;}
+
+.docChapters A:link {text-decoration: none;color:black;}
+.docChapters A:visited {text-decoration: none;color:black;}
+.docChapters A:active {text-decoration: none;background-color:gray;color:white;}
+.docChapters A:hover {text-decoration: none;color:white}
+
+.docPages A:link {text-decoration: none;color:black;}
+.docPages A:visited {text-decoration: none;color:black;}
+.docPages A:active {text-decoration: none;background-color:gray;color:white;}
+.docPages A:hover {text-decoration: none;color:white;}
+ 
+.docButton A:link {text-decoration: none;color:black;}
+.docButton A:visited {text-decoration: none;color:black;}
+.docButton A:active {text-decoration: none;background-color:gray;color:white;}
+.docButton A:hover {text-decoration: none;color:white;}
+    

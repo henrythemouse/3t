@@ -1,0 +1,101 @@
+3t mysql db/table/column rules
+
+all required tables have names that begin with a "_" (do not change these tables)
+        _kooky
+                this table is unrelated to any other table except by the browser cookie 
+                stores program data under an id that is the same as the cookie id stored on the browser
+                acts like a cache for each browser connected, only one connection per browser is possible
+        _config
+                stores the configuration variables for each db
+                the first field (_id, primary) must have a default value of '1'
+        _category
+                stores the category names and images for each db
+
+There are three main tables: itemtable, cattable, and mediatable.
+
+the item tablename must have the same as the db
+        stores the primary unique data associated with the item
+        links by id columns to the cattable and the mediatable
+        create a fulltext index for text fields
+        
+the cattable is linked by id columns to the item table and the mediatable
+        an item can have unlimited linked records in the cattable
+        cattable columns are text by design(enum, varchar, date, and such) excepting the _id columns.
+        A special column ends in a '_' character (not required).
+            This is the catInfoColumn, it's contents will comprise the media table's header.
+            To provide a text relationship to the catTable for the user.
+            If no catInfoColumn is designated the first char column from the catTable will be used.
+        create a fulltext index for text fields
+                
+the mediatable is linked by id columns to both the itemtable and the cattable
+        itemtable records can have unlimited linked records in the mediatable
+        cattable records can have unlimited linked records in the medatable
+        the media table can store any binary or text data
+        create a fulltext index for text fields
+                
+there can be any number of supporttables
+        supporttables are text only tables (except for the _id column).
+        supporttables are meant to provide selection lists for columns in item, cat, or media tables
+        if a supporttable has the same name as a column in one of the main tables then that column will present
+            the contents of the supporttable as a selection list.       
+        The selection list will by design contain text from those supporttable columns whose names end with a "_",
+            or if none do then the first text column as a fallback.
+        A full contanation of the supporttable text columns will be used as a tooltip when mouseover is done on said
+            column in the main table view.
+        
+----------------------------------------
+
+In order that the default db user can write to the kooky table and _config table (and any other future required tables):
+GRANT SELECT, INSERT, UPDATE ON auto.kooky TO 'auto'@'%';
+FLUSH PRIVILEDGES
+
+tables: _kooky, _config, _category
+
+---------------------------------
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+_config name/value pairs
+
+## Text to print on top of the logo image (default=dbname).
+displayname                 any text
+
+## Location for the displayname (default=MIDDLE).
+displaynamelocation Pick from list
+
+## Image to use as your logo, located in path2serverRoot/3t/images/dbname/ (default provided).
+displaylogo                 Pick from list
+
+## Image to use as the popup background (default=displaylogo).
+popupbackground     Pick from List
+
+## Email contact address (default=root@localhost).
+emailcontact                any email address
+
+## Hostname for the mysql server (default=localhost).
+selectedHost                example.com
+
+## Category table column containg the category names (no default).
+catColumn                   Pick from list
+
+## Category table column to sort results by (default=the id column)
+catSortColumn               Pick from list
+
+## Item table column names that will uniquely identify an item (default=first 2 char columns).
+itemListColumns          mulitPick from list
+
+## Item table column names that will comprise the All_Items table (default=first 4 char columns).
+itemColumns             multiPick from list
+
+## Category table column names you want included in search results (default=None).
+catSearchColumns        multiPick from list
+
+## On startup, display the last record entered (YES will enable, NO to disable).
+lastupdate                  Pick from list
+
+## Select a theme from the list provided (default=default).
+theme                          Pick from list
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        
+

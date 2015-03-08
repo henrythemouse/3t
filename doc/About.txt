@@ -1,0 +1,36 @@
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Disc dir/file structure
+    rootdir 
+        catimages                               store category images
+            one subdir for each db
+            default image files
+        convert                                     required files for converting filetypes to images         
+        doc                                           the docs
+        historic                                     old stuff just hanging around
+        images                                      general ui images used for icons and such
+        itemimages                               images used for each item of each db
+            one subdir for each db
+            default image files
+        js                                                store js 
+        style                                           store css
+        templates                                   store html templates
+        tmp                                             a place to write temperary files
+        
+        root files                                     program python files and libraries
+
+            CHMOD-CHOWN.py
+            db.py
+            HTMLcolors.py
+            ImageH.py
+            ImagePaletteH.py
+            imgsize.py
+            index.py
+            kooky2.py
+            myFunctions.py
+            README
+            strict401gen.py
+            testValue.py
+            TODO
+
+

@@ -43,20 +43,25 @@ else:
     else:
         exitAction=action
     p2="popup=99&amp;action="+str(exitAction)
-
+    
+# ###############################################
 # nix login/logout link for edit/create actions
+
 if action in (10,11,12,13,16,17,21,22,24,25) or popup!="":
     logoutloginLink=""
 else:
     logoutloginLink='<A HREF="index?'+p2+'"> '+loginlogout+' '+dogleg+'</a>'
 
+# ###############################################
 # if not logged in then ghost edit button
 if loginValue=="":
     itemEdit='<img src="images/edit-inactive.png" alt="Edit" title="Not logged in" CLASS="itemeditimagesmall">'
 else:
     itemEdit='<a href="index?action=10" ><img src="images/edit.png" alt="Edit" title="Edit" CLASS="itemeditimagesmall"></a>'
     
+# ###############################################
 # if there are related records ghost the delete icon
+
 if loginValue=="":
     itemDelete='<img src="images/delete2small-inactive.png" alt="Delete" title="Not logged in" CLASS="itemdeleteimagesmall">'
 elif relatedCat=="1":
@@ -64,6 +69,7 @@ elif relatedCat=="1":
 else:
     itemDelete='<a href="index?popup=95&amp;action='+str(action)+'"'+'><img src="images/delete2small.png" alt="Delete" title="Delete" CLASS="itemdeleteimagesmall"></a>'
 
+# ###############################################
 # if there are notes available use an arrow icon, otherwise use an add icon in the right side of the item header
 
 if action in (0,1,2,3,4) and resultHeader[0]=='empty':
@@ -77,6 +83,7 @@ elif action in (0,1,2,3,4):
 else:
     itemRightButton=''
     
+# ###############################################
 # Insert the relivant ID into the view media table header right side button    
 
 try:
@@ -91,6 +98,7 @@ try:
 except:
     mediaRightButton=''
     
+# ###############################################
 # manage the add button for new item
 
 if loginValue=="":
@@ -100,6 +108,7 @@ else:
     newItemButtonClass="imggo"
     newItemButton='<A HREF="index?action=11"><IMG src="images/add.png" alt="Add" id="itemCreate"  CLASS="itemadd" title="Create a New Item"></A>'
     
+# ###############################################
 # manage the add button for new cat
 
 if loginValue=="":
@@ -109,6 +118,7 @@ else:
     newCatButtonClass="imggo"
     newCatButton='<A HREF="index?action=13"><IMG src="images/add.png" alt="Add" id="minorNew" CLASS="catadd" title="Create a New Record"></A>'
     
+# ###############################################
 # manage the add button for support tables
 
 if loginValue=="":
@@ -126,6 +136,7 @@ else:
     editCategorySettings='<a href="index?action=23&amp;supportTableName=_category" ><img src="images/category.png" alt="Edit" title="Edit Categories" CLASS="setcategoryimage"></a>'
     
 
+# ###############################################
 # can use the mode varible for debug messages
 #mode=repr(popup)+"---"+str(resultHeader)+"---"+repr(action)
 #mode=str(catImages)+"---"+str(currentCat)
@@ -140,29 +151,10 @@ else:
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
 <LINK rel="stylesheet" href="style/base.css" type="text/css">
 <LINK rel="stylesheet" href="style/<%=theme%>.css" type="text/css">
-    <script type="text/javascript">
-        function setFocus()
-            {
-            document.getElementById('dogit').style.backgroundColor="#FFFF99"
-            document.getElementById('dogleg').focus()
-            }
-        function openError(errorText) 
-            {
-            errorWindow=window.alert(errorText)
-            }
-            
-    </script>
-
+<script type="text/javascript" src="js/main.js"></script>
 </HEAD>
-<% 
-if error:
-%>
 
-<BODY onload='javascript:openError("<%=error%>")'>
-<% 
-else:
-%>
-<BODY onload="setFocus()">
+<BODY>
 
 <DIV CLASS="PAGE pagecolor">
 <% 
@@ -406,7 +398,7 @@ if action in (10,11,12,13,16,17,21,22,24,25):
 <!--  ***************************************************            -->
     
 <% 
-elif "About" in caption:
+elif "Configuration" in caption:
 %>
 <!--  ***************************************************            -->
 <!--  ***************************************************            -->
@@ -433,7 +425,17 @@ elif "About" in caption:
         <!-- end of header div-->
         
          <!-- result table -->
-        <DIV CLASS="ABOUTTABLE abouttablecolor scrollbarcolor">
+        <DIV CLASS="docmain">
+            <div CLASS="docButton">
+                <div>
+		            <img src="images/docright.png" alt=">" height="16" width="16">
+		            <a href="index?action=20&amp;doc=guide">User Guide</a>
+                </div>
+                <div>
+		            <img src="images/docright.png" alt=">" height="16" width="16">
+		            <a href="index?action=20&amp;doc=manual">Tech Manual</a>
+                </div>
+            </div>
             <%=resultTable%>
         </DIV>
                     
@@ -551,14 +553,14 @@ elif resultHeader[0]=='Imedia' or resultHeader[0]=='media':
 <!--  ***************************************************            -->
 <!--  ***************************************************            -->
 
-
-
-
-
-
+<!--  ***************************************************            -->
+<!--  ******************************* *******************            -->
+<!--  ********* START OF POPUP MSG CODE  ****************            -->
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
 
 <%
-if popup in ('99','98','97','96','95','94'):
+if popup in ('99','98','97','96','95','94','93'):
     if popup=='98':
         loginmsg="Failed login, try again?"
     elif popup=='97':
@@ -578,12 +580,15 @@ if popup in ('99','98','97','96','95','94'):
         supportID=req.form['supportID']
         supportTableName=req.form['supportTableName']
         loginlogout="deleteSupport"
+    elif popup=='93':
+        loginmsg="ERROR MESSAGE"
+        loginlogout="errorMessage"
     else:
         loginmsg=""
 
     if loginlogout=='login':
 %>
-<DIV CLASS='loginbox' STYLE="width:400;height:300;box-shadow: 10px 10px 4px #161616;background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
+<DIV CLASS='loginbox logintext' STYLE="width:400;height:300;box-shadow: 10px 10px 4px #161616;background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
         <DIV>
             <!--start of form - the Edit table area-->
             <FORM method="post" id="dogForm" name="dogForm" action="myFunctions.py/dogin">
@@ -593,7 +598,7 @@ if popup in ('99','98','97','96','95','94'):
             </DIV>
             
             <DIV CLASS='loginName'>
-                Name: <INPUT TYPE="text" NAME="dogleg" id='dogleg' VALUE="" size="20" CLASS='inputfield dataInput'>
+                Name: <INPUT TYPE="text" AUTOFOCUS NAME="dogleg" id='dogleg' VALUE="" size="20" CLASS='inputfield dataInput'>
             </DIV>
             
             <DIV CLASS='loginPass'>
@@ -601,10 +606,10 @@ if popup in ('99','98','97','96','95','94'):
             </DIV>
             
             <DIV CLASS='login'>
-                <INPUT TYPE="submit" NAME="dogin" id='dogin' VALUE="LOGIN" style="background-color:lightgreen;color:black;font:16px sans-serif;">
+                <INPUT TYPE="submit" NAME="dogin" id='dogin' VALUE="LOGIN" CLASS="defaultSubmit">
             </DIV>
             <DIV CLASS='logincancel'>
-                <INPUT TYPE="submit" NAME="cancel" VALUE="CANCEL" CLASS='inputfield'>
+                <INPUT TYPE="submit" NAME="cancel" VALUE="CANCEL"  CLASS="alternateSubmit">
             </DIV>
             
             <INPUT TYPE="hidden" NAME="dbname" VALUE="<%=dbname%>">
@@ -620,15 +625,15 @@ if popup in ('99','98','97','96','95','94'):
 <%
     elif loginlogout=='logout':
 %>
-<DIV CLASS='loginbox' STYLE="width:400;height:300;box-shadow: 10px 10px 4px #161616;background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
+<DIV CLASS='loginbox logintext' STYLE="width:400;height:300;box-shadow: 10px 10px 4px #161616;background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
         <DIV>
             <!--start of form - the Edit table area-->
             <FORM method="post" id="dogForm" name="dogForm" enctype="multipart/form-data" action="myFunctions.py/dogout">
                 <DIV CLASS='logout'>
-                    <INPUT TYPE="submit" NAME="dogout" id='dogout' VALUE="LOGOUT" CLASS='inputfield'>
+                    <INPUT TYPE="submit" NAME="dogout" id='dogout' VALUE="LOGOUT"  CLASS="defaultSubmit">
                 </DIV>
                 <DIV CLASS='logoutcancel'>
-                    <INPUT TYPE="submit" NAME="cancel" id='cancel' VALUE="CANCEL" CLASS='inputfield'>
+                    <INPUT TYPE="submit" NAME="cancel" id='cancel' VALUE="CANCEL"  CLASS="alternateSubmit">
                 </DIV>
             <INPUT TYPE="hidden" NAME="dbname" VALUE="<%=dbname%>">
             <INPUT TYPE="hidden" NAME="mediaID" VALUE="<%=mediaID%>">
@@ -644,7 +649,7 @@ if popup in ('99','98','97','96','95','94'):
 <%
     elif loginlogout=='deleteMedia':
 %>
-<DIV CLASS='loginbox' STYLE="width:400;height:300;box-shadow: 10px 10px 4px #161616;background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
+<DIV CLASS='loginbox logintext' STYLE="width:400;height:300;box-shadow: 10px 10px 4px #161616;background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
         <DIV>
             <!--start of form - the Edit table area-->
             <FORM method="post" id="dogForm" name="dogForm" enctype="multipart/form-data" action="myFunctions.py/delMedia">
@@ -653,10 +658,10 @@ if popup in ('99','98','97','96','95','94'):
                     <%=loginmsg%>
                 </DIV>
                  <DIV CLASS='logout'>
-                    <INPUT TYPE="submit" NAME="delMedia" id='delMedia' VALUE="DELETE" CLASS='inputfield'>
+                    <INPUT TYPE="submit" NAME="delMedia" id='delMedia' VALUE="DELETE"  CLASS="alternateSubmit">
                 </DIV>
                 <DIV CLASS='logoutcancel'>
-                    <INPUT TYPE="submit" NAME="cancel" id='cancel' VALUE="CANCEL" CLASS='inputfield'>
+                    <INPUT TYPE="submit" NAME="cancel" id='cancel' VALUE="CANCEL"  CLASS="defaultSubmit">
                 </DIV>
             <INPUT TYPE="hidden" NAME="dbname" VALUE="<%=dbname%>">
             <INPUT TYPE="hidden" NAME="mediaID" VALUE="<%=mediaID%>">
@@ -674,7 +679,7 @@ if popup in ('99','98','97','96','95','94'):
 <%
     elif loginlogout=='deleteCat':
 %>
-<DIV CLASS='loginbox' STYLE="width:400;height:300;box-shadow: 10px 10px 4px #161616;background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
+<DIV CLASS='loginbox logintext' STYLE="width:400;height:300;box-shadow: 10px 10px 4px #161616;background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
         <DIV>
             <!--start of form - the Edit table area-->
             <FORM method="post" id="dogForm" name="dogForm" enctype="multipart/form-data" action="myFunctions.py/delCat">
@@ -683,10 +688,10 @@ if popup in ('99','98','97','96','95','94'):
                     <%=loginmsg%>
                 </DIV>
                  <DIV CLASS='logout'>
-                    <INPUT TYPE="submit" NAME="delCat" id='delCat' VALUE="DELETE" CLASS='inputfield'>
+                    <INPUT TYPE="submit" NAME="delCat" id='delCat' VALUE="DELETE"  CLASS="alternateSubmit">
                 </DIV>
                 <DIV CLASS='logoutcancel'>
-                    <INPUT TYPE="submit" NAME="cancel" id='cancel' VALUE="CANCEL" CLASS='inputfield'>
+                    <INPUT TYPE="submit" NAME="cancel" id='cancel' VALUE="CANCEL"  CLASS="defaultSubmit">
                 </DIV>
             <INPUT TYPE="hidden" NAME="dbname" VALUE="<%=dbname%>">
             <INPUT TYPE="hidden" NAME="catID" VALUE="<%=catID%>">
@@ -701,7 +706,7 @@ if popup in ('99','98','97','96','95','94'):
 <%
     elif loginlogout=='deleteItem':
 %>
-<DIV CLASS='loginbox'  STYLE="width:400;height:300;box-shadow: 10px 10px 4px #161616;background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
+<DIV CLASS='loginbox logintext'  STYLE="width:400;height:300;box-shadow: 10px 10px 4px #161616;background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
         <DIV>
             <!--start of form - the Edit table area-->
             <FORM method="post" id="dogForm" name="dogForm" enctype="multipart/form-data" action="myFunctions.py/delItem">
@@ -710,10 +715,10 @@ if popup in ('99','98','97','96','95','94'):
                     <%=loginmsg%>
                 </DIV>
                  <DIV CLASS='logout'>
-                    <INPUT TYPE="submit" NAME="delItem" id='delItem' VALUE="DELETE" CLASS='inputfield'>
+                    <INPUT TYPE="submit" NAME="delItem" id='delItem' VALUE="DELETE"  CLASS="alternateSubmit">
                 </DIV>
                 <DIV CLASS='logoutcancel'>
-                    <INPUT TYPE="submit" NAME="cancel" id='cancel' VALUE="CANCEL" CLASS='inputfield'>
+                    <INPUT TYPE="submit" NAME="cancel" id='cancel' VALUE="CANCEL"  CLASS="defaultSubmit">
                 </DIV>
             <INPUT TYPE="hidden" NAME="dbname" VALUE="<%=dbname%>">
             <INPUT TYPE="hidden" NAME="itemID" VALUE="<%=itemID%>">
@@ -724,7 +729,7 @@ if popup in ('99','98','97','96','95','94'):
 <%
     elif loginlogout=='deleteSupport':
 %>
-<DIV CLASS='loginbox'  STYLE="width:400;height:300;box-shadow: 10px 10px 4px #161616;background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
+<DIV CLASS='loginbox logintext'  STYLE="width:400;height:300;box-shadow: 10px 10px 4px #161616;background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
         <DIV>
             <!--start of form - the Edit table area-->
             <FORM method="post" id="dogForm" name="dogForm" enctype="multipart/form-data" action="myFunctions.py/delSupport">
@@ -733,14 +738,37 @@ if popup in ('99','98','97','96','95','94'):
                     <%=loginmsg%>
                 </DIV>
                  <DIV CLASS='logout'>
-                    <INPUT TYPE="submit" NAME="delSupport" id='delSupport' VALUE="DELETE" CLASS='inputfield'>
+                    <INPUT TYPE="submit" NAME="delSupport" id='delSupport' VALUE="DELETE"  CLASS="alternateSubmit">
                 </DIV>
                 <DIV CLASS='logoutcancel'>
-                    <INPUT TYPE="submit" NAME="cancel" id='cancel' VALUE="CANCEL" CLASS='inputfield'>
+                    <INPUT TYPE="submit" NAME="cancel" id='cancel' VALUE="CANCEL"  CLASS="defaultSubmit">
                 </DIV>
             <INPUT TYPE="hidden" NAME="dbname" VALUE="<%=dbname%>">
             <INPUT TYPE="hidden" NAME="supportID" VALUE="<%=supportID%>">
             <INPUT TYPE="hidden" NAME="supportTableName" VALUE="<%=supportTableName%>">
+            <!-- end of form-->
+            </FORM>
+        </DIV>
+</DIV>
+<%
+    elif loginlogout=='errorMessage':
+%>
+<DIV CLASS='loginbox'  STYLE="width:400;height:300;box-shadow: 10px 10px 4px #161616;background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
+        <DIV>
+            <!--start of form - the Edit table area-->
+            <FORM method="post" id="dogForm" name="dogForm" enctype="multipart/form-data" action="index?action=3">
+            
+                <DIV CLASS='loginmsg loginmsgcolor'>
+                    <%=loginmsg%>
+                </DIV>
+                 <DIV CLASS='errormessage messagetext'>
+                    <p STYLE='margin:5px'><%=errorMessage%></p>
+                </DIV>
+                <DIV CLASS='messageOK'>
+                    <INPUT TYPE="submit" NAME="OK" id='OK' VALUE="OK" CLASS='inputfield'>
+                </DIV>
+            <INPUT TYPE="hidden" NAME="dbname" VALUE="<%=dbname%>">
+            <INPUT TYPE="hidden" NAME="itemID" VALUE="<%=itemID%>">
             <!-- end of form-->
             </FORM>
         </DIV>
@@ -750,6 +778,11 @@ if popup in ('99','98','97','96','95','94'):
 #end
 %>
 
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
+<!--  *********** END OF POPUP MSG CODE *****************            -->
+<!--  ***************************************************            -->
+<!--  ***************************************************            -->
     
         </DIV>
     </BODY> 

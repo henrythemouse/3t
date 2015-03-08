@@ -40,6 +40,8 @@ BODY {background-color:#248c8c;color:black;}
 .list select:hover {background-color:#FFFF99;color:black;border: red solid thin;}
 .searchSubmit:hover {background-color:#E7CE94;color:black;border: red solid thin;}
 .searchInput:hover {background-color:#E7CE94;color:black;border: red solid thin;}
+.defaultSubmit {background-color:#47f347;color:black;border: red solid thin;font:16px sans-serif;}
+.alternateSubmit {background-color:#E7CE94;color:black;border: red solid thin;font:16px sans-serif;}
 
 /* FONT Settings */
 
@@ -63,4 +65,20 @@ a:active {color: #000000;}
 .inputdefault {background-color:lightgreen;color:black;font:16px sans-serif;}
 .loginmsgcolor{color:red;background-color:transparent;}
 .resultcol {font:10pt Times, serif;text-align:left;color:#000000}
+.messagetext {background-color:#F5F5F5;color:#B70303;14px;font: 14pt Times, sans}
+.logintext {background-color:#ffffff;color:#000000;14px;font: 14pt Times, sans}
 
+/* *************************************************** */
+/* documentation division */
+
+.docPageTitle {color:#9b3d27;font: 20px arial, sans-serif;}
+.docTextDivColor{background-color:#e5e5e5;color:black;}
+.docPagesColor{background-color:#bfbfbf;color:black;}
+.docChaptersColor{background-color:#aeaeae;color:black;} 
+.docChapters A:link {text-decoration: none;color:black;}
+.docChapters A:visited {text-decoration: none;color:black;}
+.docChapters A:active {text-decoration: none;color:black;}
+.docChapters A:hover {text-decoration: none;color:white}
+.docChapterTitleColor{background-color:#bfbfbf;color:black;}
+.docChapterTitle:hover{background-color:#a39797;color: black;}
+    

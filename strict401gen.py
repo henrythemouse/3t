@@ -1359,6 +1359,7 @@ class Input:
         self.align = ''
         self.id = ''
         self.Class = None
+        self.autofocus = ''
         
         for item in kw.keys():
             if self.__dict__.has_key(item):
@@ -1389,6 +1390,7 @@ class Input:
         if self.id: s.append(' ID="%s"' % self.id)
         if self.srcImage: s.append(' SRC="%s" ALT="%s"' % (self.srcImage,self.alt))
         if self.Class: s.append(' Class="%s"' % self.Class)
+        if self.autofocus: s.append(' AUTOFOCUS="%s"' % self.autofocus) 
         s.append('>')
         if self.rlabel: s.append(str(self.rlabel))
         return string.join(s, '')
@@ -1431,6 +1433,7 @@ class Select(UserList.UserList):
         # added for 401 strict
         self.style = ''
         self.Class = ''
+        self.autofocus=''
         self.enclosure ='DIV'
         for item in kw.keys():
             if self.__dict__.has_key(item):
@@ -1449,7 +1452,7 @@ class Select(UserList.UserList):
         if self.title: s.append(' title="%s"' % self.title)
         if self.style: s.append(' style="%s"' % self.style)
         if self.Class: s.append(' Class="%s"' % self.Class)
-
+        if self.autofocus: s.append(' autofocus="%s"' % self.autofocus)
         s.append('>\n')
         if type(self.data[0]) is TupleType:
             zrow='odd'
@@ -1516,6 +1519,8 @@ class Textarea:
         # added for 401 strict
         self.style = ''
         self.Class = ''
+        self.autofocus=''
+        
         for item in kw.keys():
             if self.__dict__.has_key(item):
                 self.__dict__[item] = kw[item]
@@ -1531,6 +1536,7 @@ class Textarea:
         if self.onSelect: s.append(' onSelect="%s"' % self.onSelect)
         if self.style: s.append(' style="%s"' % self.style)
         if self.Class: s.append(' Class="%s"' % self.Class)
+        if self.autofocus: s.append(' autofocus="%s"' % self.autofocus)
         s.append('>')
         s.append(str(self.text))
         s.append('</TEXTAREA>')

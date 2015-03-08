@@ -11,8 +11,8 @@
 /*  ********** THE PRIMARY DIVS ******************** */
 /*  ************************************************ */
 
-/*DIV.PAGE {position:absolute;top:20px;left:20px;width:800px;height:515px;}*/
-DIV.PAGE {position:absolute;top:50%;left:50%;height:515px;width:800px;margin: -257px 0 0 -400px;}
+DIV.PAGE {position:absolute;top:20px;left:20px;width:800px;height:515px;}
+/*DIV.PAGE {position:absolute;top:50%;left:50%;height:515px;width:800px;margin: -257px 0 0 -400px;}*/
 DIV.TOP {position:absolute;top:0px;width:800px;left:0px;height:220px;}
 DIV.BOTTOM  {position:absolute;top:180px;width:800px;left:0px;height:322px;}
 DIV.HEADER {
@@ -157,10 +157,10 @@ option {height:5mm;}
 .mediaaddimage {height:40px;width:100px;border:0px;right:0px}
 .mediaviewimage {height:40px;width:100px;border:0px;right:0px}
 .mediaedit { position:absolute;top:5px;left:5px;}
-.mediatable {border-collapse: colapse; border-spacing: 0; border:0px}
+.mediatable {border-collapse: collapse; border-spacing: 0px; border:0px}
 .mediacoltools { font:12pt Times, serif;width:16px;height:16px}
 .mediacoltext { font:12pt Times, serif;width:100%;padding:10px}
-.mediacolnote { font:12pt Times, serif;width:100%;padding:5px;border-collapse: colapse; border-spacing: 5;}
+.mediacolnote { font:12pt Times, serif;width:100%;padding:5px;border-collapse: collapse; border-spacing: 5px;}
 .mediacolimage { width:128px;border:0px;right:0px}
 
 
@@ -171,7 +171,7 @@ option {height:5mm;}
 .loginbox {position:absolute;top:200px;left:200px;width:420px;height:220px;border:0;
     z-index:1;background-size:420px 220px;background-repeat:no-repeat;
 }
-.loginmsg {position:absolute;top:10px;left:90px;font:20px sans-serif;z-index:1;
+.loginmsg {position:relative;top:10px;text-align:center;font:20px sans-serif;z-index:1;
 }
 .loginName {position:absolute;top:50px;left:60px;font:20px sans-serif;z-index:1;
 }
@@ -204,3 +204,68 @@ option {height:5mm;}
 
 .settingsimage {height:40px;width:40px;border:0px;right:0px} 
 .setcategoryimage {height:40px;width:40px;border:0px;right:45px} 
+.messageOK {position:absolute;top:190px;left:190px;z-index:1;}
+.errormessage {position:absolute;top:35px;left:15px;bottom:35px;right:15px;z-index:1;overflow-x:hidden;}
+
+/* *************************************************** */
+/* documentation division */
+
+.docmain {
+    position:relative;top:40px;left:2px;height:260px;width:795px;
+    background-image:url('../images/3t.png');
+}
+.docButton {position:relative;top:100px;left:600px;height:40px;width:200px;
+            }
+
+/* .docMenu { */
+/*     margin:2px; */
+/*     font: 20px arial, sans-serif; */
+/*     text-align: center; */
+/*     vertical-align: middle; */
+/*     line-height:45px; */
+/*     position:relative;top:0px;width:150px;left:0px;height:256px; */
+/* } */
+
+.docTitle {
+    margin:2px;
+    font: 25px arial, sans-serif;
+    text-align: center;
+    vertical-align: middle;
+    line-height:45px;
+    position:absolute;top:0px;width:150px;left:0px;height:45px;
+}
+
+.docChapterTitle{
+    margin:2px;
+    font: 18px arial, sans-serif;
+    text-align: center;
+    vertical-align: middle;
+    line-height:45px;
+    position:relative;top:0px;width:140px;left:0px;height:45px;overflow-x: hidden;
+}
+
+.docChapters{
+    margin:0px;
+    position: absolute;top:45px;width:150px;left:0px;height:220px;overflow-x: hidden;
+    }   
+
+.docPages{
+    margin:2px;
+    display: none;
+    position: absolute;top:0px;width:645px;left:150px;height:265px;overflow-x: hidden;
+    }
+
+.docPageTitle {
+    font: 16px arial, sans-serif;	
+	
+}
+.docTextDiv{
+    margin:0px;
+    display: none;
+    position: relative;bottom:0px;width:645px;left:0px;height:238px;overflow-x: hidden;
+    }
+
+
+
+
+

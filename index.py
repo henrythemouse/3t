@@ -23,52 +23,6 @@ from mod_python import psp,util #@UnresolvedImport
 $LastChangedDate: 2014-07-07 13:16:39 -0700 (Mon, 07 Jul 2014) $
 $LastChangedRevision:$
 '''
-'''
-BUG FIXES THAT NEED TO PROPIGATE TO 2TABLE
-
-'''
-'''
-TO DO
-
-For Item title ("Details for .....") how do I determine the order of the fields?
-    In the Read db the author's name lastname firstname, should be reversed.
-    I use the itemUniqueID config value.
-
-Do I want to insert the username at the start of the note? Provide a conf option?
-    The option is ... if one includes a 'owner' field in a table then the script will
-    insert the owner name in front of the first field of the mediaTable. No owner
-    field means no owner inserted. Simple?
-
-catID is blank in mediaCreate, so the caption can't contain the record reference.
-        I re-enabled catID in kooky get to fix this, but I don't recall needing to do that b4
-        and I wonder what affect it will have elsewhere.
-
-All/All results are too wide in iceweasel on my hp. Due to too many large columns.
-    I needed to reset the max col len down to 18 (from 25). I may need to include this in
-    the config as a setting? Also needed to lower font size to 8 (from 10). This doesn't
-    seem very dependable.
-
-Added an owner field to the table definition for applicable dbs, so that only the owner of a entry can edit
-    the entry.  This is essentially a row privilege (which mysql doesn't supply). It's in addition to
-    any login privileges enabled. You can have mysql update privileges for a table, but if you aren't the
-    owner of a particular record then you still won't be able to edit it.
-
-Login: In addition one must login to create an entry, logout is optional. The kooky table will remember
-    the login if you don't logout, so next time you load the page you'll already be logged in. There is a
-    default user that is enabled when no one is logged in, this user only  has select privileges. For a user
-    to have write privileges the db has to have that user setup and insert/update privileges enabled.
-
-
-Save a new author and it doesn't display that author on return.
-
-Field widths in mediatable are not constant (in read the rating will have a large width at times). Need headerWidths for media table.
-
-Need 'no cookie' warning.
-
-New feature: auto load the last modified media record apon first access?
-Or add a link to it via the toolbar?
-
-'''
 
 
 # I USE THE WORD 'BROKEN' TO MARK BROKEN CODE
@@ -105,7 +59,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
     supportTableName=''
     itemReq=''
     catReq=''
-
+    
     try:
         x=req.form.list
 #         util.redirect(req,"testValue.py/testvalue?test="+repr(x))
@@ -132,10 +86,13 @@ def index(req,currentCat=0,currentItem=1,action=0):
             config=myFunctions.getConfig(req,"")
 
 
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(kookyDB))
+#     util.redirect(req,"testValue.py/testvalue?test="+repr(config))
     
     # check for a config error
-    if config['configError']=="configError":
+#     if config['configError']=="configError":
+    if config['configError']:
+#         errorMessage=config['configError']
+#         popup='93'
         action=100
 #         action=20
 
@@ -156,17 +113,8 @@ def index(req,currentCat=0,currentItem=1,action=0):
         except:
             pass
 
-        try:                # if available, get the category formdata
+        try:
             error=req.form['error']
-            #~ if error=="item":
-                #~ error="An ERROR occurred while saving the data."+\
-                #~ "You may have tried to save an image that was too big."+\
-                #~ "Images must be less than 65KB in size. Try again."
-            #~ elif error=="cat":
-                #~ error="An ERROR occurred while saving the data."+\
-                #~ "You may have enter the date incorrectly."+\
-                #~ "The accepted date formats are YYYY-MM-DD, YYYY/MM/DD "+\
-                #~ "or YYYYMMDD. Try again."
         except:
             error=''
 
@@ -243,12 +191,23 @@ def index(req,currentCat=0,currentItem=1,action=0):
             action=25
         except:
             pass
+
+        try:
+            doc=req.form['doc']
+            
+        except:
+            doc=''
         
             
         try:
             popup=req.form['popup'].value
+            try:
+                errorMessage=req.form['errorMessage'].value
+            except:
+                errorMessage=''
         except:
             popup=''
+            errorMessage=''
             
 #         util.redirect(req,"testValue.py/testvalue?test="+repr(config['dbname'])+"***"+str(dbname))
 
@@ -504,14 +463,20 @@ def index(req,currentCat=0,currentItem=1,action=0):
 #        catImage=catImages[currentCat][1]
         supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
-        results=aboutInfo(config)
+#         results=aboutInfo(config)
+        results=getDoc(config,doc)
+        
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(results[1])+" "+str(results[2]))
         
         # parse the results list
-        caption=results[0]
-        resultHeader=results[1]
-        resultData=results[2]
-
-        resultTable=aboutTable(resultData,config)
+        caption='Configuration' #results[0]
+        resultHeader='' #results[1]
+        resultData=results[0] #results[2]
+        doc=results[1]
+        
+        docDiv=docTable(resultData,doc,config)
+        resultTable=docDiv[0]
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(docDiv[1])+" resultTable: "+str(resultTable))
 
     elif action==21:     #edit config
 
@@ -555,7 +520,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         # in case the _category table has been edited this will refress the images
         catImages=catImgs2(config)
         
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(catImages)+" "+str(supportTableName))
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(len(result[0[0]]))+" "+str(result[2]))
 
         # parse the results list
         caption='supportTableHeader'
@@ -584,10 +549,10 @@ def index(req,currentCat=0,currentItem=1,action=0):
 #        catImage=catImages[currentCat][1]
         supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(supportTableName))
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(supportTableName)+'___'+repr(config))
 
         result=createSupport(supportTableName,config)
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(result))
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(result[:-1]))
 
         # parse the results list
         caption=result[0]
@@ -613,6 +578,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
 #         pass
 
     elif action<100:               # no action - use defaults
+        
         if popup:
             # this goes back to the item display
             # I could do more and return to ???, not a safe bet however.
@@ -637,6 +603,8 @@ def index(req,currentCat=0,currentItem=1,action=0):
             resultTable=itemTable(str(item[1]),resultData,config)
             
         elif config['lastupdate']=='YES':
+            # this will force the app to open the last media entry
+            # if the last entry was not media, the last media entry will be displayed
 
 #            util.redirect(req,"testValue.py/testvalue?test="+repr(config))
             itemID,mediaID=lastUpdate(config)
@@ -660,7 +628,8 @@ def index(req,currentCat=0,currentItem=1,action=0):
             caption="Most Recent Entry: "+results[0]
             resultHeader=results[1]
             resultData=results[2]
-
+            action=15
+            
             headerWidths=getMediaColWidths(req,config)
             #~ data=kooky2.myCookies(req,'get','',config['dbname'],config['selectedHost'])
             #~ username=data['username']
@@ -732,6 +701,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         v['itemSelected']=itemSelected
         v['action']=action
         v['popup']=popup
+        v['errorMessage']=errorMessage
         v['relatedCat']=relatedCat
         v['dogleg']=username
         v['cancelAction']=str(cancelAction)
@@ -765,41 +735,21 @@ def index(req,currentCat=0,currentItem=1,action=0):
 
     else:
 
-
-
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(config['configTable']))
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(config))
         result=createSupport(config['configTable'],config)
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(result))
         caption='supportTableHeader'
         resultTable=result[2]
-#         headerWidths=result[1]
-#         resultHeader=result[2]
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(v)+"------"+str(result))
 
         mainForm='templates/conf2.html'
         v['dbname']=config['dbname']
-        v['dogleg']=username
-        v['popup']=''
-        v['caption']=caption
-#         v['resultHeader']=resultHeader
         v['resultTable']=resultTable
-#         v['supportSelect']=supportSelect
-        v['supportTableName']="_config"
-        v['emailcontact']=""
-        v['config']=config
-        
-#         mainForm='templates/conf.html'
-# 
-#         v['message1']="THIS IS A DEFAULT CONFIGURATION DIALOG"
-#         v['message2']="EITHER SOMETHING IS WRONG IN THE CONFIGURATION FILE"
-#         v['message3']="A CRITICAL VALUE HAS CHANGED AND THE PROGRAM CAN'T START"
-#         v['message4']="CHECK THE VALUES BELOW AND EDIT THEM AS NEEDED"
-#         v['message5']="********************************************************"
-#         if dbname:
-#             v['configName']='-'+dbname
-#         else:
-#             v['configName']=''
+        v['emailcontact']=config['emailcontact']
+        v['errorMessage']=errorMessage
+        v['popup']=popup
+        v['popupbackground']=config['popupbackground']
 
-#    util.redirect(req,"testValue.py/testvalue?test="+repr(v))
+#     util.redirect(req,"testValue.py/testvalue?test="+repr(config))
 
     # call the html doc passing it the data
     return psp.PSP(req,mainForm,vars=v)
@@ -1482,7 +1432,8 @@ def createItem(currentItem,item,config):
     # semicolons not passed, string will break at semicolon
     count=0
     itemRow=strict401gen.TR()
-
+    focus="1"
+    
     for thisField in cols:
         try:
             fieldlen=thisField[1]
@@ -1497,39 +1448,40 @@ def createItem(currentItem,item,config):
             enumList[0]=enumList[0][5:]
             enumList[len(enumList)-1]=enumList[len(enumList)-1][:-1]
             itemRow.append(strict401gen.TD(thisField[0],Class='editLabel'))
-            itemRow.append(strict401gen.TD(strict401gen.Select(enumList,name=thisField[0],id=thisField[0],Class="editfield")))
+            itemRow.append(strict401gen.TD(strict401gen.Select(enumList,autofocus=focus,name=thisField[0],id=thisField[0],Class="editfield")))
 
         elif 'set(' in thisField[1]:
             setList=thisField[1].split(",")
             setList[0]=setList[0][4:]
             setList[len(setList)-1]=setList[len(setList)-1][:-1]
             itemRow.append(strict401gen.TD(thisField[0],Class='editLabel'))
-            itemRow.append(strict401gen.TD(strict401gen.Select(setList,name=thisField[0],id=thisField[0],multiple=1,size=len(setList),Class="editfield")))
+            itemRow.append(strict401gen.TD(strict401gen.Select(setList,autofocus=focus,name=thisField[0],id=thisField[0],multiple=1,size=len(setList),Class="editfield")))
 
         elif 'date' in thisField[1]:
             x=string.strip(str(datetime.date.today()))
             itemRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
-            itemRow.append(strict401gen.TD(strict401gen.Input(type="text",value=x,name=thisField[0],id=thisField[0],maxlength="10",Class="editfield dataInput")))
+            itemRow.append(strict401gen.TD(strict401gen.Input(type="text",value=x,autofocus=focus,name=thisField[0],id=thisField[0],maxlength="10",Class="editfield dataInput")))
 
         elif 'text' in thisField[1]:
             itemRow.append(strict401gen.TD(thisField[0],Class='editLabel'))
-            itemRow.append(strict401gen.TD(strict401gen.Textarea(name=thisField[0],id=thisField[0],Class="editfield dataInput")))
+            itemRow.append(strict401gen.TD(strict401gen.Textarea(name=thisField[0],autofocus=focus,id=thisField[0],Class="editfield dataInput")))
 
         elif 'blob' in thisField[1]:
             itemRow.append(strict401gen.TD(thisField[0],Class='editLabel'))
-            itemRow.append(strict401gen.TD(strict401gen.Input(type='file',name=thisField[0],id=thisField[0],size="10",Class="editfield")))
+            itemRow.append(strict401gen.TD(strict401gen.Input(type='file',autofocus=focus,name=thisField[0],id=thisField[0],size="10",Class="editfield")))
 
         elif thisField[0] in config['supportTables']:
             #we have a support table, used to generate a selecet field
             shortList,longList=getPickList(thisField[0],config)
 #             test=str(cols[thisField][0])+"  short: "+str(shortList)+"   long: "+str(longList)
             itemRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
-            itemRow.append(strict401gen.TD(strict401gen.Select(shortList,name=thisField[0],id=thisField[0],Class="editfield")))            
+            itemRow.append(strict401gen.TD(strict401gen.Select(shortList,autofocus=focus,name=thisField[0],id=thisField[0],Class="editfield")))            
 
         else:
             itemRow.append(strict401gen.TD(thisField[0],Class='editLabel'))
-            itemRow.append(strict401gen.TD(strict401gen.Input(type="text",name=thisField[0],id=thisField[0],maxlength=maxlen,Class="editfield dataInput")))
-
+            itemRow.append(strict401gen.TD(strict401gen.Input(type="text",autofocus=focus,name=thisField[0],id=thisField[0],maxlength=maxlen,Class="editfield dataInput")))
+        focus=''
+        
         if not count%2:
             itemTable.append(itemRow)
             itemRow=strict401gen.TR()
@@ -1547,7 +1499,7 @@ def editItem(currentItem,item,config):
     itemID=str(item[1])
     cols=[]
     colNames=[]
-
+    
     # get the column  names
     q="show columns from `"+config['itemTable']+"`"
     allCols=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
@@ -1572,6 +1524,7 @@ def editItem(currentItem,item,config):
     # semicolons not passed, string will break at semicolon
     count=0
     itemRow=strict401gen.TR()
+    focus="1"
 
     for thisField in range(0,len(cols)):
         try:
@@ -1581,24 +1534,24 @@ def editItem(currentItem,item,config):
             maxlen=''
 
         count=count+1
-
+        
         if 'enum(' in cols[thisField][1]:
             enumList=cols[thisField][1].split(",")
             enumList[0]=enumList[0][5:]
             enumList[len(enumList)-1]=enumList[len(enumList)-1][:-1]
             itemRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            itemRow.append(strict401gen.TD(strict401gen.Select(enumList,selected=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],Class="editfield")))
+            itemRow.append(strict401gen.TD(strict401gen.Select(enumList,autofocus=focus,selected=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],Class="editfield")))
 
         elif 'set(' in cols[thisField][1]:
             setList=cols[thisField][1].split(",")
             setList[0]=setList[0][4:]
             setList[len(setList)-1]=setList[len(setList)-1][:-1]
             itemRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            itemRow.append(strict401gen.TD(strict401gen.Select(setList,name=cols[thisField][0],id=cols[thisField][0],multiple=1,size=len(setList),Class="editfield")))
+            itemRow.append(strict401gen.TD(strict401gen.Select(setList,autofocus=focus,name=cols[thisField][0],id=cols[thisField][0],multiple=1,size=len(setList),Class="editfield")))
 
         elif 'text' in cols[thisField][1]:
             itemRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            itemRow.append(strict401gen.TD(strict401gen.Textarea(values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],Class="editfield dataInput")))
+            itemRow.append(strict401gen.TD(strict401gen.Textarea(values[0][thisField],autofocus=focus,name=cols[thisField][0],id=cols[thisField][0],Class="editfield dataInput")))
 
         elif 'date' in cols[thisField][1]:
             if not values[0][thisField] or values[0][thisField]=="None":
@@ -1606,11 +1559,11 @@ def editItem(currentItem,item,config):
             else:
                 x=values[0][thisField]
             itemRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            itemRow.append(strict401gen.TD(strict401gen.Input(type="text",value=x,name=cols[thisField][0],id=cols[thisField][0],maxlength="10",Class="editfield dataInput")))
+            itemRow.append(strict401gen.TD(strict401gen.Input(type="text",value=x,autofocus=focus,name=cols[thisField][0],id=cols[thisField][0],maxlength="10",Class="editfield dataInput")))
 
         elif 'blob' in cols[thisField][1]:
             itemRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            itemRow.append(strict401gen.TD(strict401gen.Input(type='file',name=cols[thisField][0],id=cols[thisField][0],size="10",Class="editfield")))
+            itemRow.append(strict401gen.TD(strict401gen.Input(type='file',autofocus=focus,name=cols[thisField][0],id=cols[thisField][0],size="10",Class="editfield")))
 
         elif cols[thisField][0] in config['supportTables']:
             #we have a support table, used to generate a selecet field
@@ -1618,21 +1571,22 @@ def editItem(currentItem,item,config):
 #             test=str(cols[thisField][0])+"  short: "+str(shortList)+"   long: "+str(longList)
             itemRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
             if not values[0][thisField] or values[0][thisField]=="None":
-                itemRow.append(strict401gen.TD(strict401gen.Select(shortList,name=cols[thisField][0],id=cols[thisField][0],Class="editfield")))            
+                itemRow.append(strict401gen.TD(strict401gen.Select(shortList,autofocus=focus,name=cols[thisField][0],id=cols[thisField][0],Class="editfield")))            
             else:
-                itemRow.append(strict401gen.TD(strict401gen.Select(shortList,selected=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],Class="editfield")))            
+                itemRow.append(strict401gen.TD(strict401gen.Select(shortList,autofocus=focus,selected=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],Class="editfield")))            
 
         else:
             itemRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            itemRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],maxlength=maxlen,Class="editfield dataInput")))
-
+            itemRow.append(strict401gen.TD(strict401gen.Input(type="text",autofocus=focus,value=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],maxlength=maxlen,Class="editfield dataInput")))
+        focus=''
+        
         if not count%2:
             itemTable.append(itemRow)
             itemRow=strict401gen.TR()
         elif count==len(cols):
             itemRow.append(strict401gen.TD(strict401gen.RawText("&nbsp;"),colspan="2"))
             itemTable.append(itemRow)
-
+             
     caption='Update  the information for "'+config['dbname']+'"'
     header=formbuttons('update')
 
@@ -2085,7 +2039,8 @@ def createCat(categoryName,item,config):
 
     count=0
     catRow=strict401gen.TR()
-
+    focus="1"
+    
     for thisField in cols:
         try:
             fieldlen=thisField[1]
@@ -2100,43 +2055,43 @@ def createCat(categoryName,item,config):
             enumList[0]=enumList[0][6:]
             enumList[len(enumList)-1]=enumList[len(enumList)-1][:-2]
             catRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
-            catRow.append(strict401gen.TD(strict401gen.Select(enumList,name=thisField[0],id=thisField[0],Class="editfield")))
+            catRow.append(strict401gen.TD(strict401gen.Select(enumList,name=thisField[0],autofocus=focus,id=thisField[0],Class="editfield")))
 
         elif 'set(' in thisField[1]:
             setList=thisField[1].split(",")
             setList[0]=setList[0][5:]
             setList[len(setList)-1]=setList[len(setList)-1][:-1]
             catRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
-            catRow.append(strict401gen.TD(strict401gen.Select(setList,name=thisField[0],id=thisField[0],multiple=1,size=len(setList),Class="editfield")))
+            catRow.append(strict401gen.TD(strict401gen.Select(setList,name=thisField[0],autofocus=focus,id=thisField[0],multiple=1,size=len(setList),Class="editfield")))
 
         elif 'text' in thisField[1]:
             catRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
-            catRow.append(strict401gen.TD(strict401gen.Textarea(name=thisField[0],id=thisField[0],Class="editfield dataInput")))
+            catRow.append(strict401gen.TD(strict401gen.Textarea(name=thisField[0],autofocus=focus,id=thisField[0],Class="editfield dataInput")))
 
         elif 'blob' in thisField[1]:
             catRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
-            catRow.append(strict401gen.TD(strict401gen.Input(type='file',name=thisField[0],id=thisField[0],Class="editfield")))
+            catRow.append(strict401gen.TD(strict401gen.Input(type='file',autofocus=focus,name=thisField[0],id=thisField[0],Class="editfield")))
 
         elif 'date' in thisField[1]:
             x=string.strip(str(datetime.date.today()))
             catRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
-            catRow.append(strict401gen.TD(strict401gen.Input(type="text",value=x,name=thisField[0],id=thisField[0],maxlength="10",Class="editfield dataInput")))
+            catRow.append(strict401gen.TD(strict401gen.Input(type="text",value=x,autofocus=focus,name=thisField[0],id=thisField[0],maxlength="10",Class="editfield dataInput")))
 
         elif 'int' in thisField[1]:
             catRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
-            catRow.append(strict401gen.TD(strict401gen.Input(type="text",name=thisField[0],id=thisField[0],maxlength=maxlen,Class="editfield dataInput")))
+            catRow.append(strict401gen.TD(strict401gen.Input(type="text",autofocus=focus,name=thisField[0],id=thisField[0],maxlength=maxlen,Class="editfield dataInput")))
 
         elif 'float' in thisField[1]:
             maxlen=maxlen.split(',')[0]
             catRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
-            catRow.append(strict401gen.TD(strict401gen.Input(type="text",name=thisField[0],id=thisField[0],maxlength="6",Class="editfield dataInput")))
+            catRow.append(strict401gen.TD(strict401gen.Input(type="text",autofocus=focus,name=thisField[0],id=thisField[0],maxlength="6",Class="editfield dataInput")))
 
         elif thisField[0] in config['supportTables']:
             #we have a support table, used to generate a selecet field
             shortList,longList=getPickList(thisField[0],config)
 #             test=str(cols[thisField][0])+"  short: "+str(shortList)+"   long: "+str(longList)
             catRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
-            catRow.append(strict401gen.TD(strict401gen.Select(shortList,name=thisField[0],id=thisField[0],Class="editfield")))            
+            catRow.append(strict401gen.TD(strict401gen.Select(shortList,autofocus=focus,name=thisField[0],id=thisField[0],Class="editfield")))            
 
         else: # char fields
             if thisField[4]:
@@ -2144,8 +2099,9 @@ def createCat(categoryName,item,config):
             else:
                 defaultValue=''
             catRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
-            catRow.append(strict401gen.TD(strict401gen.Input(value=defaultValue,type="text",name=thisField[0],id=thisField[0],maxlength=maxlen,Class="editfield dataInput")))
-
+            catRow.append(strict401gen.TD(strict401gen.Input(value=defaultValue,autofocus=focus,type="text",name=thisField[0],id=thisField[0],maxlength=maxlen,Class="editfield dataInput")))
+        focus=''
+        
         if not count%2:
             catTable.append(catRow)
             catRow=strict401gen.TR()
@@ -2201,6 +2157,7 @@ def editCat(categoryName,catID,config):
 
     count=0
     catRow=strict401gen.TR()
+    focus='1'
 
     for thisField in range(0,len(cols)):
         try:
@@ -2216,22 +2173,22 @@ def editCat(categoryName,catID,config):
             enumList[0]=enumList[0][6:]
             enumList[len(enumList)-1]=enumList[len(enumList)-1][:-2]
             catRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            catRow.append(strict401gen.TD(strict401gen.Select(enumList,selected=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],Class="editfield")))
+            catRow.append(strict401gen.TD(strict401gen.Select(enumList,autofocus=focus,selected=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],Class="editfield dataInput")))
 
         elif 'set(' in cols[thisField][1]:
             setList=thisField[1].split(",")
             setList[0]=setList[0][5:]
             setList[len(setList)-1]=setList[len(setList)-1][:-1]
             catRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            catRow.append(strict401gen.TD(strict401gen.Select(setList,name=cols[thisField][0],id=thisField[0],multiple=1,size=len(setList),Class="editfield")))
+            catRow.append(strict401gen.TD(strict401gen.Select(setList,autofocus=focus,name=cols[thisField][0],id=thisField[0],multiple=1,size=len(setList),Class="editfield dataInput")))
 
         elif 'text' in cols[thisField][1]:
             catRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            catRow.append(strict401gen.TD(strict401gen.Textarea(values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],Class="editfield dataInput")))
+            catRow.append(strict401gen.TD(strict401gen.Textarea(values[0][thisField],autofocus=focus,name=cols[thisField][0],id=cols[thisField][0],Class="editfield dataInput")))
 
         elif 'blob' in cols[thisField][1]:
             catRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            catRow.append(strict401gen.TD(strict401gen.Input(type='file',name=cols[thisField][0],id=cols[thisField][0],Class="editfield")))
+            catRow.append(strict401gen.TD(strict401gen.Input(type='file',name=cols[thisField][0],autofocus=focus,id=cols[thisField][0],Class="editfield dataInput")))
 
         elif 'date' in cols[thisField][1]:
             if not values[0][thisField] or values[0][thisField]=="None":
@@ -2239,16 +2196,16 @@ def editCat(categoryName,catID,config):
             else:
                 x=values[0][thisField]
             catRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            catRow.append(strict401gen.TD(strict401gen.Input(type="text",value=x,name=cols[thisField][0],id=cols[thisField][0],maxlength="10",Class="editfield dataInput")))
+            catRow.append(strict401gen.TD(strict401gen.Input(type="text",value=x,name=cols[thisField][0],autofocus=focus,id=cols[thisField][0],maxlength="10",Class="editfield dataInput")))
 
         elif 'int' in cols[thisField][1]:
             catRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            catRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],maxlength="6",Class="editfield dataInput")))
+            catRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[0][thisField],autofocus=focus,name=cols[thisField][0],id=cols[thisField][0],maxlength="6",Class="editfield dataInput")))
 
         elif 'float' in cols[thisField][1]:
             maxlen=maxlen.split(',')[0]
             catRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            catRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],maxlength="6",Class="editfield dataInput")))
+            catRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[0][thisField],autofocus=focus,name=cols[thisField][0],id=cols[thisField][0],maxlength="6",Class="editfield dataInput")))
 
         elif colNames[thisField] in config['supportTables'] or colNames[thisField]==config['catColumn']:
             #we have a support table, used to generate a select field
@@ -2258,13 +2215,13 @@ def editCat(categoryName,catID,config):
             if not values[0][thisField] or values[0][thisField]=="None":            
                 catRow.append(strict401gen.TD(strict401gen.Select(shortList,name=cols[thisField][0],id=cols[thisField][0],Class="editfield")))            
             else:
-                catRow.append(strict401gen.TD(strict401gen.Select(shortList,selected=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],Class="editfield")))
+                catRow.append(strict401gen.TD(strict401gen.Select(shortList,selected=values[0][thisField],autofocus=focus,name=cols[thisField][0],id=cols[thisField][0],Class="editfield dataInput")))
             
         else: # char fields
             if cols[thisField][0][-1]=="_":
                 relatedName=values[0][thisField]
             catRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            catRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],maxlength=maxlen,Class="editfield dataInput")))
+            catRow.append(strict401gen.TD(strict401gen.Input(type="text",autofocus=focus,value=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],maxlength=maxlen,Class="editfield dataInput")))
                 
         if not count%2:
             catTable.append(catRow)
@@ -2272,7 +2229,8 @@ def editCat(categoryName,catID,config):
         elif count==len(cols):
             catRow.append(strict401gen.TD(strict401gen.RawText("&nbsp;"),colspan="2"))
             catTable.append(catRow)
-
+        focus=''
+        
     caption='Update the information for "'+relatedName+'"'
     header=formbuttons('update')
 
@@ -2325,9 +2283,9 @@ def mediaQuery(record,config):
     if orderby:
         q=q+" order by `"+config['mediaTable']+"`.`"+orderby+"` desc"
 
-
     qresult=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
 
+    # build the header text for the media display
     if record[0]=="I":
         # for an item caption
         q2='select `'+string.join(config['itemListColumns'],"`,`")+'` from `'+\
@@ -2592,6 +2550,7 @@ def mediaTable(mediaData,cookieID,record,config):
 def createMedia(mediaID,catID,item,config):
 
     cols=[]
+    
     if mediaID[0]=='I':
         mediaID=mediaID[1:]
         mediaType='Imedia'
@@ -2616,7 +2575,8 @@ def createMedia(mediaID,catID,item,config):
 
     count=0
     mediaRow=strict401gen.TR()
-
+    focus="1"
+    
     for thisField in cols:
         try:
             fieldlen=thisField[1]
@@ -2631,48 +2591,49 @@ def createMedia(mediaID,catID,item,config):
             enumList[0]=enumList[0][6:]
             enumList[len(enumList)-1]=enumList[len(enumList)-1][:-2]
             mediaRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
-            mediaRow.append(strict401gen.TD(strict401gen.Select(enumList,name=thisField[0],id=thisField[0],Class="editfield")))
+            mediaRow.append(strict401gen.TD(strict401gen.Select(enumList,autofocus=focus,name=thisField[0],id=thisField[0],Class="editfield")))
 
         elif 'set(' in thisField[1]:
             setList=thisField[1].split(",")
             setList[0]=setList[0][5:]
             setList[len(setList)-1]=setList[len(setList)-1][:-1]
             mediaRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
-            mediaRow.append(strict401gen.TD(strict401gen.Select(setList,name=thisField[0],id=thisField[0],multiple=1,size=len(setList),Class="editfield")))
+            mediaRow.append(strict401gen.TD(strict401gen.Select(setList,autofocus=focus,name=thisField[0],id=thisField[0],multiple=1,size=len(setList),Class="editfield")))
 
         elif 'text' in thisField[1]:
             mediaRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
-            mediaRow.append(strict401gen.TD(strict401gen.Textarea(name=thisField[0],id=thisField[0],Class="editfield dataInput")))
+            mediaRow.append(strict401gen.TD(strict401gen.Textarea(name=thisField[0],autofocus=focus,id=thisField[0],Class="editfield dataInput")))
 
         elif 'blob' in thisField[1]:
             mediaRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
-            mediaRow.append(strict401gen.TD(strict401gen.Input(type='file',name=thisField[0],id=thisField[0],size="10",Class="editfield")))
+            mediaRow.append(strict401gen.TD(strict401gen.Input(type='file',autofocus=focus,name=thisField[0],id=thisField[0],size="10",Class="editfield")))
 
         elif 'date' in thisField[1]:
             x=str(datetime.date.today()).strip()
             mediaRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
-            mediaRow.append(strict401gen.TD(strict401gen.Input(type="text",value=x,name=thisField[0],id=thisField[0],maxlength="10",Class="editfield dataInput")))
+            mediaRow.append(strict401gen.TD(strict401gen.Input(type="text",value=x,autofocus=focus,name=thisField[0],id=thisField[0],maxlength="10",Class="editfield dataInput")))
 
         elif 'int' in thisField[1]:
             mediaRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
-            mediaRow.append(strict401gen.TD(strict401gen.Input(type="text",name=thisField[0],id=thisField[0],maxlength="6",Class="editfield dataInput")))
+            mediaRow.append(strict401gen.TD(strict401gen.Input(type="text",autofocus=focus,name=thisField[0],id=thisField[0],maxlength="6",Class="editfield dataInput")))
 
         elif 'float' in thisField[1]:
             maxlen=maxlen.split(',')[0]
             mediaRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
-            mediaRow.append(strict401gen.TD(strict401gen.Input(type="text",name=thisField[0],id=thisField[0],maxlength="6",Class="editfield dataInput")))
+            mediaRow.append(strict401gen.TD(strict401gen.Input(type="text",autofocus=focus,name=thisField[0],id=thisField[0],maxlength="6",Class="editfield dataInput")))
 
         elif thisField[0] in config['supportTables']:
             #we have a support table, used to generate a selecet field
             shortList,longList=getPickList(thisField[0],config)
 #             test=str(cols[thisField][0])+"  short: "+str(shortList)+"   long: "+str(longList)
             mediaRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
-            mediaRow.append(strict401gen.TD(strict401gen.Select(shortList,name=thisField[0],id=thisField[0],Class="editfield")))            
+            mediaRow.append(strict401gen.TD(strict401gen.Select(shortList,autofocus=focus,name=thisField[0],id=thisField[0],Class="editfield")))            
 
         else:
             mediaRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
-            mediaRow.append(strict401gen.TD(strict401gen.Input(type="text",name=thisField[0],id=thisField[0],maxlength=maxlen,Class="editfield dataInput")))
-
+            mediaRow.append(strict401gen.TD(strict401gen.Input(type="text",autofocus=focus,name=thisField[0],id=thisField[0],maxlength=maxlen,Class="editfield dataInput")))
+        focus=''
+        
         if not count%2:
             mediaTable.append(mediaRow)
             mediaRow=strict401gen.TR()
@@ -2707,6 +2668,7 @@ def editMedia(mediaID,catID,item,config):
     test=''
     filename=''
     colNames=[]
+    
     if mediaID[0]=='I':
         mediaID=mediaID[1:]
         mediaType='Imedia'
@@ -2746,7 +2708,8 @@ def editMedia(mediaID,catID,item,config):
 
     count=0
     mediaRow=strict401gen.TR()
-
+    focus="1"
+    
     for thisField in range(0,len(cols)):
         try:
             fieldlen=cols[thisField][1]
@@ -2755,28 +2718,33 @@ def editMedia(mediaID,catID,item,config):
             maxlen=''
 
         count=count+1
-
+#         focus="1"
+#         if focus=="1":
+#             focus=''
+#         else:
+#             focus="1"
+#         
         if 'enum(' in cols[thisField][1]:
             enumList=cols[thisField][1].split("','")
             enumList[0]=enumList[0][6:]
             enumList[len(enumList)-1]=enumList[len(enumList)-1][:-2]
             mediaRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            mediaRow.append(strict401gen.TD(strict401gen.Select(enumList,selected=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],Class="editfield")))
+            mediaRow.append(strict401gen.TD(strict401gen.Select(enumList,autofocus=focus,selected=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],Class="editfield dataInput")))
 
         elif 'set(' in cols[thisField][1]:
             setList=thisField[1].split(",")
             setList[0]=setList[0][5:]
             setList[len(setList)-1]=setList[len(setList)-1][:-1]
             mediaRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            mediaRow.append(strict401gen.TD(strict401gen.Select(setList,name=cols[thisField][0],id=thisField[0],multiple=1,size=len(setList),Class="editfield")))
+            mediaRow.append(strict401gen.TD(strict401gen.Select(setList,autofocus=focus,name=cols[thisField][0],id=thisField[0],multiple=1,size=len(setList),Class="editfield dataInput")))
 
         elif 'text' in cols[thisField][1]:
             mediaRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            mediaRow.append(strict401gen.TD(strict401gen.Textarea(values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],rows='10',cols='60',Class="editfield dataInput")))
+            mediaRow.append(strict401gen.TD(strict401gen.Textarea(values[0][thisField],autofocus=focus,name=cols[thisField][0],id=cols[thisField][0],rows='10',cols='60',Class="editfield dataInput")))
 
         elif 'blob' in cols[thisField][1]:
             mediaRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            mediaRow.append(strict401gen.TD(strict401gen.Input(type='file',name=cols[thisField][0],id=cols[thisField][0],rlabel=filename,Class="editfield",size="30"),Class="editfield"))
+            mediaRow.append(strict401gen.TD(strict401gen.Input(type='file',autofocus=focus,name=cols[thisField][0],id=cols[thisField][0],rlabel=filename,Class="editfield",size="30"),Class="editfield dataInput"))
 
         elif 'date' in cols[thisField][1]:
             if not values[0][thisField] or values[0][thisField]=="None":
@@ -2784,16 +2752,16 @@ def editMedia(mediaID,catID,item,config):
             else:
                 x=values[0][thisField]
             mediaRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            mediaRow.append(strict401gen.TD(strict401gen.Input(type="text",value=x,name=cols[thisField][0],id=cols[thisField][0],maxlength="10",Class="editfield dataInput")))
+            mediaRow.append(strict401gen.TD(strict401gen.Input(type="text",value=x,autofocus=focus,name=cols[thisField][0],id=cols[thisField][0],maxlength="10",Class="editfield dataInput")))
 
         elif 'int' in cols[thisField][1]:
             mediaRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            mediaRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],maxlength="6",Class="editfield dataInput")))
+            mediaRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[0][thisField],autofocus=focus,name=cols[thisField][0],id=cols[thisField][0],maxlength="6",Class="editfield dataInput")))
 
         elif 'float' in cols[thisField][1]:
             maxlen=maxlen.split(',')[0]
             mediaRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-            mediaRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],maxlength="6",Class="editfield dataInput")))
+            mediaRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[0][thisField],autofocus=focus,name=cols[thisField][0],id=cols[thisField][0],maxlength="6",Class="editfield dataInput")))
 
         elif cols[thisField][0] in config['supportTables']:
             #we have a support table, used to generate a selecet field
@@ -2801,9 +2769,9 @@ def editMedia(mediaID,catID,item,config):
 #             test=str(cols[thisField][0])+"  short: "+str(shortList)+"   long: "+str(longList)
             mediaRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
             if not values[0][thisField] or values[0][thisField]=="None":
-                mediaRow.append(strict401gen.TD(strict401gen.Select(shortList,name=cols[thisField][0],id=cols[thisField][0],Class="editfield")))            
+                mediaRow.append(strict401gen.TD(strict401gen.Select(shortList,autofocus=focus,name=cols[thisField][0],id=cols[thisField][0],Class="editfield dataInput")))            
             else:
-                mediaRow.append(strict401gen.TD(strict401gen.Select(shortList,selected=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],Class="editfield")))            
+                mediaRow.append(strict401gen.TD(strict401gen.Select(shortList,autofocus=focus,selected=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],Class="editfield dataInput")))            
                 
         else: # char fields
             if cols[thisField][0] in config['invisible']:
@@ -2811,8 +2779,9 @@ def editMedia(mediaID,catID,item,config):
                 mediaRow.append(strict401gen.TD(values[0][thisField],Class="editlabel"))               
             else:
                 mediaRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-                mediaRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],maxlength=maxlen,Class="editfield dataInput")))
-
+                mediaRow.append(strict401gen.TD(strict401gen.Input(type="text",autofocus=focus,value=values[0][thisField],name=cols[thisField][0],id=cols[thisField][0],maxlength=maxlen,Class="editfield dataInput")))
+        focus=''
+        
         if not count%2:
             mediaTable.append(mediaRow)
             mediaRow=strict401gen.TR()
@@ -2852,13 +2821,17 @@ def supportTable(supportTableName,config):
 
     test=''
     endWidth="20"
+    q1=''
+    q2=''
+    q3=''
+    
 
     colWidths,colInfo=getSupportColWidths(supportTableName,config)
     
     if supportTableName=="_config":
         # get all records for this table
-        q='select `_id`,`dbname` from '+supportTableName+"`"
-        result=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
+        q1='select `_id`,`dbname` from '+supportTableName+"`"
+        result=db.dbConnect(config['selectedHost'],config['dbname'],q1,0)
         
         colwidth="100%"   
     else:
@@ -2870,8 +2843,8 @@ def supportTable(supportTableName,config):
                 col='`'+supportTableName+'`.`'+thisCol[0]+'`,'
                 selected=selected+col
             
-        q4='select '+selected[:-1]+ ' from `'+supportTableName+"`"
-        supportresult=db.dbConnect(config['selectedHost'],config['dbname'],q4,0)
+        q2='select '+selected[:-1]+ ' from `'+supportTableName+"`"
+        supportresult=db.dbConnect(config['selectedHost'],config['dbname'],q2,0)
         result=sorted(supportresult, key=itemgetter(1))   # sort by col 1 
         colwidth=""
         
@@ -2880,8 +2853,8 @@ def supportTable(supportTableName,config):
     # get a list of the fieltypes so I can branch on blob fields
     fieldNames=[]
     fieldTypes=[]
-    q="show columns from `"+supportTableName+"`"
-    cols=db.dbConnect(config['selectedHost'],config['dbname'],q,0)
+    q3="show columns from `"+supportTableName+"`"
+    cols=db.dbConnect(config['selectedHost'],config['dbname'],q3,0)
     for thisCol in cols:
         fieldNames.append(thisCol[0])
         fieldTypes.append(thisCol[1])
@@ -3007,11 +2980,15 @@ def supportTable(supportTableName,config):
         header.append('Name of Database')
     else:
         for thisCol in colInfo:
-            if '_' not in thisCol[0] and 'filename' not in thisCol[0]:
+            if thisCol[0][0]!='_' and 'filename' not in thisCol[0]:
                 header.append(thisCol[0])
+    for thisCol in range(1,len(header)):
+        try:
+            colWidths[thisCol]=colWidths[thisCol]
+        except:
+            colWidths.append("50")
 
-
-    return (supportTable,colWidths,header,test)
+    return (supportTable,colWidths,header,colInfo,q1,q2,q3)
 
 def editSupport(supportTableName,supportID,config):
 
@@ -3051,6 +3028,7 @@ def editSupport(supportTableName,supportID,config):
     supportTable=strict401gen.TableLite(border="0",Class="edittable edittablecolor")
 
     count=0    
+    focus="1"
     
     if supportTableName=="_config":
         supportComment=strict401gen.TR(Class='oddrow')
@@ -3097,7 +3075,9 @@ def editSupport(supportTableName,supportID,config):
                     elif 'columns' in cols[thisField][0].lower():
                         if len(selectedValues)>1:
                             selectedValues=selectedValues.split()
-                        supportRow.append(strict401gen.TD(strict401gen.Select(config['itemShowColumns'],multiple=1,size=5,selected=selectedValues,name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield")))
+                            supportRow.append(strict401gen.TD(strict401gen.Select(config['itemShowColumns'],multiple=1,size=5,selected=selectedValues,name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield")))
+                        else:
+                            supportRow.append(strict401gen.TD(strict401gen.Select(config['itemShowColumns'],multiple=1,size=5,name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield")))
                 elif 'cat' in cols[thisField][0].lower():
                     if 'table' in cols[thisField][0].lower():
                         supportRow.append(strict401gen.TD(strict401gen.Select(config['tableNames'],selected=selectedValues,name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield")))
@@ -3129,16 +3109,20 @@ def editSupport(supportTableName,supportID,config):
         
             if 'blob' in cols[thisField][1]:
                 supportRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-                supportRow.append(strict401gen.TD(strict401gen.Input(type='file',name=cols[thisField][0],id=cols[thisField][0],rlabel=filename,Class="editfield",size="30"),Class="editfield"))
+                supportRow.append(strict401gen.TD(strict401gen.Input(type='file',autofocus=focus,name=cols[thisField][0],id=cols[thisField][0],rlabel=filename,Class="editfield",size="30"),Class="editfield"))
                 
             else:
                 if cols[thisField][0] in config['invisible']:
                     supportRow.append(strict401gen.TD("",Class="editlabel"))
                     supportRow.append(strict401gen.TD(values[thisField],Class="editlabel"))               
                 else:
+                    if focus=="1":
+                        focus=''
+                    else:
+                        focus="1"
                     supportRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-                    supportRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[thisField],name=cols[thisField][0],id=cols[thisField][0],maxlength=maxlen,Class="editfield dataInput")))
-
+                    supportRow.append(strict401gen.TD(strict401gen.Input(type="text",autofocus=focus,value=values[thisField],name=cols[thisField][0],id=cols[thisField][0],maxlength=maxlen,Class="editfield dataInput")))
+        focus=''
 
         if supportTableName=="_config":
                 supportComment=strict401gen.TR(Class='oddrow')
@@ -3182,8 +3166,8 @@ def createSupport(supportTableName,config):
     supportTable=strict401gen.TableLite(border="0",Class="edittable edittablecolor")
 
     count=0
-    
-    
+    focus="1"
+    test=[]
     if supportTableName=="_config":
         imageList=getImageList(config)
         themeList=getThemeList(config)
@@ -3211,35 +3195,51 @@ def createSupport(supportTableName,config):
             supportRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel",style="font-weight:bold"))
 #             supportRow.append(strict401gen.TD(strict401gen.Input(type="text",id=cols[thisField][0],size=sizelen,maxlength=maxlen,Class="editfield dataInput")))
             
+            try:
+                selectedValues=config[cols[thisField][0]]
+            except:
+                selectedValues=""
+
             if "enum" in cols[thisField][1]:
+                    try:
+                        defaultValue=config[cols[thisField][0]]
+                    except:
+                        defaultValue=''
+                    test.append(defaultValue)
                     enumList=cols[thisField][1][6:-2].split("','")
-                    supportRow.append(strict401gen.TD(strict401gen.Select(enumList,name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield")))
+                    supportRow.append(strict401gen.TD(strict401gen.Select(enumList,name=cols[thisField][0],id=cols[thisField][0],selected=defaultValue,style='width:80%',Class="editfield dataInput")))
             else:
                 if 'item' in cols[thisField][0].lower():
                     if 'table'in cols[thisField][0].lower():
-                        supportRow.append(strict401gen.TD(strict401gen.Select(config['tableNames'],name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield")))
+                        supportRow.append(strict401gen.TD(strict401gen.Select(config['tableNames'],name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield dataInput")))
                     elif 'columns' in cols[thisField][0].lower():
-                        supportRow.append(strict401gen.TD(strict401gen.Select(config['itemShowColumns'],multiple=1,size=5,name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield")))
+                        if len(selectedValues)>1:
+                            supportRow.append(strict401gen.TD(strict401gen.Select(config['itemShowColumns'],multiple=1,size=5,selected=selectedValues,name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield")))
+                        else:
+                            supportRow.append(strict401gen.TD(strict401gen.Select(config['itemShowColumns'],multiple=1,size=5,name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield")))
                 elif 'cat' in cols[thisField][0].lower():
                     if 'table' in cols[thisField][0].lower():
-                        supportRow.append(strict401gen.TD(strict401gen.Select(config['tableNames'],name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield")))
+                        supportRow.append(strict401gen.TD(strict401gen.Select(config['tableNames'],name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield dataInput")))
                     elif 'columns' in cols[thisField][0].lower():
-                        supportRow.append(strict401gen.TD(strict401gen.Select(config['catShowColumns'],multiple=1,size=5,name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield")))
+                        if len(selectedValues)>1:
+                            supportRow.append(strict401gen.TD(strict401gen.Select(config['catShowColumns'],multiple=1,size=5,selected=selectedValues,name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield dataInput")))
+                        else:
+                            supportRow.append(strict401gen.TD(strict401gen.Select(config['catShowColumns'],multiple=1,size=5,name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield dataInput")))
                     elif 'column' in cols[thisField][0].lower():
-                        supportRow.append(strict401gen.TD(strict401gen.Select(config['catShowColumns'],name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield")))
+                        supportRow.append(strict401gen.TD(strict401gen.Select(config['catShowColumns'],name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield dataInput")))
                 elif 'media' in cols[thisField][0].lower():
                     if 'table' in cols[thisField][0].lower():
-                        supportRow.append(strict401gen.TD(strict401gen.Select(config['tableNames'],name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield")))
+                        supportRow.append(strict401gen.TD(strict401gen.Select(config['tableNames'],name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield dataInput")))
                     elif 'columns' in cols[thisField][0].lower():
-                        supportRow.append(strict401gen.TD(strict401gen.Select(config['mediaShowColumns'],multiple=1,size=5,name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield")))
+                        supportRow.append(strict401gen.TD(strict401gen.Select(config['mediaShowColumns'],multiple=1,size=5,name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield dataInput")))
                     elif 'column' in cols[thisField][0].lower():
-                        supportRow.append(strict401gen.TD(strict401gen.Select(config['mediaShowColumns'],name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield")))
+                        supportRow.append(strict401gen.TD(strict401gen.Select(config['mediaShowColumns'],name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield dataInput")))
                 elif 'logo' in cols[thisField][0].lower():
-                        supportRow.append(strict401gen.TD(strict401gen.Select(imageList,name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield")))
+                    supportRow.append(strict401gen.TD(strict401gen.Select(imageList,name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield dataInput")))
                 elif 'background' in cols[thisField][0].lower():
-                        supportRow.append(strict401gen.TD(strict401gen.Select(imageList,name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield")))                    
+                    supportRow.append(strict401gen.TD(strict401gen.Select(imageList,name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield dataInput")))                    
                 elif 'theme' in cols[thisField][0].lower():
-                        supportRow.append(strict401gen.TD(strict401gen.Select(themeList,name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield")))                    
+                    supportRow.append(strict401gen.TD(strict401gen.Select(themeList,name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield dataInput")))                                     
                 else:
                     try:
                         defaultValue=config[cols[thisField][0]]
@@ -3252,12 +3252,13 @@ def createSupport(supportTableName,config):
     
             if 'blob' in cols[thisField][1]:
                 supportRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-                supportRow.append(strict401gen.TD(strict401gen.Input(type='file',name=cols[thisField][0],id=cols[thisField][0],size="10",Class="editfield")))
+                supportRow.append(strict401gen.TD(strict401gen.Input(type='file',autofocus=focus,name=cols[thisField][0],id=cols[thisField][0],size="10",Class="editfield")))
 
             else:
                 supportRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
-                supportRow.append(strict401gen.TD(strict401gen.Input(type="text",name=cols[thisField][0],id=cols[thisField][0],maxlength=maxlen,Class="editfield dataInput")))
-
+                supportRow.append(strict401gen.TD(strict401gen.Input(type="text",autofocus=focus,name=cols[thisField][0],id=cols[thisField][0],maxlength=maxlen,Class="editfield dataInput")))
+        focus=''
+        
         if supportTableName=="_config":
                 supportComment=strict401gen.TR(Class='oddrow')
                 supportRow=strict401gen.TR(Class='evenrow')
@@ -3276,7 +3277,7 @@ def createSupport(supportTableName,config):
 
     header=formbuttons('create')
 
-    return(caption,header,supportTable,'support')
+    return(caption,header,supportTable,'support',repr(test))
 
 def supportForm(supportTableName,config):
     
@@ -3658,6 +3659,175 @@ def updateCookie(req,name,value,config):
 
 
 ############ about functions
+
+def getDoc(config,doc):
+
+    if doc=="guide" or doc=='':    
+        doc="guide"
+        q1='select `'+config['docTable']+'`.`'+'cno`,`'+config['docTable']+'`.`'+'pno`,`'+\
+        config['docTable']+'`.`'+'chapter`,`'+config['docTable']+'`.`'+'page`,`'+\
+        config['docTable']+'`.`'+'text`,`'+config['docTable']+'`.`'+'image`'+\
+        ' from `'+config['docTable']+'` where `'+config['docTable']+'`.`'+'category` = "Guide"'+\
+        ' order by `cno`, `pno`'
+
+    elif doc=="manual":
+
+        q1='select `'+config['docTable']+'`.`'+'cno`,`'+config['docTable']+'`.`'+'pno`,`'+\
+        config['docTable']+'`.`'+'chapter`,`'+config['docTable']+'`.`'+'page`,`'+\
+        config['docTable']+'`.`'+'text`,`'+config['docTable']+'`.`'+'image`'+\
+        ' from `'+config['docTable']+'` where `'+config['docTable']+'`.`'+'category` = "Manual"'+\
+        ' order by `cno`, `pno`'
+            
+    docCode=db.dbConnect(config['selectedHost'],config['dbname'],q1,0)
+        
+    
+    return (docCode,doc,q1)
+
+def docTable(docData,doc,config):
+
+    if doc=="guide":
+        docName='User Guide'
+    elif doc=="manual":
+        docName="Tech Manual"
+    else:
+        docName="unknown"
+        
+    # counting the chapters
+    chCount=['1']
+    for row in docData:
+        if row[0] not in chCount:
+            chCount.append(row[0])
+            
+    # assemble a list of chapter pages and text    
+    chapters=[]
+    for xcount in range(1,len(chCount)+1):
+        ch=['']        
+        for row in docData:
+            
+            if row[0]==str(xcount):
+                ch.append([row[3],row[4]])    
+                ch[0]=row[2]
+                
+        chapters.append(ch)
+
+    count=0
+    pages=0
+    tDiv=strict401gen.Div(id="docTitle",CLASS='docTitle docTitleColor')
+    tDiv.append(docName)
+    cDiv=strict401gen.Div(id="docChapters",CLASS='docChapters docChaptersColor')
+    
+    for chapter in chapters:
+        count=count+1
+        pages=pages+(len(chapter)-1)
+            
+        if divmod(count,2)[1]==0:
+            rowColor='evenrow'
+        else:
+            rowColor='oddrow'
+        chDiv=strict401gen.Div(id="c"+str(count),CLASS='docChapterTitle '+rowColor)
+        chDiv.append(strict401gen.Href("#",chapter[0],onClick='showc('+str(count)+','+str(len(chapters))+')'))               
+    
+        cDiv.append(chDiv)
+    
+    doc=strict401gen.Div(Class="docMenu")
+    doc.append(tDiv)
+    doc.append(cDiv)
+
+    count=0
+    ccount=0
+    for chapter in chapters:
+        ccount=ccount+1
+        pcount=len(chapter)-1
+
+        pgDiv=strict401gen.Div(onClick="showc(1,9)",id="tc"+str(ccount),CLASS='docPages docPagesColor')
+
+        for page in range(1,pcount+1): 
+            
+            count=count+1
+            titleDiv=strict401gen.Div(Style="margin-left:5px;")
+
+#             docImg=strict401gen.Image("images/docright.png",height="16",width="16",alt="Open Page",id="triangle"+str(count),title="Open Page")
+#             titleDiv.append(strict401gen.Href("#"+"top"+str(count),docImg,onClick='showp('+str(count)+','+str(pages)+')'))       
+#             titleDiv.append(strict401gen.Span(chapter[page][0],id="top"+str(count),CLASS='docPageTitle',Style="margin-left:10px;"))
+            titleDiv.append(strict401gen.Image("images/docright.png",height="16",width="16",alt="Open Page",id="triangle"+str(count),title="Open Page"))
+            title=strict401gen.Span(chapter[page][0],id="top"+str(count),CLASS='docPageTitle',Style="margin-left:10px;")
+            titleDiv.append(strict401gen.Href("#"+"top"+str(count),title,onClick='showp('+str(count)+','+str(pages)+')'))       
+            pgDiv.append(titleDiv)
+            
+            txDiv=strict401gen.Div(id="t"+str(count),CLASS='docTextDiv docTextDivColor')
+            txDiv.append(strict401gen.Para(chapter[page][1],Style="margin-left:10px;margin-right:10px"))       
+            txDiv.append(strict401gen.BR())
+            pgDiv.append(txDiv)
+        
+        doc.append(pgDiv)
+    
+    test=chapters
+    return (doc,test)
+
+def docTable0(docData,config):
+
+    doc=strict401gen.Div(CLASS='chapters bottomcolor')
+    #row[0]=chapterTitle row[1]=pageTitle row[2]=pageText row[3]=pageImage
+    
+    ch={}
+    pg={}
+    for row in docData:             # loop through the rows
+        if row[0] in ch:            # is chapterTitle in ch?
+            pg[row[1]]=row[2]       # just add the pageTitle to
+            ch[row[0]]=pg
+#             x=strict401gen.Div(CLASS='chapterTitle oddrow')
+#             x.append(row[0])
+#             doc.append(x)
+# #             print ("i0 :"+str(row[0]))
+        else:
+#             x=strict401gen.Div(CLASS='chapterTitle evenrow')
+#             x.append(row[0])
+#             doc.append(x)
+            ch[row[0]]={}
+#             if row[1] in pg:          # is pageTitle in pageDic
+#                 pg[row[1]]=ch[2]      #
+#             else:
+            pg={}
+            pg[row[1]]=row[2]
+            ch[row[0]]=pg
+#             doc.append(strict401gen.Div(CLASS='chapters'))
+#             doc.append(strict401gen.Div(CLASS='chapterTitle'))
+#             doc.append(strict401gen.Pre('here'))
+    
+#     doc.append(strict401gen.PRE('chapterTitle'))
+
+
+
+
+
+
+#     for row in docData:
+        
+
+    chCount=0
+    pgCount=0
+    for chKey in ch.keys():
+        chCount=chCount+1
+        chDiv=strict401gen.Div(id="c"+str(chCount),CLASS='chapterTitle oddrow')
+        chDiv.append(strict401gen.Href(url="#",text=chKey,onClick='showc('+str(chCount)+','+str(len(ch))+')'))               
+        doc.append(chDiv)
+
+        for pgKey in ch[chKey]:
+            pgCount=pgCount+1
+            pgDiv=strict401gen.Div(id="tc"+str(pgCount),CLASS='chapter')
+            pgDiv.append(strict401gen.Href(url="#",text=pgKey,onClick='show('+str(chCount)+','+str(len(pg))+')'))       
+    
+            txDiv=strict401gen.Div(id="t"+str(pgCount),CLASS='lay')
+            txDiv.append(strict401gen.Pre(pg[pgKey]))       
+            pgDiv.append(txDiv)
+        
+      
+            doc.append(pgDiv)
+
+#       
+    
+    
+    return (doc)
 
 def aboutInfo(config):
 

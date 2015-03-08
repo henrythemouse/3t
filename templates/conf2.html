@@ -1,16 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <HTML>
 <%
-dbname=config['dbname']
 mode="Rows Displayed: "+str(len(resultTable)-1)
 caption='supportTableHeader'
 p2="&action=1"
-if dogleg:
-    loginlogout='logout'
-else:
-    loginlogout='login'
-
-
 %>
 	<HEAD>
 		<title> <%=dbname.upper()%> </title>
@@ -81,6 +74,31 @@ else:
 	        
 			    </FORM>
         
+<%
+if popup:
+%>
+				<DIV CLASS='loginbox'  STYLE="width:400;height:300;box-shadow: 10px 10px 4px #161616;background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
+				        <DIV>
+				            <!--start of form - the Edit table area-->
+				            <FORM method="post" id="dogForm" name="dogForm" enctype="multipart/form-data" action="index?action=3">
+				            
+				                <DIV CLASS='loginmsg loginmsgcolor'>
+				                    Configuration Error
+				                </DIV>
+				                 <DIV CLASS='errormessage messagetext'>
+				                    <p STYLE='margin:5px'><%=errorMessage%></p>
+				                </DIV>
+				                <DIV CLASS='messageOK'>
+				                    <INPUT TYPE="submit" NAME="OK" id='OK' VALUE="OK" CLASS='inputfield'>
+				                </DIV>
+				            <INPUT TYPE="hidden" NAME="dbname" VALUE="<%=dbname%>">
+				            <!-- end of form-->
+				            </FORM>
+				        </DIV>
+				</DIV>
+<%
+end
+%>        
         <!-- end of page div -->
 	    </DIV>   
     </BODY> 

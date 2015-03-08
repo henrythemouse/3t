@@ -23,7 +23,7 @@ BODY {background-color:#85A4A3;color:black;}
 .resulttablecolor{background-color:#6A000F;color:black;}
 .abouttablecolor{background-color:#C3C3C3;color:black;}
 .edittablecolor{background-color:#AFAFAF;color:black;}
-.dataInput:focus {background-color:#F7F7F7;color:black;border: red solid thin;}
+.dataInput:focus {background-color:#ffc0cb;color:black;border: red solid thin;}
 
 /* hover colors*/
 
@@ -39,6 +39,8 @@ BODY {background-color:#85A4A3;color:black;}
 .list select:hover {border: red solid thin;}
 .searchSubmit:hover {background-color:#EAEAEA;color:black;border: red solid thin;}
 .searchInput:hover {background-color:#EAEAEA;color:black;border: red solid thin;}
+.defaultSubmit {background-color:#47f347;color:#ffffff;border:red solid thin;font:16px sans-serif;}
+.alternateSubmit {background-color:#E7CE94;color:black;border:red solid thin;font:16px sans-serif;}
 
 /* FONT Settings */
 
@@ -62,4 +64,20 @@ a:active {color: #add8e6;}
 .inputdefault {background-color:#EAEAEA;color:black;font:16px sans-serif;}
 .loginmsgcolor{color:red;background-color:transparent;}
 .resultcol {font:10pt Times, serif;text-align:left;color:#000000}
+.messagetext {background-color:#F5F5F5;color:#B70303;14px;font: 14pt Times, sans}
+.logintext {background-color:#000000;color:#ffffff;14px;font: 14pt Times, sans}
 
+/* *************************************************** */
+/* documentation division */
+
+.docPageTitle {color:#9b3d27;font: 20px arial, sans-serif;}
+.docTextDivColor{background-color:#e5e5e5;color:black;}
+.docPagesColor{background-color:#bfbfbf;color:black;}
+.docChaptersColor{background-color:#aeaeae;color:black;} 
+.docChapters A:link {text-decoration: none;color:black;}
+.docChapters A:visited {text-decoration: none;color:black;}
+.docChapters A:active {text-decoration: none;color:black;}
+.docChapters A:hover {text-decoration: none;color:white}
+.docChapterTitleColor{background-color:#bfbfbf;color:black;}
+.docChapterTitle:hover{background-color:#a39797;color: black;}
+     
