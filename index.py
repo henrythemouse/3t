@@ -2489,7 +2489,7 @@ def mediaTable(mediaData,cookieID,record,config):
                 blobFile.close()
     
     #                binaryLink=strict401gen.Href("tmp/"+cookieID+'/'+binaryname,text,onClick="window.open(this.href);return false;")
-                blobLink=strict401gen.Href("tmp/"+cookieID+'/'+blobName,strict401gen.Image("images/fileTypes/"+iconName,title=blobToolTip,alt=iconName,Class="mediacolimage"),onClick="window.open(this.href);return false;")
+                blobLink=strict401gen.Href("tmp/"+cookieID+'/'+blobName,strict401gen.Image("images/fileTypes/"+iconName,title=blobToolTip,alt=iconName,Class="mediacolicon"),onClick="window.open(this.href);return false;")
                 mediaRow.append(strict401gen.TD(blobLink,colspan="1",Class="mediacolimage"))
     
             elif isText:
@@ -3687,10 +3687,16 @@ def docTable(docData,doc,config):
 
     if doc=="guide":
         docName='User Guide'
+        otherDoc="manual"
+        otherDocName="Tech Manual"
     elif doc=="manual":
         docName="Tech Manual"
+        otherDoc="guide"
+        otherDocName="User Guide"
     else:
         docName="unknown"
+        otherDoc="unknown"
+        otherDocName="unknown"
         
     # counting the chapters
     chCount=['1']
@@ -3712,9 +3718,9 @@ def docTable(docData,doc,config):
 
     count=0
     pages=0
-    tDiv=strict401gen.Div(id="docTitle",CLASS='docTitle docTitleColor')
-    tDiv.append(docName)
-    cDiv=strict401gen.Div(id="docChapters",CLASS='docChapters docChaptersColor')
+    docTitleDiv=strict401gen.Div(id="docTitle",CLASS='docTitle docTitleColor')
+    docTitleDiv.append(strict401gen.Href("index?action=20&amp;doc="+otherDoc,docName,title="Switch to "+otherDocName))
+    chaptersDiv=strict401gen.Div(id="docChapters",CLASS='docChapters docChaptersColor')
     
     for chapter in chapters:
         count=count+1
@@ -3724,14 +3730,15 @@ def docTable(docData,doc,config):
             rowColor='evenrow'
         else:
             rowColor='oddrow'
-        chDiv=strict401gen.Div(id="c"+str(count),CLASS='docChapterTitle '+rowColor)
-        chDiv.append(strict401gen.Href("#",chapter[0],onClick='showc('+str(count)+','+str(len(chapters))+')'))               
+            
+        chapterDiv=strict401gen.Div(id="c"+str(count),Class='docChapter '+rowColor)
+        chapterDiv.append(strict401gen.Image("images/chapter-blank.png",height="45",width="140",alt="Open Page",id="chapterImg"+str(count),title="Open Page"))        
+        chapterDiv.append(strict401gen.Href("#",chapter[0],Class="docChapterTitle",onClick='showchapter('+str(count)+','+str(len(chapters))+')'))               
+        chaptersDiv.append(chapterDiv)
     
-        cDiv.append(chDiv)
-    
-    doc=strict401gen.Div(Class="docMenu")
-    doc.append(tDiv)
-    doc.append(cDiv)
+    doc=strict401gen.Div()
+    doc.append(docTitleDiv)
+    doc.append(chaptersDiv)
 
     count=0
     ccount=0
@@ -3739,23 +3746,31 @@ def docTable(docData,doc,config):
         ccount=ccount+1
         pcount=len(chapter)-1
 
-        pgDiv=strict401gen.Div(onClick="showc(1,9)",id="tc"+str(ccount),CLASS='docPages docPagesColor')
+        pgDiv=strict401gen.Div(id="tc"+str(ccount),CLASS='docPages docPagesColor')
 
         for page in range(1,pcount+1): 
             
             count=count+1
             titleDiv=strict401gen.Div(Style="margin-left:5px;")
 
-#             docImg=strict401gen.Image("images/docright.png",height="16",width="16",alt="Open Page",id="triangle"+str(count),title="Open Page")
-#             titleDiv.append(strict401gen.Href("#"+"top"+str(count),docImg,onClick='showp('+str(count)+','+str(pages)+')'))       
-#             titleDiv.append(strict401gen.Span(chapter[page][0],id="top"+str(count),CLASS='docPageTitle',Style="margin-left:10px;"))
-            titleDiv.append(strict401gen.Image("images/docright.png",height="16",width="16",alt="Open Page",id="triangle"+str(count),title="Open Page"))
+            titleDiv.append(strict401gen.Image("images/docright.png",height="16px",width="16px",alt="Open Page",id="triangle"+str(count),title="Open Page"))
             title=strict401gen.Span(chapter[page][0],id="top"+str(count),CLASS='docPageTitle',Style="margin-left:10px;")
-            titleDiv.append(strict401gen.Href("#"+"top"+str(count),title,onClick='showp('+str(count)+','+str(pages)+')'))       
+            titleDiv.append(strict401gen.Href("#"+"top"+str(count),title,onClick='showpage('+str(count)+','+str(pages)+')'))       
             pgDiv.append(titleDiv)
             
             txDiv=strict401gen.Div(id="t"+str(count),CLASS='docTextDiv docTextDivColor')
-            txDiv.append(strict401gen.Para(chapter[page][1],Style="margin-left:10px;margin-right:10px"))       
+            docText=chapter[page][1]
+            try:
+                docList=docText.splitlines()
+            except:
+                docText=docText.trim()
+                if len(docText)>0:
+                    docList=[docText]
+                else:
+                    docList=["missing text"]
+                    
+            for line in docList:
+                txDiv.append(strict401gen.Para(line,Style="margin-left:10px;margin-right:10px"))       
             txDiv.append(strict401gen.BR())
             pgDiv.append(txDiv)
         
@@ -3808,9 +3823,9 @@ def docTable0(docData,config):
     pgCount=0
     for chKey in ch.keys():
         chCount=chCount+1
-        chDiv=strict401gen.Div(id="c"+str(chCount),CLASS='chapterTitle oddrow')
-        chDiv.append(strict401gen.Href(url="#",text=chKey,onClick='showc('+str(chCount)+','+str(len(ch))+')'))               
-        doc.append(chDiv)
+        chapterDiv=strict401gen.Div(id="c"+str(chCount),CLASS='chapterTitle oddrow')
+        chapterDiv.append(strict401gen.Href(url="#",text=chKey,onClick='showchapter('+str(chCount)+','+str(len(ch))+')'))               
+        doc.append(chapterDiv)
 
         for pgKey in ch[chKey]:
             pgCount=pgCount+1

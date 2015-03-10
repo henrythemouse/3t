@@ -914,7 +914,9 @@ class Href:
         self.url = url
         self.text = text
         self.title = None
-        self.name = None
+        self.id = None
+        self.Class = None
+        self.style = None
         for item in kw.keys():
             if self.__dict__.has_key(item):
                 self.__dict__[item] = kw[item]
@@ -928,7 +930,9 @@ class Href:
         if self.onClick: s.append(' onClick="%s"' % self.onClick)
         if self.onMouseOver: s.append(' onMouseOver="%s"' % self.onMouseOver)
         if self.onMouseOut: s.append(' onMouseOut="%s"' % self.onMouseOut)
-        if self.name: s.append(' name="%s"' % self.name)
+        if self.id: s.append(' id="%s"' % self.id)
+        if self.Class: s.append(' class="%s"' % self.Class)
+        if self.style: s.append(' style="%s"' % self.style)
         s.append('>%s</A>' % self.text)
         return string.join(s, '')
 

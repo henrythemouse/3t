@@ -19,17 +19,19 @@ function mainSrc(){
 //}
 
 //c=number of chapters
-function showc(ac,c){
+function showchapter(ac,c){
 for(i=1;i<=c;i++){
 	document.getElementById('tc'+i).style.display = 'none';
 //	document.getElementById('c'+i).style.background = ''; 
+	document.getElementById('chapterImg'+i).src = './images/chapter-blank.png'; 
 }
 document.getElementById('tc'+ac).style.display = 'inline-block';
 //document.getElementById('c'+ac).style.background = '#a39797'; 
+document.getElementById('chapterImg'+ac).src = './images/chapter-active4.png'; 
 }
 
 //n = number of hidden pages
-function showp(a,n){
+function showpage(a,n){
 if (document.getElementById('t'+a).style.display == 'inline-block') {
 	document.getElementById('t'+a).style.display = 'none';
 	document.getElementById('triangle'+a).src = './images/docright.png';

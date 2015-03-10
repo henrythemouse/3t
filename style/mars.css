@@ -9,7 +9,7 @@ BODY {background-color:#85A4A3;color:black;}
 .topcolor{background-color:#AC0D0D;color:black;}
 .itemcolor{background-color:#820000;color:black}
 .catcolor{background-color:#820000;color:black}
-.bottomcolor{background-color:#FFB9A0;color:black;}
+.bottomcolor{background-color:#ffcebd;color:black;}
 .headercolor{background-image:url('../images/mars-header.jpg');color:black;}
 .toolbarcolor{background:url('../images/mars-toolbar2.jpg');color:white;}
 /* just for IE */
@@ -17,8 +17,8 @@ BODY {background-color:#85A4A3;color:black;}
 
 /* TABLE colors */
 
-.oddrow {background-color:#C3C3C3;color:#000000}
-.evenrow{background-color:#EAEAEA;color:#000000}
+.oddrow{background-color:#e6a791;color:#000000}
+.evenrow {background-color:#FFB9A0;color:#000000}
 /* tr.header {height:10mm;background-color:#5faba1;color:#000000} */
 .resulttablecolor{background-color:#6A000F;color:black;}
 .abouttablecolor{background-color:#C3C3C3;color:black;}
@@ -33,19 +33,19 @@ BODY {background-color:#85A4A3;color:black;}
 .imgwarn input:hover {background-color: #FF4500;color: black;}
 .imgcaution img:hover {background-color:#DDF75C;color: black;}
 .imgcaution input:hover {background-color:#DDF75C;color: black;}
-.imgpassive img:hover {background-color:#C3C3C3;color: black;}
+.imgpassive img:hover {background-color:#FFD9CC;color: black;}
 .imgpassive input:hover {background-color:#C3C3C3;color: black;}
 .hilite img:hover {border: red solid thin;}
 .list select:hover {border: red solid thin;}
-.searchSubmit:hover {background-color:#EAEAEA;color:black;border: red solid thin;}
-.searchInput:hover {background-color:#EAEAEA;color:black;border: red solid thin;}
+.searchSubmit:hover {background-color:#FFD9CC;color:black;border: red solid thin;}
+.searchInput:hover {background-color:#FFD9CC;color:black;border: red solid thin;}
 .defaultSubmit {background-color:#47f347;color:#ffffff;border:red solid thin;font:16px sans-serif;}
 .alternateSubmit {background-color:#E7CE94;color:black;border:red solid thin;font:16px sans-serif;}
 
 /* FONT Settings */
 
 /* unvisited link */
-a:link {color: #bfbfbf;}
+/* a:link {color: #FFD9CC;} */
 /* visited link */
 a:visited {color: #e6e6fa;}
 /* mouse over link */
@@ -57,9 +57,9 @@ a:active {color: #add8e6;}
 
 .supporttooltip {font:12pt Times, serif;text-align:left;color:red;}
 .displaynamecolor{color:white;}
-.searchfieldcolor{background-color:#C3C3C3;color:black;}
+.searchfieldcolor{background-color:#FFD9CC;color:black;}
 .editfield {background-color:#EAEAEA;color:black;font:10pt Times, sans;}
-.topfield {background-color:#EAEAEA;color:black;font:10pt Times, sans;}
+.topfield {background-color:#FFD9CC;color:black;font:10pt Times, sans;}
 .inputfield {background-color:#EAEAEA;color:black;font:16px sans-serif;}
 .inputdefault {background-color:#EAEAEA;color:black;font:16px sans-serif;}
 .loginmsgcolor{color:red;background-color:transparent;}
@@ -70,14 +70,31 @@ a:active {color: #add8e6;}
 /* *************************************************** */
 /* documentation division */
 
-.docPageTitle {color:#9b3d27;font: 20px arial, sans-serif;}
-.docTextDivColor{background-color:#e5e5e5;color:black;}
-.docPagesColor{background-color:#bfbfbf;color:black;}
-.docChaptersColor{background-color:#aeaeae;color:black;} 
+.docPageTitle {color:black;}
+.docTextDivColor{background-color:#ffebe3;color:black;}
+.docPagesColor{background-color:#ffcebd;color:black;}
+.docTitleColor{background-color:#ffcebd;color:black}
+.docChaptersColor{background-color:#FFB9A0;color:black;}
+.docChapterTitleColor{background-color:#FFB9A0;color:black;}
+.docChapterTitle:hover{background-color:#f08d81;color: black;}
+
+.docTitle A:link {text-decoration: none;color:black;}
+.docTitle A:visited {text-decoration: none;color:black;}
+.docTitle A:active {text-decoration: none;background-color:gray;color:black;}
+.docTitle A:hover {text-decoration: none;color:red}
+
 .docChapters A:link {text-decoration: none;color:black;}
 .docChapters A:visited {text-decoration: none;color:black;}
-.docChapters A:active {text-decoration: none;color:black;}
+.docChapters A:active {text-decoration: none;background-color:gray;color:white;}
 .docChapters A:hover {text-decoration: none;color:white}
-.docChapterTitleColor{background-color:#bfbfbf;color:black;}
-.docChapterTitle:hover{background-color:#a39797;color: black;}
-     
+
+.docPages A:link {text-decoration: none;color:black;}
+.docPages A:visited {text-decoration: none;color:black;}
+.docPages A:active {text-decoration: none;background-color:gray;color:white;}
+.docPages A:hover {text-decoration: none;color:white;}
+ 
+.docButton A:link {text-decoration: none;color:black;}
+.docButton A:visited {text-decoration: none;color:black;}
+.docButton A:active {text-decoration: none;background-color:gray;color:white;}
+.docButton A:hover {text-decoration: none;color:white;}
+    

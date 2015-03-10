@@ -19,7 +19,7 @@ BODY {background-color:#85A4A3;color:black;}
 /* TABLE colors */
 
 .oddrow {background-color:#B3B3B3;color:#000000}
-.evenrow{background-color:#bfbfbf;color:#000000}
+.evenrow{background-color:#cccccc;color:#000000}
 /* tr.header {height:10mm;background-color:#5faba1;color:#000000} */
 .resulttablecolor{background-color:#CD001D;color:black;}
 .abouttablecolor{background-color:#badbad;color:black;}
@@ -79,6 +79,11 @@ a:active {color: #add8e6;}
 .docChaptersColor{background-color:#aeaeae;color:black;}
 .docChapterTitleColor{background-color:#bfbfbf;color:black;}
 .docChapterTitle:hover{background-color:#999999;color: black;}
+
+.docTitle A:link {text-decoration: none;color:black;}
+.docTitle A:visited {text-decoration: none;color:black;}
+.docTitle A:active {text-decoration: none;background-color:gray;color:black;}
+.docTitle A:hover {text-decoration: none;color:red}
 
 .docChapters A:link {text-decoration: none;color:black;}
 .docChapters A:visited {text-decoration: none;color:black;}

@@ -71,14 +71,32 @@ a:active {color: #000000;}
 /* *************************************************** */
 /* documentation division */
 
-.docPageTitle {color:#9b3d27;font: 20px arial, sans-serif;}
-.docTextDivColor{background-color:#e5e5e5;color:black;}
-.docPagesColor{background-color:#bfbfbf;color:black;}
-.docChaptersColor{background-color:#aeaeae;color:black;} 
+.docPageTitle {color:#9b3d27;}
+.docTextDivColor{background-color:#FFFFCC;color:black;}
+.docPagesColor{background-color:#DEB887;color:black;}
+.docTitleColor{background-color:#DEB887;color:#9b3d27}
+.docChaptersColor{background-color:#DEB887;color:black;}
+.docChapterTitleColor{background-color:#DEB887;color:black;}
+.docChapterTitle:hover{background-color:#eeee53;color: black;}
+
+.docTitle A:link {text-decoration: none;color:black;}
+.docTitle A:visited {text-decoration: none;color:black;}
+.docTitle A:active {text-decoration: none;background-color:gray;color:black;}
+.docTitle A:hover {text-decoration: none;color:white}
+
 .docChapters A:link {text-decoration: none;color:black;}
 .docChapters A:visited {text-decoration: none;color:black;}
-.docChapters A:active {text-decoration: none;color:black;}
-.docChapters A:hover {text-decoration: none;color:white}
-.docChapterTitleColor{background-color:#bfbfbf;color:black;}
-.docChapterTitle:hover{background-color:#a39797;color: black;}
+.docChapters A:active {text-decoration: none;background-color:gray;color:white;}
+.docChapters A:hover {text-decoration: none;color:#9b3d27}
+
+.docPages A:link {text-decoration: none;color:black;}
+.docPages A:visited {text-decoration: none;color:black;}
+.docPages A:active {text-decoration: none;background-color:gray;color:white;}
+.docPages A:hover {text-decoration: none;color:white;}
+ 
+.docButton A:link {text-decoration: none;color:black;}
+.docButton A:visited {text-decoration: none;color:black;}
+.docButton A:active {text-decoration: none;background-color:gray;color:white;}
+.docButton A:hover {text-decoration: none;color:white;}
+    
     
