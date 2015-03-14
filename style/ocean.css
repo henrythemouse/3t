@@ -71,32 +71,20 @@ a:active {color: #ffffff;}
 /* *************************************************** */
 /* documentation division */
 
-.docPageTitle {color:white;}
 .docTextDivColor{background-color:#ddefed;color:black;}
-.docPagesColor{background-color:#005630;color:black;}
-.docTitleColor{background-color:#005630;color:white}
-.docChaptersColor{background-color:#005630;color:black;}
-.docChapterTitleColor{background-color:#005630;color:black;}
-.docChapterTitle:hover{background-color:#a4ca95;color: black;}
 
-.docTitle A:link {text-decoration: none;color:black;}
-.docTitle A:visited {text-decoration: none;color:black;}
-.docTitle A:active {text-decoration: none;background-color:gray;color:black;}
-.docTitle A:hover {text-decoration: none;color:white}
+.docTitle A:link {text-decoration: none;color:#a4ca95;}
+.docTitle A:visited {text-decoration: none;color:#a4ca95;}
+.docTitle A:active {text-decoration: nonecolor:#a4ca95;}
+.docTitle A:hover {text-decoration: none;background-color:#007d46;color:white}
 
-.docChapters A:link {text-decoration: none;color:black;}
-.docChapters A:visited {text-decoration: none;color:black;}
-.docChapters A:active {text-decoration: none;background-color:gray;color:white;}
-.docChapters A:hover {text-decoration: none;color:white}
+.docChapters A:link {text-decoration: none;color:#005630;}
+.docChapters A:visited {text-decoration: none;color:#005630;}
+.docChapters A:active {text-decoration: none;color:white;}
+.docChapters A:hover {text-decoration: none;background-color:#a4ca95;color:#005630;}
 
-.docPages A:link {text-decoration: none;color:black;}
-.docPages A:visited {text-decoration: none;color:black;}
+.docPages A:link {text-decoration: none;color:#a4ca95;}
+.docPages A:visited {text-decoration: none;color:#a4ca95;}
 .docPages A:active {text-decoration: none;background-color:gray;color:white;}
-.docPages A:hover {text-decoration: none;color:white;}
+.docPages A:hover {text-decoration: none;background-color:#007d46;color:white;}
  
-.docButton A:link {text-decoration: none;color:black;}
-.docButton A:visited {text-decoration: none;color:black;}
-.docButton A:active {text-decoration: none;background-color:gray;color:white;}
-.docButton A:hover {text-decoration: none;color:white;}
-    
-   

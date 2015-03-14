@@ -224,7 +224,7 @@ option {height:5mm;}
     text-align: center;
     vertical-align: middle;
     line-height:45px;
-    position:absolute;top:0px;width:150px;left:0px;height:45px;
+    position:absolute;top:4px;width:150px;left:0px;height:45px;
 }
 
 .docChapter{
@@ -237,7 +237,7 @@ option {height:5mm;}
     text-align: center;
     vertical-align: middle;
     line-height:35px;
-    position:absolute;top:2px;width:130px;left:2px;height:35px;
+    position:absolute;top:5px;width:125px;left:5px;height:30px;
 }
 
 .docChapters{

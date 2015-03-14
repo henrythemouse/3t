@@ -22,12 +22,12 @@ function mainSrc(){
 function showchapter(ac,c){
 for(i=1;i<=c;i++){
 	document.getElementById('tc'+i).style.display = 'none';
-//	document.getElementById('c'+i).style.background = ''; 
+	document.getElementById('L'+i).style.color = ''; 
 	document.getElementById('chapterImg'+i).src = './images/chapter-blank.png'; 
 }
 document.getElementById('tc'+ac).style.display = 'inline-block';
-//document.getElementById('c'+ac).style.background = '#a39797'; 
-document.getElementById('chapterImg'+ac).src = './images/chapter-active4.png'; 
+document.getElementById('L'+ac).style.color = '#000000'; 
+document.getElementById('chapterImg'+ac).src = './images/chapter-active10.png'; 
 }
 
 //n = number of hidden pages

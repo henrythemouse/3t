@@ -15,6 +15,7 @@ else:
     mode="Rows Displayed: "+str(len(resultTable)-1)
 if 'default' in catImage:
     catImage='catimages/'+dbname+'/default.png'
+catImage=catImage.replace(" ","%20")
 
 # set the displayname locatoin
 if displaynamelocation=='TOP':

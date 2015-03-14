@@ -2982,11 +2982,6 @@ def supportTable(supportTableName,config):
         for thisCol in colInfo:
             if thisCol[0][0]!='_' and 'filename' not in thisCol[0]:
                 header.append(thisCol[0])
-    for thisCol in range(1,len(header)):
-        try:
-            colWidths[thisCol]=colWidths[thisCol]
-        except:
-            colWidths.append("50")
 
     return (supportTable,colWidths,header,colInfo,q1,q2,q3)
 
@@ -3718,9 +3713,9 @@ def docTable(docData,doc,config):
 
     count=0
     pages=0
-    docTitleDiv=strict401gen.Div(id="docTitle",CLASS='docTitle docTitleColor')
+    docTitleDiv=strict401gen.Div(id="docTitle",CLASS='docTitle')
     docTitleDiv.append(strict401gen.Href("index?action=20&amp;doc="+otherDoc,docName,title="Switch to "+otherDocName))
-    chaptersDiv=strict401gen.Div(id="docChapters",CLASS='docChapters docChaptersColor')
+    chaptersDiv=strict401gen.Div(id="docChapters",CLASS='docChapters')
     
     for chapter in chapters:
         count=count+1
@@ -3730,10 +3725,11 @@ def docTable(docData,doc,config):
             rowColor='evenrow'
         else:
             rowColor='oddrow'
-            
+        
+        chapterTitle=chapter[0].strip()
         chapterDiv=strict401gen.Div(id="c"+str(count),Class='docChapter '+rowColor)
-        chapterDiv.append(strict401gen.Image("images/chapter-blank.png",height="45",width="140",alt="Open Page",id="chapterImg"+str(count),title="Open Page"))        
-        chapterDiv.append(strict401gen.Href("#",chapter[0],Class="docChapterTitle",onClick='showchapter('+str(count)+','+str(len(chapters))+')'))               
+        chapterDiv.append(strict401gen.Image("images/chapter-blank.png",height="100%",width="100%",alt="Open Page",id="chapterImg"+str(count),title="Open Page"))        
+        chapterDiv.append(strict401gen.Href("#",chapterTitle,id="L"+str(count),Class="docChapterTitle",onClick='showchapter('+str(count)+','+str(len(chapters))+')'))               
         chaptersDiv.append(chapterDiv)
     
     doc=strict401gen.Div()
@@ -3746,14 +3742,14 @@ def docTable(docData,doc,config):
         ccount=ccount+1
         pcount=len(chapter)-1
 
-        pgDiv=strict401gen.Div(id="tc"+str(ccount),CLASS='docPages docPagesColor')
+        pgDiv=strict401gen.Div(id="tc"+str(ccount),CLASS='docPages')
 
         for page in range(1,pcount+1): 
             
             count=count+1
             titleDiv=strict401gen.Div(Style="margin-left:5px;")
 
-            titleDiv.append(strict401gen.Image("images/docright.png",height="16px",width="16px",alt="Open Page",id="triangle"+str(count),title="Open Page"))
+            titleDiv.append(strict401gen.Image("images/docright.png",height="16",width="16",alt="Open Page",id="triangle"+str(count),title="Open Page"))
             title=strict401gen.Span(chapter[page][0],id="top"+str(count),CLASS='docPageTitle',Style="margin-left:10px;")
             titleDiv.append(strict401gen.Href("#"+"top"+str(count),title,onClick='showpage('+str(count)+','+str(pages)+')'))       
             pgDiv.append(titleDiv)
@@ -3778,152 +3774,6 @@ def docTable(docData,doc,config):
     
     test=chapters
     return (doc,test)
-
-def docTable0(docData,config):
-
-    doc=strict401gen.Div(CLASS='chapters bottomcolor')
-    #row[0]=chapterTitle row[1]=pageTitle row[2]=pageText row[3]=pageImage
-    
-    ch={}
-    pg={}
-    for row in docData:             # loop through the rows
-        if row[0] in ch:            # is chapterTitle in ch?
-            pg[row[1]]=row[2]       # just add the pageTitle to
-            ch[row[0]]=pg
-#             x=strict401gen.Div(CLASS='chapterTitle oddrow')
-#             x.append(row[0])
-#             doc.append(x)
-# #             print ("i0 :"+str(row[0]))
-        else:
-#             x=strict401gen.Div(CLASS='chapterTitle evenrow')
-#             x.append(row[0])
-#             doc.append(x)
-            ch[row[0]]={}
-#             if row[1] in pg:          # is pageTitle in pageDic
-#                 pg[row[1]]=ch[2]      #
-#             else:
-            pg={}
-            pg[row[1]]=row[2]
-            ch[row[0]]=pg
-#             doc.append(strict401gen.Div(CLASS='chapters'))
-#             doc.append(strict401gen.Div(CLASS='chapterTitle'))
-#             doc.append(strict401gen.Pre('here'))
-    
-#     doc.append(strict401gen.PRE('chapterTitle'))
-
-
-
-
-
-
-#     for row in docData:
-        
-
-    chCount=0
-    pgCount=0
-    for chKey in ch.keys():
-        chCount=chCount+1
-        chapterDiv=strict401gen.Div(id="c"+str(chCount),CLASS='chapterTitle oddrow')
-        chapterDiv.append(strict401gen.Href(url="#",text=chKey,onClick='showchapter('+str(chCount)+','+str(len(ch))+')'))               
-        doc.append(chapterDiv)
-
-        for pgKey in ch[chKey]:
-            pgCount=pgCount+1
-            pgDiv=strict401gen.Div(id="tc"+str(pgCount),CLASS='chapter')
-            pgDiv.append(strict401gen.Href(url="#",text=pgKey,onClick='show('+str(chCount)+','+str(len(pg))+')'))       
-    
-            txDiv=strict401gen.Div(id="t"+str(pgCount),CLASS='lay')
-            txDiv.append(strict401gen.Pre(pg[pgKey]))       
-            pgDiv.append(txDiv)
-        
-      
-            doc.append(pgDiv)
-
-#       
-    
-    
-    return (doc)
-
-def aboutInfo(config):
-
-    caption="About 3t"
-    header=""
-    result=[\
-    ["Author: Gary M Witscher"],
-    ["Date: 2014-07-07"],
-    ["Version: 2.4"],
-    ["License: Free (as in beer and chicken)"],
-    ["W3C Markup Validation: HTML 4.01 Strict"],
-    ["W3C CSS Validation: CSS2"],
-    ["- How Did This All Come About and Why"],
-    ["Some time back I wrote a web based MySQL client to handle the task "\
-    "of keeping track of my numerous automobile repairs. I was hoping to "\
-    "avoid repeating my automotive mistakes and to track expenses. It all worked out "\
-    "fairly well, but the client interface was not as simple as it needed to be. "\
-    "This was due to the fact that as I developed it I expanded my needs and found that "\
-    "it needed to handle any and all data bases and data types. This sort of completeness "\
-    "produced UI complexities that didn't allow fast and easy data access. "\
-    "So, I set about to build a UI that would be simple to use. This is version 2 in that series."],
-    ["- A Little About the Layout"],
-    ["This Web App is specifically designed to display, edit, and search  three related tables. "\
-    "The primary table is the 'itemTable'. Data linked to each Item is stored "\
-    "in the secondary table (catagory table, or 'catTable'). The 'itemTable' has an image "\
-    "field for storing an image of that item. The 'catTable' has a links to a 'mediaTable' "\
-    "for storing notes and related images about the specific record. There is also a kooky "\
-    "table that is designed to allow for multiple logins."],
-    ["- MySQL Information"],
-    ["All the data is stored in a MySQL data base. Information on how to configure the "\
-    "data base can be found in the INSTALL file in the main directory. This version will only "\
-    "handle three tables, very specific tables. I call the first one 'Auto' (the itemTable), the second one "\
-    " is 'Service' (the catTable). The third one is a media table called 'note'. "
-    "If you want the features I've programmed into this script you will "\
-    " have to abide by the strict table definitions I've provided. Although you can name them and their "\
-    "fields anything you want. And they can contain any data you like. This is not JUST an Auto DB, "\
-    "I've used it for a 'Books I've Read DB' and have plans to use it for many other dbs."],
-    ["- Requirements"],
-    ["The app must run under Apache ver2 or later unless you want to make some major code changes."\
-    "It uses Python2.5 and ModPython and MySQL-python. In addition it uses enumeration fields, which "\
-    "as far as I know are not found outside of MySQL. So, I think your stuck with MySQL."]
-    ]
-
-    return (caption,header,result,'item')
-
-def aboutTable(aboutData,config):
-
-    resultTable=strict401gen.TableLite(CLASS='')
-    row='odd'
-    aboutIntro="font:10pt Tahoma, serif;text-align:center;"
-
-    for thisRow in aboutData:
-        # indicates a title line
-        if thisRow[0][0]=="-":
-
-            if row=='odd':
-                row='even'
-            else:
-                row='odd'
-
-            rRow=strict401gen.TR(Class=row+'row')
-            rRow.append(strict401gen.TD(thisRow[0][1:],style="width:785px;font: 14pt Times, serif, bold;text-align:center;"))
-            aboutIntro="font:10pt Arial, sans;text-align:left;"
-            
-        # not a title, just a data line
-        else:
-            rRow=strict401gen.TR(Class=row+'row')
-            rRow.append(strict401gen.TD(thisRow[0],style="width:785px;"))
-
-        resultTable.append(rRow)
-
-    if row=='odd':
-        row='even'
-    else:
-        row='odd'
-
-    rRow=strict401gen.TR(Class=row+'row')
-    rRow.append(strict401gen.TD(strict401gen.RawText("&nbsp;"),style="width:785px;"))
-    resultTable.append(rRow)
-
-    return (resultTable)
 
 def editConfig(req,config):
 

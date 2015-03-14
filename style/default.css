@@ -71,32 +71,20 @@ a:active {color: #000000;}
 /* *************************************************** */
 /* documentation division */
 
-.docPageTitle {color:#9b3d27;}
 .docTextDivColor{background-color:#FFFFCC;color:black;}
-.docPagesColor{background-color:#DEB887;color:black;}
-.docTitleColor{background-color:#DEB887;color:#9b3d27}
-.docChaptersColor{background-color:#DEB887;color:black;}
-.docChapterTitleColor{background-color:#DEB887;color:black;}
-.docChapterTitle:hover{background-color:#eeee53;color: black;}
 
-.docTitle A:link {text-decoration: none;color:black;}
-.docTitle A:visited {text-decoration: none;color:black;}
-.docTitle A:active {text-decoration: none;background-color:gray;color:black;}
-.docTitle A:hover {text-decoration: none;color:white}
+.docTitle A:link {text-decoration: none;color:#CC3A18;}
+.docTitle A:visited {text-decoration: none;color:#CC3A18;}
+.docTitle A:active {text-decoration: none;color:#CC3A18;}
+.docTitle A:hover {text-decoration: none;background-color:#FFD278;color:#70200D}
 
-.docChapters A:link {text-decoration: none;color:black;}
-.docChapters A:visited {text-decoration: none;color:black;}
-.docChapters A:active {text-decoration: none;background-color:gray;color:white;}
-.docChapters A:hover {text-decoration: none;color:#9b3d27}
+.docChapters A:link {text-decoration: none;color:#CC3A18;}
+.docChapters A:visited {text-decoration: none;color:#CC3A18;}
+.docChapters A:active {text-decoration: none;color:#CC3A18;}
+.docChapters A:hover {text-decoration: none;background-color:#FFD278;color:#70200D}
 
-.docPages A:link {text-decoration: none;color:black;}
-.docPages A:visited {text-decoration: none;color:black;}
-.docPages A:active {text-decoration: none;background-color:gray;color:white;}
-.docPages A:hover {text-decoration: none;color:white;}
- 
-.docButton A:link {text-decoration: none;color:black;}
-.docButton A:visited {text-decoration: none;color:black;}
-.docButton A:active {text-decoration: none;background-color:gray;color:white;}
-.docButton A:hover {text-decoration: none;color:white;}
-    
+.docPages A:link {text-decoration: none;color:#CC3A18;}
+.docPages A:visited {text-decoration: none;color:#CC3A18;}
+.docPages A:active {text-decoration: none;color:#CC3A18;}
+.docPages A:hover {text-decoration: none;background-color:#FFD278;color:#70200D;}
     

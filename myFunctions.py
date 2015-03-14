@@ -285,9 +285,11 @@ def getConfig(req,dbname):
             config['supportTables'].remove('_kooky')
             config['supportTables'].remove('_config')
             config['supportTables'].remove('_category')
+            config['supportTables'].remove('_doc')
             config['tableNames'].remove('_kooky')
             config['tableNames'].remove('_config')
             config['tableNames'].remove('_category')
+            config['tableNames'].remove('_doc')
         except:
             config['configError']='supportTable list failed: '
             
