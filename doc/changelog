@@ -1,15 +1,24 @@
 3t (3.0) stable; urgency=low
 
-  * Moved configuration variables to _config table in db.
-  * Editing/deleting icons depend on valid login.
+  * All PRI column names start with '_', auto-configuration depends on this now.
+  * Changed all itemTable structures to match: itemPriColName = _itemTableName = dbname.
+  * Changed other data table structures to match: PRI column name = _tableName.
+  * Media table is now named 'media'.
+  * Table fullTextIndexName = tableName.
+  * Renamed kooky table to '_kooky'.
+  * Added _category table to supply category names an images.
+  * Added _doc table to supply User Guide and Tech Manual, documentation UI redesigned.
+  * Moved configuration variables to _config table in db, using support table UI to edit.
+  * Edit/Delete icons depend on valid login.
   * Extracted colors to selectable css 'theme' files, base.css provides all other css.
   * Added support for extra tables to be used for select lists: support tables.
+  * Added links to support table column data from the results table.
   * Re-organized media div, text in vertical table on left, then note, then image.
   * itemimages dir now has individual subdirs for each db, db specific item images are saved there.
   * images dir now has individual subdirs for each db, default images are copied there.
   * added filetype support for media table, displays icons for popular filetypes that can't be thumbnailed.
 
- -- Gary M. Witscher <g@webquery.org>  Sun, 21 Dec 2014 12:21:58 -0800
+ -- Gary M. Witscher <witscher@gmail.com>  Sun, 21 Dec 2014 12:21:58 -0800
 
 3t (2.2) stable; urgency=low
 

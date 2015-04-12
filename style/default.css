@@ -18,7 +18,8 @@ BODY {background-color:#248c8c;color:black;}
 
 /* TABLE colors */
 
-.oddrow {background-color:#FFFF99;color:#000000}
+/* .oddrow {background-color:#FFFF99;color:#000000} */
+.oddrow {background-color:#ffe1a6;color:#000000}
 .evenrow{background-color:#FFFFCC;color:#000000}
 /* .header {height:10mm;background-color:#5faba1;color:#000000} */
 .resulttablecolor{background-color:#DEB887;color:black;}
@@ -71,6 +72,7 @@ a:active {color: #000000;}
 /* *************************************************** */
 /* documentation division */
 
+.docPagesColor{background-color:#DEB887;color:black;}
 .docTextDivColor{background-color:#FFFFCC;color:black;}
 
 .docTitle A:link {text-decoration: none;color:#CC3A18;}

@@ -59,6 +59,8 @@ def index(req,currentCat=0,currentItem=1,action=0):
     supportTableName=''
     itemReq=''
     catReq=''
+    searchText=''
+    searchMode=''
     
     try:
         x=req.form.list
@@ -131,10 +133,6 @@ def index(req,currentCat=0,currentItem=1,action=0):
         except:
             itemSelected=''
 
-        try:                # if available, get the item formdata
-            searchText=req.form['searchText']
-        except:
-            searchText=''
 
         try:                # if available, get the cat record formdata - edit a record
             catID=req.form['edit']
@@ -225,37 +223,46 @@ def index(req,currentCat=0,currentItem=1,action=0):
             cancelAction=data['cancelAction']
             username=data['username']
             userpass=data['userpass']
-#             supportTableName=data['supportTableName']
-            if not username:
-                username=dbname
-                config['login']=''
-            else:
-                config['login']='stored'
-            if not userpass:
-                userpass=dbname
-                config['login']=''
-            else:
-                config['login']='stored'
-            try:
-                # is search button clicked?
-                searchButton=req.form['searchButton.x'].value
-                try:
-                    # get searchMode if sent
-                    searchMode=req.form['searchMode'].value
-                except:
-                    searchMode=""
-            except:
-                # use saved data
-                searchMode=data['searchMode']
-                searchText=data['searchText']
-
-            if not catID:
-                catID=data['catID']
+            searchText=data['searchText']
+            searchMode=req.form['searchMode']
         except:
-            #~ util.redirect(req,"testValue.py/testvalue?test="+repr(data))
             pass
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(data)+"--"+str(searchText))
+#             supportTableName=data['supportTableName']
+        if not username or username=='':
+            username=config['dbname']
+            config['login']=''
+        else:
+            if username != config['dbname']:
+                config['login']='stored'
+        if not userpass or userpass=='':
+            userpass=config['dbname']
+            config['login']=''
+        else:
+            if userpass != config['dbname']:
+                config['login']='stored'
+        try:
+            # get searchText if sent
+            searchText=req.form['searchText']
+        except:
+            try:
+                # use saved data if it's available
+                searchText=data['searchText']
+            except:
+                searchText=""
+#                 pass
 
-#     util.redirect(req,"testValue.py/testvalue?test="+str(searchButton))    
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(data)+"--"+str(searchText)+"--"+str(action))            
+
+        if not catID:
+            try:
+                # use saved catID if available
+                catID=data['catID']
+            except:
+                pass
+            
+#     util.redirect(req,"testValue.py/testvalue?test="+str(config['dbname'])+"-"+str(username)+"-"+str(userpass))    
+#     util.redirect(req,"testValue.py/testvalue?test="+repr(searchText))
     
 #    itemSelected=1
     # *******************************************
@@ -378,7 +385,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
 #        catImage=catImages[currentCat][1]
         supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
-#         util.redirect(req,"testValue.py/testvalue?test="+str(searchText)+str(searchMode))
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(searchText)+repr(searchMode))
         results=searchQuery(searchText,searchMode,catImages[currentCat][0],item[1],config)
 #         util.redirect(req,"testValue.py/testvalue?test="+repr(results[-3]))
 
@@ -485,6 +492,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
         result=editConfig(req,config)
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(docDiv[1])+" resultTable: "+str(resultTable))
             
         # parse the results list
         caption=result[0]
@@ -518,9 +526,9 @@ def index(req,currentCat=0,currentItem=1,action=0):
 #         util.redirect(req,"testValue.py/testvalue?test="+repr(catImages)+" "+str(supportTableName))
         result=supportTable(supportTableName,config)
         # in case the _category table has been edited this will refress the images
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(len(result[0[0]]))+" "+str(result[5]))
         catImages=catImgs2(config)
         
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(len(result[0[0]]))+" "+str(result[2]))
 
         # parse the results list
         caption='supportTableHeader'
@@ -606,8 +614,8 @@ def index(req,currentCat=0,currentItem=1,action=0):
             # this will force the app to open the last media entry
             # if the last entry was not media, the last media entry will be displayed
 
-#            util.redirect(req,"testValue.py/testvalue?test="+repr(config))
-            itemID,mediaID=lastUpdate(config)
+            itemID,mediaID,q=lastUpdate(config)
+#             util.redirect(req,"testValue.py/testvalue?test="+repr(q))
             item=itemData2(itemID,config)
             currentItem=indexItem(item,itemSelected,action)
             itemSelect=itemForm(item[4],currentItem)
@@ -685,8 +693,10 @@ def index(req,currentCat=0,currentItem=1,action=0):
             'results':results\
             }
 
-#        util.redirect(req,"testValue.py/testvalue?test="+"kooky "+repr((searchMode)))
+#         util.redirect(req,"testValue.py/testvalue?test="+"kooky1 "+repr((data['username']+"-"+data['userpass']+"-"+config['login'])))
         kookied=kooky2.myCookies(req,'save',data,config['dbname'],config['selectedHost'])
+#         util.redirect(req,"testValue.py/testvalue?test="+"kooky2 "+repr((kookied)))
+#         util.redirect(req,"testValue.py/testvalue?test="+repr(data)+"--"+str(searchText)+"--"+str(action))            
 
         # set the template name
         mainForm='templates/main4.html'
@@ -703,7 +713,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
         v['popup']=popup
         v['errorMessage']=errorMessage
         v['relatedCat']=relatedCat
-        v['dogleg']=username
+        v['username']=username
         v['cancelAction']=str(cancelAction)
         v['error']=error
         v['dbname']=config['dbname']
@@ -776,7 +786,7 @@ def searchQuery(searchText1,searchMode,categoryName,itemID,config):
         itemFullTextCols=itemFullTextCols+itemBooleanFields
         mediaFullTextCols=mediaFullTextCols+mediaBooleanFields
         mode=' IN BOOLEAN MODE'
-        searchText="'"+'"'+searchText1+'"'+"'"
+        searchText="'"+searchText1+"'"
     else:
         mode=""
         searchText="'"+searchText1+"'"
@@ -974,7 +984,7 @@ def getBooleanFields(config):
 
 def searchForm(searchText,searchMode):
 
-    moreInput=strict401gen.Input(type='checkbox',checked=searchMode,name='searchMode',id='searchMode',title="Double Quoted Boolean Search",Class="")
+    moreInput=strict401gen.Input(type='checkbox',checked=searchMode,name='searchMode',id='searchMode',title='Boolean Search (+,-,~,*,&quot;&quot;)',Class="")
     searchInput=strict401gen.Input(type='text',llabel="Search",value=searchText,size="15",maxlength="20",name='searchText',id='searchText',title="Enter text to Search for.",Class="searchfield dataInput searchfieldcolor")
     searchButton=strict401gen.Input(type="image",name='searchButton',id="searchButton",srcImage="images/search2.png",alt="Search",title="Submit Search",Class="searchbutton searchSubmit")
 
@@ -2073,9 +2083,9 @@ def createCat(categoryName,item,config):
             catRow.append(strict401gen.TD(strict401gen.Input(type='file',autofocus=focus,name=thisField[0],id=thisField[0],Class="editfield")))
 
         elif 'date' in thisField[1]:
-            x=string.strip(str(datetime.date.today()))
+            dateStr=string.strip(str(datetime.date.today()))
             catRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
-            catRow.append(strict401gen.TD(strict401gen.Input(type="text",value=x,autofocus=focus,name=thisField[0],id=thisField[0],maxlength="10",Class="editfield dataInput")))
+            catRow.append(strict401gen.TD(strict401gen.Input(type="text",value=dateStr,autofocus=focus,name=thisField[0],id=thisField[0],maxlength="10",Class="editfield dataInput")))
 
         elif 'int' in thisField[1]:
             catRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
@@ -3314,7 +3324,9 @@ def cleanTmp(config):
     return
 
 def lastUpdate(config):
-
+    itemID=''
+    catID=''
+    
     q='select `'+\
     config['mediaTable']+'`.`'+config['catIDfield']+'`,`'+\
     config['mediaTable']+'`.`modstamp`'+\
@@ -3336,7 +3348,7 @@ def lastUpdate(config):
     qresult=db.dbConnect(config['selectedHost'],config['dbname'],q2,1)
     itemID= str(qresult[0])
 
-    return (itemID,catID)
+    return (itemID,catID,q2)
 
 def formbuttons(which):
 
@@ -3742,15 +3754,15 @@ def docTable(docData,doc,config):
         ccount=ccount+1
         pcount=len(chapter)-1
 
-        pgDiv=strict401gen.Div(id="tc"+str(ccount),CLASS='docPages')
+        pgDiv=strict401gen.Div(id="tc"+str(ccount),CLASS='docPages docPagesColor')
 
         for page in range(1,pcount+1): 
             
             count=count+1
             titleDiv=strict401gen.Div(Style="margin-left:5px;")
 
-            titleDiv.append(strict401gen.Image("images/docright.png",height="16",width="16",alt="Open Page",id="triangle"+str(count),title="Open Page"))
-            title=strict401gen.Span(chapter[page][0],id="top"+str(count),CLASS='docPageTitle',Style="margin-left:10px;")
+            titleDiv.append(strict401gen.Image("images/docright.png",CLASS='docPageImg',alt="Open Page",id="triangle"+str(count),title="Open Page"))
+            title=strict401gen.Span(chapter[page][0],id="top"+str(count),CLASS='docPageTitle',Style="margin:10px;")
             titleDiv.append(strict401gen.Href("#"+"top"+str(count),title,onClick='showpage('+str(count)+','+str(pages)+')'))       
             pgDiv.append(titleDiv)
             
@@ -3763,16 +3775,17 @@ def docTable(docData,doc,config):
                 if len(docText)>0:
                     docList=[docText]
                 else:
-                    docList=["missing text"]
+                    docList=["This page has no text"]
                     
             for line in docList:
                 txDiv.append(strict401gen.Para(line,Style="margin-left:10px;margin-right:10px"))       
+#                 txDiv.append(strict401gen.BR())
             txDiv.append(strict401gen.BR())
             pgDiv.append(txDiv)
         
         doc.append(pgDiv)
     
-    test=chapters
+    test=docList
     return (doc,test)
 
 def editConfig(req,config):
@@ -4034,9 +4047,10 @@ def getPickList(tableName,config):
     else:
         longList.append('Empty List')
 
-    shortList.sort()
-    longList.sort()
-                
+    # sorting these lists will mess up lists that are numeric (1,2...9,10), ten will place between 1 and 2
+#     shortList.sort()
+#     longList.sort()
+#                 
     return (shortList,longList)
 
 def getToolTip(colName,colValue,config):
@@ -4053,6 +4067,7 @@ def getToolTip(colName,colValue,config):
     # extract the '_' fields and insert then at the begining
     # so that the short text value will match 
     for thisCol in cols:
+        # column name ends in _, flag for shortCol
         if thisCol[0][-1]=="_":
             shortCols.insert(0,thisCol[0])
         else:

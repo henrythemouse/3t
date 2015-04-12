@@ -1,3 +1,20 @@
+<!--     <script type="text/javascript">
+         function setFocus()
+             {
+             document.getElementById('dogit').style.backgroundColor="#FFFF99"
+             document.getElementById('dogleg').focus()
+             }
+         </script> -->
+
+
+
+
+values[0][thisField]
+
+
+<textarea rows="9" cols="50" readonly><%=errorMessage%></textarea>
+
+
 <%
 #end
 %>

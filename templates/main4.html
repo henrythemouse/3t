@@ -25,12 +25,6 @@ elif displaynamelocation=='MIDDLE':
 else:
     location="BOTTOM:1%"
 
-# if logged in show logout link
-if dogleg:
-    loginlogout='logout'
-else:
-    loginlogout='login'
-
 # action determines logout/in link parameters
 if action in (15,):
     p2="popup=99&amp;media="+str(mediaID)
@@ -47,14 +41,23 @@ else:
     
 # ###############################################
 # nix login/logout link for edit/create actions
+# if logged in show logout link
 
+if loginValue:
+    loginlogout='logout'
+    user=username
+else:
+    loginlogout='login'
+    user=""
+    
 if action in (10,11,12,13,16,17,21,22,24,25) or popup!="":
     logoutloginLink=""
 else:
-    logoutloginLink='<A HREF="index?'+p2+'"> '+loginlogout+' '+dogleg+'</a>'
+    logoutloginLink='<A HREF="index?'+p2+'"> '+loginlogout+' '+user+'</a>'
 
 # ###############################################
 # if not logged in then ghost edit button
+
 if loginValue=="":
     itemEdit='<img src="images/edit-inactive.png" alt="Edit" title="Not logged in" CLASS="itemeditimagesmall">'
 else:
@@ -416,7 +419,7 @@ elif "Configuration" in caption:
                 <%=editCategorySettings%>
             </DIV>
             <DIV CLASS="caption">
-                <B><%=caption%></B>
+<!--                 <B><%=caption%></B> -->
 
             </DIV>
             <DIV CLASS="headerright2 imggo" title="Edit support tables">
@@ -429,7 +432,7 @@ elif "Configuration" in caption:
         <DIV CLASS="docmain">
             <div CLASS="docInfoText">
                 <div>
-                    A MySQL database client
+                    A MySQL web client
                 </div>
             </div>
             <%=resultTable%>
@@ -587,22 +590,22 @@ if popup in ('99','98','97','96','95','94','93'):
 <DIV CLASS='loginbox logintext' STYLE="width:400;height:300;box-shadow: 10px 10px 4px #161616;background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
         <DIV>
             <!--start of form - the Edit table area-->
-            <FORM method="post" id="dogForm" name="dogForm" action="myFunctions.py/dogin">
+            <FORM method="post" id="loginForm" name="loginForm" action="myFunctions.py/login">
             
             <DIV CLASS='loginmsg loginmsgcolor'>
                 <%=loginmsg%>
             </DIV>
             
             <DIV CLASS='loginName'>
-                Name: <INPUT TYPE="text" AUTOFOCUS NAME="dogleg" id='dogleg' VALUE="" size="20" CLASS='inputfield dataInput'>
+                Name: <INPUT TYPE="text" AUTOFOCUS NAME="username" id='username' VALUE="" size="20" CLASS='inputfield dataInput'>
             </DIV>
             
             <DIV CLASS='loginPass'>
-                Password: <INPUT TYPE="password" NAME="cattail" id='cattail' VALUE="" size="20" CLASS='inputfield dataInput'>
+                Password: <INPUT TYPE="password" NAME="userpass" id='userpass' VALUE="" size="20" CLASS='inputfield dataInput'>
             </DIV>
             
             <DIV CLASS='login'>
-                <INPUT TYPE="submit" NAME="dogin" id='dogin' VALUE="LOGIN" CLASS="defaultSubmit">
+                <INPUT TYPE="submit" NAME="login" id='login' VALUE="LOGIN" CLASS="defaultSubmit">
             </DIV>
             <DIV CLASS='logincancel'>
                 <INPUT TYPE="submit" NAME="cancel" VALUE="CANCEL"  CLASS="alternateSubmit">
@@ -624,9 +627,9 @@ if popup in ('99','98','97','96','95','94','93'):
 <DIV CLASS='loginbox logintext' STYLE="width:400;height:300;box-shadow: 10px 10px 4px #161616;background-image:url('images/<%=dbname%>/<%=popupbackground%>')">
         <DIV>
             <!--start of form - the Edit table area-->
-            <FORM method="post" id="dogForm" name="dogForm" enctype="multipart/form-data" action="myFunctions.py/dogout">
+            <FORM method="post" id="dogForm" name="dogForm" enctype="multipart/form-data" action="myFunctions.py/logout">
                 <DIV CLASS='logout'>
-                    <INPUT TYPE="submit" NAME="dogout" id='dogout' VALUE="LOGOUT"  CLASS="defaultSubmit">
+                    <INPUT TYPE="submit" NAME="logout" id='logout' VALUE="LOGOUT"  CLASS="defaultSubmit">
                 </DIV>
                 <DIV CLASS='logoutcancel'>
                     <INPUT TYPE="submit" NAME="cancel" id='cancel' VALUE="CANCEL"  CLASS="alternateSubmit">

@@ -71,6 +71,7 @@ a:active {color: #ffffff;}
 /* *************************************************** */
 /* documentation division */
 
+.docPagesColor{background-color:#005630;color:black;}
 .docTextDivColor{background-color:#ddefed;color:black;}
 
 .docTitle A:link {text-decoration: none;color:#a4ca95;}

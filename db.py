@@ -35,7 +35,8 @@ def dbConnect(selectedHost,dbToOpen,queryText,fetchFlag):
     # don't want to return results - example might be an insert/update query
     #
     if fetchFlag==-1:
-        queryResult=str(queryResult)+"===="+queryText
+#         queryResult=dbCursor.fetchall()
+        queryResult=str(queryResult)+"===="+str(queryText)
 
     # looking for the all results of a selection query
     elif fetchFlag==0:

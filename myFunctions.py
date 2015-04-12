@@ -12,14 +12,14 @@ from mod_python import util #@UnresolvedImport
 # use this call to check variable values
 # util.redirect(req,"testValue.py/testvalue?test="+repr(qresult))
 
-def dogout(req):
+def logout(req):
 
 #    util.redirect(req,"../testValue.py/testvalue?test="+repr(req.form))
     config=getConfig(req,req.form['dbname'].value)
     action=req.form['action'].value
 
     try:
-        req.form['dogout'].value
+        req.form['logout'].value
         data=kooky2.myCookies(req,'get','',config['dbname'],config['selectedHost'])
         data['username']=''
         data['userpass']=''
@@ -38,7 +38,7 @@ def dogout(req):
 
     util.redirect(req,"../index.py"+parameter)
 
-def dogin(req):
+def login(req):
 
 #     util.redirect(req,"../testValue.py/testvalue?test="+repr(req.form))
     config=getConfig(req,req.form['dbname'].value)
@@ -46,9 +46,9 @@ def dogin(req):
     action=req.form['action'].value
 
     try:
-        req.form['dogin'].value
-        username=req.form['dogleg'].value
-        userpass=req.form['cattail'].value
+        req.form['login'].value
+        username=req.form['username'].value
+        userpass=req.form['userpass'].value
     except:
         try:
             cancelClicked=req.form['cancel'].value
@@ -180,7 +180,7 @@ def getConfig(req,dbname):
                 qresult=db.dbConnect(config['selectedHost'],config['dbname'],q1,0)
                 idColCount=0
                 for thisCol in qresult:
-                    if thisCol[0][0]=="_":                # and thisCol[0]!=config['categoryTable']:
+                    if thisCol[0][0]=="_":     # and thisCol[0]!=config['categoryTable']:
                         idColCount=idColCount+1
                 if idColCount==3:
                     config['mediaTable']=thisTable[0]

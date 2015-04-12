@@ -99,14 +99,17 @@ def myCookies(req,action,data,dbname,selectedHost):
         # see if a kooky is already stored
         #
 
-        q='select kookyData from '+str(kookyTable)+ \
-        ' where _kookyID='+str(cookieID)
+        q='select `_kooky`.`kookyData` from `'+str(dbname)+"`.`_kooky`" \
+        ' where `_kooky`.`_kookyID`="'+str(cookieID)+'"'
         try:
             kookyData=db.dbConnect(selectedHost,kookyDB,q,1)
         except:
             kookyData=''
-            
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(q)+'---'+str(kookyDB)+'___'+str(kookyData))
+        
+#         d=data['results']
+#         d3=d[0]
+#         util.redirect(req,"testValue.py/testvalue?test="+repr((d3))+'---'+str(kookyData))  
+        ##+'___'+str(kookyData))
 
         # pickle the kooky data        
         #~ pData=cPickle.dumps(data)
@@ -132,13 +135,13 @@ def myCookies(req,action,data,dbname,selectedHost):
             
         # Insert new kooky
         else:
-            q='insert into '+str(kookyTable)+' \
+            q='insert into `'+str(dbname)+'`.`_kooky` \
             (_kookyID,kookyData,remoteHost) values (%s,"%s","%s")'%(cookieID,pData,remoteHost)
 
             #~ util.redirect(req,"testValue.py/testvalue?test="+"kooky"+repr(kookyDB))
             
             qinsert=db.dbConnect(selectedHost,dbname,q,-1)
-#             util.redirect(req,"testValue.py/testvalue?test="+"kooky"+repr(qinsert))
+#             util.redirect(req,"testValue.py/testvalue?test="+"kooky2"+repr(qinsert))
     #
     #
     #*********************************************

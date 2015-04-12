@@ -17,7 +17,7 @@ BODY {background-color:#85A4A3;color:black;}
 
 /* TABLE colors */
 
-.oddrow{background-color:#e6a791;color:#000000}
+.oddrow{background-color:#E69478;color:#000000}
 .evenrow {background-color:#FFB9A0;color:#000000}
 /* tr.header {height:10mm;background-color:#5faba1;color:#000000} */
 .resulttablecolor{background-color:#6A000F;color:black;}
@@ -45,13 +45,13 @@ BODY {background-color:#85A4A3;color:black;}
 /* FONT Settings */
 
 /* unvisited link */
-/* a:link {color: #FFD9CC;} */
+a:link {color: #FFFFFF;}
 /* visited link */
-a:visited {color: #e6e6fa;}
+a:visited {color: #FFFFFF;}
 /* mouse over link */
-a:hover {color: #FCC49F;}
+a:hover {color: #FFFFFF;}
 /* selected link */
-a:active {color: #add8e6;}
+a:active {color: #FFFFFF;}
 
 /* MISC colors */
 
@@ -70,6 +70,7 @@ a:active {color: #add8e6;}
 /* *************************************************** */
 /* documentation division */
 
+.docPagesColor{background-color:#ffcebd;color:black;}
 .docTextDivColor{background-color:#ffebe3;color:black;}
 
 .docTitle A:link {text-decoration: none;color:#820000;}
@@ -80,7 +81,7 @@ a:active {color: #add8e6;}
 .docChapters A:link {text-decoration: none;color:#820000;}
 .docChapters A:visited {text-decoration: none;color:#820000;}
 .docChapters A:active {text-decoration: none;color:#820000;}
-.docChapters A:hover {text-decoration: none;background-color:#DE4E4E;color:white}
+.docChapters A:hover {text-decoration: none;background-color:#E65C61;color:white}
 
 .docPages A:link {text-decoration: none;color:#820000;}
 .docPages A:visited {text-decoration: none;color:#820000;}
