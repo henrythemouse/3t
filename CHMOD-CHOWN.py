@@ -1,19 +1,17 @@
 #! /usr/bin/python
 
 # either run this as root (sudo) or be a member of the chownGroup
-
+# it will chmod/chown dirs that need to be apache writable
 
 import os
 import os.path
 import stat
 
-writeableDirs=['catimages','images','itemimages','tmp']
-chownUser=1000                                  ## gary
-chownGroup=33                                    ## www-data
+# set the list of dirs and user/group
+writeableDirs=['catimages','images','itemimages','tmp','conf']
+chownUser=1000
+chownGroup=33
 chmodInt=stat.S_IRWXU|stat.S_IRWXG   ##0770
-
-
-
 
 currentDir=os.getcwd()
 print
@@ -33,5 +31,3 @@ for thisFile in dirList:
 
 			os.chown(thisDir,chownUser,chownGroup)
 			os.chmod(thisDir,chmodInt)
-
-		
