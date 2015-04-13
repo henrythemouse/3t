@@ -1,0 +1,32 @@
+Quick Start
+
+There's always a Quick Start section for those who just want to get going. I've always been one of those people myself.I liked to get a feel for a program first before I had to learn anything. This section is for people with similar needs. Others may want to skip this section and jump to the MySql section where they can begin at the beginning.
+
+That said, given the architecture of this application, this quick start may take more time then most other quick starts. I'll attempt to make it as quick as possible, step by step.
+
+1) I must assume you have running Apache and MySql servers and that you're using linux.
+
+2) Install some software if not already installed:
+
+python v2.x (v3.× is on the todo list)
+modpython (apache module)
+mysqlpython (python to MySql glue)
+
+3) Unpack the 3t directory into your web sever's root directory. I will assume that you will use the localhost. Make sure the following directories under 3t are writable by the user that Apache runs as:tmp,itemimages,catimages,. Check the top line of all the .py files and make sure the python path is correct (the default is /usr/bin/python).
+
+4) Setup the Mysql DB. On the command line run these commands from the 3t/mysql directory to create an example DB and needed tables (you must have the required privileges):
+
+mysql -u(username) -p(password) -h(localhost) < required-tables.sql
+
+mysql -uusername -ppassword -hlocalhost < example-tables.sql
+
+You could use a MySql gui to execute these files by copying their contents into the area of the gui that is used to execute sql statements and executing them there.
+
+5) A new MySql user having the same name as the DB will have been created, but will only have select privileges to the tables. You will need a MySql user that has at least the following privileges to the example DB in order to proceed: select,insert, update and delete.
+
+6) Example data will have been inserted into the tables so you can immediately play with the UI. Visit 3t at: http://localhost/3t
+
+7) You should now see the configuration dialog.For a quick start accept the defaults by clicking on submit. These values can be changed from within the application at will.
+
+Hows that, in less than ten steps you're up and running 3t?
+

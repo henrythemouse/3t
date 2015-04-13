@@ -1,0 +1,35 @@
+dir/file structure
+
+/catimages 
+    store category images
+    one subdir for each db
+/doc 
+    the docs
+/images 
+    general ui images used for icons and such
+    one subdir for each db
+/itemimages 
+    images used for each item of each db
+    one subdir for each db
+/js 
+    javascript files
+/style 
+    css files
+/templates 
+    html templates
+/tmp 
+    a place to write tempurary files
+
+CHMOD-CHOWN.py
+db.py
+HTMLcolors.py
+ImageH.py
+ImagePaletteH.py
+imgsize.py
+index.py
+kooky2.py
+myFunctions.py
+README
+strict401gen.py
+testValue.py
+TODO

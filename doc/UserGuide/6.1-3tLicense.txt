@@ -1,0 +1,6 @@
+Author: Gary M Witscher
+Date: 2014-07-07
+Version: 2.4
+License: Free (as in beer and chicken)
+W3C Markup Validation: HTML 4.01 Strict
+W3C CSS Validation: CSS2

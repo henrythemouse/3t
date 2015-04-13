@@ -1,0 +1,44 @@
+_config
+
+The _config table stores the configuration values that are user editable. The _config table has numerous columns all of which are listed below. It's primary column (_id) defaults to 1 (one). The _config table should not have more than one row. 3T will only read record 1.
+
+_config name/value pairs
+
+## Text to print on top of the logo image (default=dbname).
+displayname                 any text
+
+## Location for the displayname (default=MIDDLE).
+displaynamelocation Pick from list
+
+## Image to use as your logo, located in path2serverRoot/3t/images/dbname/ (default provided).
+displaylogo                 Pick from list
+
+## Image to use as the popup background (default=displaylogo).
+popupbackground     Pick from List
+
+## Email contact address (default=root@localhost).
+emailcontact                any email address
+
+## Hostname for the mysql server (default=localhost).
+selectedHost                example.com
+
+## Category table column containg the category names (no default).
+catColumn                   Pick from list
+
+## Category table column to sort results by (default=the id column)
+catSortColumn               Pick from list
+
+## Item table column names that will uniquely identify an item (default=first 2 char columns).
+itemListColumns          mulitPick from list
+
+## Item table column names that will comprise the All_Items table (default=first 4 char columns).
+itemColumns             multiPick from list
+
+## Category table column names you want included in search results (default=None).
+catSearchColumns        multiPick from list
+
+## On startup, display the last record entered (YES will enable, NO to disable).
+lastupdate                  Pick from list
+
+## Select a theme from the list provided (default=default).
+theme                          Pick from list

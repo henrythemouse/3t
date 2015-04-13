@@ -1,0 +1,18 @@
+_doc table
+
+The _doc table has eight colomns.
+
+_id: the primary column
+cno: the index number for the named chapter
+pno: the index number for the named page
+category: either Manual or Guide
+page: the name/title of the page
+text: the text for that page
+image: and image
+
+The rows can be in any order in the table, just so the cno and pno columns are correctly numbered. When the rows are read by 3t it will order the results by cno and then pno ascending. They will also be seperated into the two possible categories. Chapter 1 will be first in the list of chapters and page 1 will be first in the page list for that chapter. All chapter 1 rows should have the same chapter name. Any number of chapters is possible and any number of pages per chapter.
+
+In order to propagate the _doc table to other databases:
+
+DROP TABLE IF EXISTS `dbname._doc`;
+CREATE TABLE `dbname`.`_doc` SELECT * FROM `dbname`.`_doc`;

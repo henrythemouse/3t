@@ -1,0 +1,10 @@
+Default View Bottom
+
+At the very bottom of the program window is the toolbar. A status message is printed on the left end. A contact link (configurable) is located at the center of the toolbar. At the far right is a login/logout link. You can login using a mysql user account.
+
+The status message area will show you how many rows the result table contains.
+
+The contact link will open an email client in accordance with your system configuration.
+
+The login/logout link will display the name of the person who is logged in and will provide a login link when no one is logged in.
+

@@ -1,0 +1,5 @@
+Windows
+
+I have run 3t on a Windows based server (Windows 2000) without knowing anything about Windows.
+
+In reality I ignored Windows as much as I could. I installed Apache, python, mod-python,python-Mysql, and MySQL all from their web sites. The configuration was the same, but I did have to change the shebang in all the python scripts to reflect the actual Windows path to the python executable.

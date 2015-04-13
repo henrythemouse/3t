@@ -1,0 +1,30 @@
+_category
+
+The_category table has these columns:
+
+_id The primary column
+category The category name
+image The category image
+
+Refer to the requiredTables.sql file for the detailed table definition.
+
+Every DB will have it's own _category table. The images stored in this table are written to disk when 3T is first loaded and after the table has been modified. Their location is:
+
+serverroot/3t/catimages/dbname/
+
+Where server root is the directory that apache is configured to serve web pages from.
+
+Where dbname is the name of the  MySql DB that the images are from.
+
+3T will load these images from disk when started and after the table has been modified.
+
+The category names will comprise the category selection list.
+
+The category names are used to compose select sql queries. These queries limit the search results to records that contain the selected name in the catTable's category column.
+
+Modifying the data in this table will not modify any data in any other table of any other MySql DB.
+
+
+
+Refer to the User Manual for a description of how the data in this table is used by the UI.
+

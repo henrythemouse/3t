@@ -1,0 +1,9 @@
+T- Themes
+
+At this point themes are nothing more than css color schemes. Any file in the style directory that ends with .css and is not named base.css will be selectable as a theme in the configuration dialog.
+
+If you want to create a new theme copy the contents of the default theme (default.css) to a new .css file under the style directory. Then change the background and foreground colors as you like. Of course backgrounds can also be images.
+
+If you want to go deeper you can edit the base.css file which contains mostly the position and sizes of the various divisions. Save a copy of this file to a file named default.orig in the same directory, just in case you want to go back to it.
+
+In addition there are copies of base.css and default.css in this document.

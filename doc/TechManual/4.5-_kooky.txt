@@ -1,0 +1,16 @@
+_kooky
+
+The _kooky table has these columns:
+
+_kookyID: The primary column
+kookyData: The cached data. One record for each unique browser cookie.
+remorteHost: ip address of remote host
+modstamp: timestamp for each record
+
+The data in this table can be deleted at will. More will be generated when 3T is loaded. If 3T is displaying erroneous data after an upgrade deleting this data may fix the problem.
+
+_kooky
+this table is unrelated to any other table except by the browser cookie 
+stores program data under an id that is the same as the cookie id stored on the browser
+acts like a cache for each browser connected, only one connection per browser is possible
+

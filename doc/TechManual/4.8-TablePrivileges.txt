@@ -1,0 +1,11 @@
+The script will not start if the default user doesn't have privileges to the _kooky table.
+
+In order that the default db user can write to the _kooky table (or any other tables).
+
+Run this sql as root where xxxx is the dbname.
+
+GRANT SELECT, INSERT, UPDATE ON xxxx._kooky TO 'xxxx'@'%';
+
+FLUSH PRIVILEDGES
+
+This will be done automatically if the provided install sql files are run.

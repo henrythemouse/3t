@@ -1,0 +1,5 @@
+Item list columns
+
+There is a configuration row that allows the user to select multiple Itemtable columns whose data will comprise the Item selection list.
+
+This selection list is most useful when it's members are unique. As an example let's say your Item list is a list of peoples names. If they are all your friends then maybe the hit need only have their first names. If there are more than Sue then you should select another column, one that will make each Sue unique. Select as many columns as it takes to make all list members unique and not more than that.

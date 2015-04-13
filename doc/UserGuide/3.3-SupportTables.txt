@@ -1,0 +1,1 @@
+Support tables (including the Category table) have exactly the same editing forms. In order to access them you will have to go to the Configuration screen. The Category table can be accessed in the header area via the second icon from the left. On the far right hand side of the header you will find the Support table selection dropdown menu. Select the table you'd like to edit. 

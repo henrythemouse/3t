@@ -1,0 +1,25 @@
+Wish List
+
+Column sorting from result table
+
+Move filetype name, extensions and icon to a support table.
+
+Change Titles to something that will work on mobiles
+
+Require Login to start 3t, as an option per db (read protect)
+
+Export result table to csv file 
+
+Include images as theme element
+
+    Extract all images (icons) as fixed name files. Keep defaults in images directory. Keep theme specific images in theme sub-directories. Override default images with theme specific image.
+
+Named searches (done with a support table)
+
+    10 Most recent records
+    10 Most recent searches
+    Top 10 searches
+    saved search l
+    saved search 2
+    ..... search 10
+    

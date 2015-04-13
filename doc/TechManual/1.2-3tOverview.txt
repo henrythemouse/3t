@@ -1,0 +1,12 @@
+T- Overview
+
+3t can be broken down into three parts.
+
+1) Python
+Python makes it all happen, it is the core of 3t. 3t is a python program which collects data,stores it and displays it in a browser.
+
+2)MySQL
+MySql is the backend storage for 3t data. Python-Msqldb enables python to send sql to the Mysql sever.
+
+3)HTML
+3t displays it's UI and it's data in a standard web browser using HTML. Mod-python allows python code to be used inside HTML. That code is used to manipulate variables, branch based on their values, and to call functions and modules that process user input.

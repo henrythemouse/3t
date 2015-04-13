@@ -1,0 +1,21 @@
+Default View
+
+Post installation you will be presented with the default view. The screen is devided into three sections: top, middle, and bottom.
+
+The top section is dedicated to selecting information from your DB through a series of selectable limits. From left to right these limiters are: select an item or all items,select a category or all categories and enter text to search for. Using a limiter or combination of limiters will determine what information will be found and displayed.
+
+At the top left will be the user controls for Item selection. Selecting the image will open the Item information table related to that image. The up/down icons to the right of the image index the current Item accordingly. Below the image is a drop down selection list containing a list of all the Items. Select the one you'd like to view.
+
+The next area to the right is used to select a category.All operations are analogous to Item selection.
+
+The area located in the upper right has multiple functions. I'll come back to the that area, for now let's review the search dialog. The simplest use is to type some text into the input field and press the return key. Optionally, clicking on the search icon will perform the search. This will limit the current result set to a subset that contains the text entered. You can see where we are going with this. Selecting an Item limits the results to information related to that Item. Next, selecting a category further limits the results to information related to the selected Item that belong to the selected category. Search for a word and the results are further limited to those records that contain that word.
+
+The search is a Mysql fulltext search, only columns defined in fulltext indexes are searched. In addition there is a checkable box just to the left of the search input field. Checking this box will expand the number of columns searched by including enumeration columns (not indexable). In Mysql this is known as a double quoted boolian search. Selecting this added feature could slow down searches on large tables, but can retrieve more records.
+
+The area above the search input has two functions. 
+
+1) It is used to display an image. This image can be anything you like.
+I use an image that represents the information in the DB. A title can be overlaid on top of this image.
+
+2) The image is also a link to the configuration and documentation page. Here you will be able to read this guide as well as the Tech Manual. Additionally, you can configure program variables, categories and support tables. The details of this page an revealed elsewhere in this guide.
+

@@ -1,0 +1,5 @@
+Introduction
+
+3t is a web app that I developed to "scratch an itch". There are countless applications available that can read and write to various data storage backends.Most of these are networkable and several are crossplatform, but almost all of the applications I tried required a mastery that was unique to each application. Skills learned in one application UI were almost never applicable in another application UI. In addition to this difficulty, no single application had all the features I wanted. Running an application inside a web browser solved much of the first problem and programming it myself enabled a possibility for me correct the second problem.
+
+Thus 3T was born.

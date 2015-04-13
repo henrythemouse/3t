@@ -1,0 +1,4 @@
+Documentation
+
+Of course what you are reading now is part of the documentation. The Tech Manual and the User's Guide comprise the online documentation. You'll be glad to know (maybe) that there's lots more. There is an examples folder in the source directory that contains the code to create complete example databases. The source code itself is a wealth of misinformation (I mean information :-).
+

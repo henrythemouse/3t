@@ -1,0 +1,9 @@
+You can configure several aspects of what and how 3t displays information. The settings in the configuration dialog will not change any data in the data tables, no information will be removed or added. These settings will only determine how and what information is displayed.
+
+It's important to set reasonable values IAW the configuration explanations. When you do the information displayed should make sense IAW program designs.
+
+Most of the settings are obvious personal preferences. Images have to be in the relevant directories in order to be listed for selection. Multi selectors are available for selecting multiple column names when that make sense. These settings are not mandatory, but are for the user to use to tweek the appearance of the program ui.
+
+Program significant values are detailed in subsequent pages and more details can be had in the Tech Manual.
+
+

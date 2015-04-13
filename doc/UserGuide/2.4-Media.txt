@@ -1,0 +1,5 @@
+View Media
+
+When viewing a media record the result section is slightly different than other views. Like other views there are edit and delete icons on the left. Unlike other views media records can not have records related to them, so the lack of user privileges is the only reason for the delete icon to be ghosted. Media results are not displayed in a typical table format. There are three areas. The left most area is a vertical list of short text fields. The right most area is for an image if the record has one. The center area is for large text, a multi-line or multi-paragraph entry. If no image is present this large text area will expand to the right border.
+
+In the header,just above the result section, there will be a text reference referring to the record that the media is related to. At the far right is the Add icon, which will allow additional media records to be created.

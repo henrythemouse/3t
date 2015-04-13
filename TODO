@@ -1,9 +1,0 @@
-first load always fails, one needs to refresh to get it loaded
-after that it loads everytime. Must be a cookie thing.
-
-Images in the notes are elongated if the note is longer than the image.
-Need the image to not go longer than it is.
-
-When done entering a new author, it should go to that author. It now goes
-back to the first entry.
-

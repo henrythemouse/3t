@@ -1,0 +1,16 @@
+Requirements
+
+3t is a web app. Its' a server/client app that uses the Apache web server and Mysql as the data backend. The two are glued together by a python script. The details of these components will follow, however in order to use 3t you will need:
+
+A running Apache server and the skills and permissions to configure it.
+
+A running Mysql server and the skills to administrate it. You will need the skills and privileges to design and create databases and tables.
+
+
+In particular you will need these software packages with these minimum versions:
+
+ Python  ver 2.5.2
+ MySQL server ver 5.1)
+ MySQL-python ver 1.2.2 (ver to match Python ver)
+ Apache ver 2.2.11
+ mod_python ver 3.3.1

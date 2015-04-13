@@ -1,0 +1,14 @@
+Default View Center
+
+The largest section of the program window is the middle section. This section is primarily used to display the results that are returned after you've made a selection in the upper section. There are three distinctly different views: Itemview, Data view and Media view.
+
+The Item view header will have three icons. At the left will be the Edit and Delete icons. At the right will be the Add icon or the View icon depending on whether or not there are existing associated media records. All these icons may be ghosted for non-privileged users. The Delete icon will be also ghosted if media records are linked to the Item. Any record that has media associated with it cannot be deleted until all those media records have been deleted.
+
+The Item view data table is a two column table, populated by name-value pairs. The first column is the name column, the second column is the value column. The information displayed here is determined by the table definition. Any amount of information can be included with an Item definition.
+
+
+Once a Category has been selected or a Search has been initiated the resulting data will be displayed in this section. The data results are presented in a simple table format. The column names are across the top. In the data display mode there is an extra column on each side of the table. These columns display different icons depending on the state of the record in that row.
+
+In the left side column there will be an edit icon, just below that will be a delete icon. Both will be ghosted if the person logged in doesn't have appropriate privileges. Additionally, the delete icon will be ghosted if there are any associated media records, regardless of user privileges. All associated records will have to be deleted before a data record can be deleted. If you have "All Records" selected in the Item and Category selectors then this column will only have one icon, a link to that Item detail.
+
+The right most column will have one of two icons depending on whether or not the record has any associated media. If it doesn't have any an Add icon is there. If it does have associated media then an icon linked to that media will be there.

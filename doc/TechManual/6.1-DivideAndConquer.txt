@@ -1,0 +1,7 @@
+T- categories
+
+Categories are a central part of the 3t data scheme. All data sets can broken down into subsets of related data. Categories.
+
+A common query would necessarily be to search for records in a table that are related to eachother in some organizational way. They wouldn't have to share text, but something more general like function or form. This type of search yields an overview that can be further limited using text matching. To me this is a normal way to approach the query process and so I've built this into 3t. Changing categories queries the db for data table rows whos category column matches that category name.
+
+The data table must have a Category column. That column will get it's value from the _category table (discussed elsewhere in this document). That table can also contain an image to represent each category which will be displayed in the UI when such category is selected.

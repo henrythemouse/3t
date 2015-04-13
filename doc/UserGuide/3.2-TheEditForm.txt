@@ -1,0 +1,7 @@
+You can create new records as well as update existing records in Item, Data and Media tables. The entry form for all these tables is the same. The header section will have two buttons, one at each side. At the left side will always be a Cancel button. If you're creating a new record an Insert button will occupy the right side, if editing an existing record you will see an Update button at the right side.
+
+Cancel Button: will exit the edit form leaving the record unchanged.
+
+Insert Button: will exit the edit form and create a new record in the table being edited using the information entered. In the event that an error occurs a notification will appear.
+
+Update Button: will exit the edit form and update the record in the table being edited using the information entered. In the event that an error occurs a notification will appear.

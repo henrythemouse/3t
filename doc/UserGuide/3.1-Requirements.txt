@@ -1,0 +1,3 @@
+It's all very well to be able to read descriptions and view media, but suppose you'd like to enter some data. First you will need update and insert Mysql privileges
+for the database and table you wish to edit.
+

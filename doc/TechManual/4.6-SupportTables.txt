@@ -1,0 +1,3 @@
+Support Tables
+
+There can be any number of SupportTables. SupportTables are text only tables (except for the _id column). SupportTables are meant to provide selection lists for columns in item, cat, or media tables.If a SupportTable has the same name as a column in one of the main tables then that column will present the contents of the SupportTable as a selection list. The selection list will by design contain text from those SupportTable columns whose names end with a "_", or if none do then the first text column as a fallback. A full contanation of the SupportTable text columns will be used as a tooltip when mouseover is done on said column in the main table view.

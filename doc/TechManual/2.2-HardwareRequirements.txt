@@ -1,0 +1,9 @@
+Hardware:
+
+Not much is required in the way of hardware, almost anything will run the software required. However, there are some limitations that might matter in some cases. 
+
+The first and most important is that you will not likely be able to run this program on a shared hosting service. The reason for that is that I've never found any such services that include mod_python or MySQL-python. Most are php orientated when it comes to database work.
+
+If you try to run 3t from a dedicated home based server you will find that local access is quite easy. However, remote access can present some problems for the beginner as the Internet is not as open as one might think. Some internet service providers will block normal web access to your home account (using port blocking). This can be circumvented by using non-standard ports.
+
+As of this writting Virtual Machines have become all the rage. I've never tried it but you should be able to get 3t running on a dedicated Virtual Machine. These services usually offer full root access to the VM so you'll be able to install all the software you need.

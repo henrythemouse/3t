@@ -1,0 +1,7 @@
+Config catcolumn
+
+Most of the important configuration settings are determined and generated automatically. Some can not be extrapolated from table definitions. One such setting is what I call the catcolumn. 3t uses the value of this setting to build sql queries which in turn determine many ui components as well as listed results.
+
+Catcolumn could have a fixed column name and then the user wouldn't have had to configure one. However, this name will also appear in numerous result tables and using a generic name wouldn't fit all cases. So, in the interest of flexibility, this setting is left for the user to select.
+
+The cattable is auto detected and only a subset of it's columns are selectable when selecting the catcolumn. When the cattable was defined one of it's columns was intended to hold the category names. Select that column for the catcolumn.

@@ -1,0 +1,21 @@
+Relationships
+
+3t is written to facilitate access to a relational MySql database. 3t is dependent on the structure of the MySql tables. There are minimum required tables, columns and definitions that must exist in order for the designed features to function. The script itself will fail to execute if these minimum requirements are not met. Below is a sumary of the various tables and how they relate.
+
+For the sake of discussion lets assume we have a database that will track automotive maintenance. Most importantly then we will need a table that contains the make and model of the automobiles we want to track. In 3t this would be called the Item table.
+
+Any one vehicle will no doubt have numerous services preformed on it. Information such as date, cost and type of service might be desirable to record. A table to store this data is required and that table must relate to the Item table. In 3t this table is called the Data table.
+
+Some services are simple and wont benifit from lengthy enumeration. Other services involve multiple parts and procedures or even several repair shops. In order to accomodate this likelihood a table is needed that relates to the Data table.It should be a table that can store media as well as text. You will need to store pictures, video and scanned documents. In 3t this table is the Media table.
+
+So, you can see the relational tree.
+
+Item table
+    Data table
+        Media table
+        
+
+In addition the Media table relates directly to the Item table so that specific information related to the Item but not related to any Data record can be stored.
+
+This is the design that the 3t python script is built around.
+

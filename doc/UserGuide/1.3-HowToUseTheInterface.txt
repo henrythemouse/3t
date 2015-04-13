@@ -1,0 +1,21 @@
+UI Selection
+
+3t offers three selection constraints.
+
+1) Limit the results to a specific item.
+
+2) Limit the results to a specific category.
+
+3) Limit the results to a specific search term.
+
+For example:
+
+In the item pull down selector, select All Records. In the category pull down select All Records. Leave the search entry empty. The results will include all records in the data table.
+
+Limit the results to only those records belonging to a single category by selecting that category.If you also have a specific item selected then the result would only contain data related to that item and belonging to the selected category.
+
+Accordingly,any combination of these three (item,category,search) can be used to find the information you want. They limit the result to information that meets the selected criteria.
+
+There is more detail  on each of these selection options in the following sections of this guide.
+
+If you are interested in the underlying mechanics of this process there is more detail in the Tech Manual. The source code is also available if you like reading python.

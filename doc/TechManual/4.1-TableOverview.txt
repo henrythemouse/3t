@@ -1,0 +1,19 @@
+MySql
+
+This section is about how this application uses MySql as well as some details regarding the table definitions. At some point I'm assuming you will want to design your own databases that will work with 3t. In that event you will need some information.
+
+3t is a python script that uses python-mysql to manipulate mysql table data. Most of that work is done by the dosql function. Insert, update, and delete queries are all handled there. The logged in user must have the required MySql privileges. If any errors occur a notification dialog will display in the center of the screen. Select queries are run throughout the script by a non-privileged user.
+
+There are four required tables that are not storing application data. Their names begin with the underline character.
+
+_config
+_kooky
+_category
+_doc
+
+These four tables are essential to the application. Their definitions should not be modified. The data that they contain can and most likely will be overwritten often. There are individual sections on each of those tables describing their definitions.
+
+There are three required tables that store the application data. The first table is designed to store the primary data. The second table is designed to store secondary data and the third table is designed to store media related to either the first or second table. An example might be (1) an author table, (2) a table containing the list of books related to each author and (3) a media table containing reviews, pictures, audio, or videos related to the author or a book.There are individual sections on each of these tables describing uses and definitions.
+
+
+

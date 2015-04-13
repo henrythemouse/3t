@@ -1,0 +1,3 @@
+T introduction.
+
+This Tech Manual is focused on the technical aspects of 3t. These are the aspects of 3t that the user can't see, like the logical structure behind the UI, the Mysql table definitions, the python modules and function libraries, administrative tasks, theme creation and other related subjects. Someone will need to attend to these matters in order to have a functional 3t db, while from a user's point of view these subjects are of no interest what so ever.

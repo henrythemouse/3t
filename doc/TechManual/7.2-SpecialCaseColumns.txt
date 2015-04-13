@@ -1,0 +1,9 @@
+special circumstances
+
+Owner column:
+
+If there is a column named 'owner' in the Media table and there is a text type column in the same table, then when that text column is displayed a line will be inserted at the beginning of the text. That line will be: username "writes" (where username is the login name for the person who created that entry).
+
+Summation column:
+
+If there is a numeric column defined in the Data table then the sum of that column for all records in that table will be listed in the Item view using the name of that column for reference.

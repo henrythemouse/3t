@@ -1,0 +1,9 @@
+Intro2
+
+Features and limitations
+
+The number one feature I hoped to implement was simplicity and that unfortunatly ended up being the greatest limitation. 3t employs three tables to handle all the primary data. That's what keeps the database design simple and by inference the user interface easy to use. It also greatly limits what can be done in a database design. Consequently 3t may not meet your needs.
+
+In theory it should handle any media format that your browser can display. In practice I've only tested the ones I use, which is only a small fraction of the formats that exist.
+
+Its written mostly in python and html, making it easily hacked by novice and expert developers alike. On the other hand, I fall into the novice category, making the code badly commented, sometimes convoluted and always inconsistent.

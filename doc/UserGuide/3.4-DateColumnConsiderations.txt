@@ -1,0 +1,13 @@
+Date columns require specific values.
+
+MySQL only accepts the date as YYYY-MM-DY. There is some flexability as to how you enter that date, but not much.
+
+Accepted values: 2015-06-15 using any delimeter like 2015.6.15 or no dilimiter like 20150615. You can shorten the year to 2 digits and MySQL will deside the century like this:
+
+    Year values in the range 00-69 are converted to 2000-2069.
+
+    Year values in the range 70-99 are converted to 1970-1999. 
+
+If you enter an invalid date MySQL will save the date as 0000-00-00.
+
+
