@@ -1,3 +1,9 @@
+If you want the current working version, select if from tag.
+There can be all kinds of problems with the Master.
+
+All the current documentation is in the tag releases.
+
+
 Directories that must be writable by the apache server:
 catimages
 catimages/'dbname'
