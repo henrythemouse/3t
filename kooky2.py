@@ -21,7 +21,6 @@ def myCookies(req,action,data,dbname,selectedHost):
     # a user by that name with that password must have insert,update privileges to the kooky db
     
 #     util.redirect(req,"testValue.py/testvalue?test=action:"+str(action)+" dbname:"+str(dbname))
-    #~ action="save"
     
     cookieID=''
     kookyDB=''
@@ -56,9 +55,7 @@ def myCookies(req,action,data,dbname,selectedHost):
         else:
             cookieData['kookyID']=cookieID
             cookieData['kookyDB']=kookyDB
-            
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(kookyDB))
-        
+                    
     except:
         # no cookie found so create one
         for i in time.localtime()[:6]:
@@ -72,7 +69,6 @@ def myCookies(req,action,data,dbname,selectedHost):
         newCookie.expires = time.time() + 31449600 # one year
         Cookie.add_cookie(req, newCookie)
     
-#     util.redirect(req,"testValue.py/testvalue?test=kookyDB:"+str(kookyDB)+" dbname:"+str(dbname))
     # above is all about browser cookies
     #*********************************************
         
@@ -87,7 +83,7 @@ def myCookies(req,action,data,dbname,selectedHost):
         
     elif action=='db':
         # just return the dbname for getting the config
-        kookyData=kookyDB #kookyData['kookyDB']
+        kookyData=kookyDB
     #
     #*********************************************
         
@@ -106,13 +102,7 @@ def myCookies(req,action,data,dbname,selectedHost):
         except:
             kookyData=''
         
-#         d=data['results']
-#         d3=d[0]
-#         util.redirect(req,"testValue.py/testvalue?test="+repr((d3))+'---'+str(kookyData))  
-        ##+'___'+str(kookyData))
-
         # pickle the kooky data        
-        #~ pData=cPickle.dumps(data)
         pData=pickle.dumps(data)
         
         # Here I have to remove all the " characters
@@ -130,7 +120,6 @@ def myCookies(req,action,data,dbname,selectedHost):
             q='update '+str(kookyTable)+' set \
             kookyData="%s",remoteHost="%s" where _kookyID=%s'%(pData,remoteHost,cookieID)
             
-            #~ util.redirect(req,"testValue.py/testvalue?test="+"kooky"+repr(q))
             qupdate=db.dbConnect(selectedHost,kookyDB,q,-1)
             
         # Insert new kooky
@@ -138,10 +127,7 @@ def myCookies(req,action,data,dbname,selectedHost):
             q='insert into `'+str(dbname)+'`.`_kooky` \
             (_kookyID,kookyData,remoteHost) values (%s,"%s","%s")'%(cookieID,pData,remoteHost)
 
-            #~ util.redirect(req,"testValue.py/testvalue?test="+"kooky"+repr(kookyDB))
-            
             qinsert=db.dbConnect(selectedHost,dbname,q,-1)
-#             util.redirect(req,"testValue.py/testvalue?test="+"kooky2"+repr(qinsert))
     #
     #
     #*********************************************
@@ -156,11 +142,7 @@ def myCookies(req,action,data,dbname,selectedHost):
         q='select kookyData from '+str(kookyTable)+\
            ' where _kookyID="'+cookieID+'"' ##%s'%(kookyID)
            
-        #~ util.redirect(req,"testValue.py/testvalue?test="+repr(q))
-           
         kookyData=db.dbConnect(selectedHost,kookyDB,q,1)
-        
-        #~ util.redirect(req,"testValue.py/testvalue?test="+repr(kookyData)+'---'+q)
 
         if kookyData:
             kookyData=kookyData[0]

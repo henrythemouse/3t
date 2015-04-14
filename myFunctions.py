@@ -14,7 +14,6 @@ from mod_python import util #@UnresolvedImport
 
 def logout(req):
 
-#    util.redirect(req,"../testValue.py/testvalue?test="+repr(req.form))
     config=getConfig(req,req.form['dbname'].value)
     action=req.form['action'].value
 
@@ -25,7 +24,6 @@ def logout(req):
         data['userpass']=''
 
         kookied=kooky2.myCookies(req,'save',data,config['dbname'],config['selectedHost'])
-        #~ util.redirect(req,"../testValue.py/testvalue?test="+repr(kookied))
 
     except:
         pass
@@ -33,14 +31,12 @@ def logout(req):
     if action=='15':
         parameter='?media='+req.form['media']
     else:
-#        parameter='?media='+req.form['media']
         parameter='?action='+req.form['action']
 
     util.redirect(req,"../index.py"+parameter)
 
 def login(req):
 
-#     util.redirect(req,"../testValue.py/testvalue?test="+repr(req.form))
     config=getConfig(req,req.form['dbname'].value)
     cancelClicked=''
     action=req.form['action'].value
@@ -75,9 +71,6 @@ def login(req):
     except:
         pass
 
-
-#     util.redirect(req,"../testValue.py/testvalue?test="+repr(error))
-
     # if it's a good login then save it to the kooky table
     if loginAccepted:
         data=kooky2.myCookies(req,'get','',config['dbname'],config['selectedHost'])
@@ -102,7 +95,6 @@ def login(req):
             elif action=='15':
                 parameter='?media='+req.form['media']
             else:
-#                parameter='?media='+req.form['media']
                 parameter='?action='+req.form['action']
         else:
             parameter='?popup=98&amp;action=98'
@@ -137,8 +129,6 @@ def getConfig(req,dbname):
     searchCols=[]
     apacheConfig=req.get_config()
     rootPath=apacheConfig['PythonPath'][11:-2]
-
-#     util.redirect(req,"testValue.py/testvalue?test="+repr(config))
     
     try:
 
@@ -154,7 +144,6 @@ def getConfig(req,dbname):
                 # to edit the _config table or any other table util a valid login is accomplished.
                 insertq="insert into `"+config['configTable']+"` (`"+dbname+"`) values ('"+dbname+"')"
                 recordInsert=db.dbConnect(config['selectedHost'],dbname,insertq,0)
-#             util.redirect(req,"testValue.py/testvalue?test="+repr(insertq))
 
             q="show columns from `"+dbname+"`.`_config`"
             configCols=db.dbConnect(config['selectedHost'],dbname,q,0)
@@ -168,8 +157,6 @@ def getConfig(req,dbname):
         except:
             config['configError']='Query failed: '+q
 
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(q))
-
         # set the table names, item table is same as dbname, cat table will have 2 id columns, media table will have 3 id cols
         try:
             config['itemTable']=config['dbname']
@@ -180,7 +167,7 @@ def getConfig(req,dbname):
                 qresult=db.dbConnect(config['selectedHost'],config['dbname'],q1,0)
                 idColCount=0
                 for thisCol in qresult:
-                    if thisCol[0][0]=="_":     # and thisCol[0]!=config['categoryTable']:
+                    if thisCol[0][0]=="_":
                         idColCount=idColCount+1
                 if idColCount==3:
                     config['mediaTable']=thisTable[0]
@@ -188,8 +175,6 @@ def getConfig(req,dbname):
                     config['catTable']=thisTable[0]
         except:
             config['configError']='Query failed: '+q+ 'Query failed: '+q1
-
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(q1))
                 
         # query mysql for it's values for the itemTable
         try:
@@ -219,8 +204,6 @@ def getConfig(req,dbname):
         except:
             config['configError']='Item Query failed: '+q
 
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(charCols)+'___'+repr(itemCols))
-
         # query mysql for it's values for the catTable
         try:
             catCols=[]
@@ -237,7 +220,6 @@ def getConfig(req,dbname):
                     config['catInfoColumn']=thisCol[0]
                     catCols.append(thisCol[0])
                 elif thisCol[0][0]!='_':                      
-                    # or thisCol[0]==config['categoryTable']:
                     catCols.append(thisCol[0])
                 if 'char' in thisCol[1]:
                     charCols.append(thisCol[0])
@@ -250,8 +232,6 @@ def getConfig(req,dbname):
                 searchCols=charCols
         except:
             config['configError']='Cat Query failed: '+q
-            
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(charCols)+repr(catCols))
 
         # query mysql for it's values for the mediaTable
         try:
@@ -269,8 +249,6 @@ def getConfig(req,dbname):
             config['mediaShowColumns']=mediaCols
         except:
             config['configError']='Media Query failed: '+q
-            
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(config)+"before")
 
         # populate the supportTables and tableNames config variables
         try:
@@ -292,8 +270,6 @@ def getConfig(req,dbname):
             config['tableNames'].remove('_doc')
         except:
             config['configError']='supportTable list failed: '
-            
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(config)+"before")
         
         try:
             config['invisible']='filename'
@@ -310,8 +286,6 @@ def getConfig(req,dbname):
             config['owner']='owner'
         except:
             config['configError']='Assignments failed'
-            
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(config)+"after")
 
         # config defaults
         if not config['displayname']:
@@ -340,8 +314,6 @@ def getConfig(req,dbname):
             config['lastupdate']='NO'
         if not config['theme']:
             config['theme']='default'
-            
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(config)+"after2")
 
     except:
         config['configError']="configError"
@@ -398,14 +370,12 @@ def cat(req):
         except:
             action='cancel'
 
-#     util.redirect(req,"../testValue.py/testvalue?test="+repr(req.form.list))
     if action !='cancel':
 
         what=doSql(req,action,cols,config['catIDfield'],config['dbname'],config['catTable'],config['selectedHost'],config['owner'])
         cleanTmp(config)
         
         if what[0]:
-#             parameter="?error="+what[0]
             parameter="?popup=93&amp;errorMessage="+what[0]
         else:
             parameter="?action=7"
@@ -447,7 +417,6 @@ def item(req):
         what=doSql(req,action,cols,config['itemIDfield'],config['dbname'],config['itemTable'],config['selectedHost'],config['owner'])
         cleanTmp(config)
         
-#        util.redirect(req,"../testValue.py/testvalue?test="+repr(what))
         if what[0]:
             parameter="?popup=93&amp;errorMessage="+what[0]
         elif action=='insert':
@@ -515,25 +484,16 @@ def media(req):
     #  set the realted table, so this returns to the correct data
     tableID=req.form['catID']
 
-#     util.redirect(req,"../testValue.py/testvalue?test="+repr(cols)+repr(filename))
-
     if action!='cancel':
 
         what=doSql(req,action,cols,config['mediaIDfield'],config['dbname'],config['mediaTable'],config['selectedHost'],config['owner'])
         cleanTmp(config)
-        #        util.redirect(req,"../testValue.py/testvalue?test="+repr(what))
 
         if what[0]:
             parameter="?popup=93&amp;errorMessage="+what[0]
         else:
-#            insertID=what[1]
             parameter="?media="+str(tableID)
     else:
-#        try:
-#            cancelAction=req.form['cancelAction']
-#        except:
-#            cancelAction="7"
-#        parameter="?action="+cancelAction
         parameter="?media="+str(tableID)
 
     util.redirect(req,"../index.py"+parameter)
@@ -541,7 +501,6 @@ def media(req):
 def Imedia(req):
 
     config=getConfig(req,req.form['dbname'].value)
-#    util.redirect(req,"../testValue.py/testvalue?test="+repr(req.form.list))
 
     # get the column names and column types for tableName
     cols={}
@@ -577,8 +536,6 @@ def Imedia(req):
         else:
             cols[config['invisible']]=filename
 
-#    util.redirect(req,"../testValue.py/testvalue?test="+repr(cols)+repr(filename)+str(q))
-
     try:                # SAVE clicked
         action=req.form['savebutton.x']
         action='insert'
@@ -601,17 +558,13 @@ def Imedia(req):
 
 
     if action!='cancel':
-#        util.redirect(req,"../testValue.py/testvalue?test="+repr(cols))##+repr(cols[config['mediaIDfield']]))
 
         what=doSql(req,action,cols,config['mediaIDfield'],config['dbname'],config['mediaTable'],config['selectedHost'],config['owner'])
         cleanTmp(config)
-        
-#        util.redirect(req,"../testValue.py/testvalue?test="+repr(what))
 
         if what[0]:
             parameter="?popup=93&amp;errorMessage="+what[0]
         else:
-#            insertID=what[1]
             parameter="?media="+str(tableID)
     else:
         parameter="?action=3"
@@ -619,8 +572,6 @@ def Imedia(req):
     util.redirect(req,"../index.py"+parameter)
 
 def support(req):
-
-#     util.redirect(req,"../testValue.py/testvalue?test="+repr(req.form.list))
     
     try:
         dbname=req.form['dbname'].value
@@ -652,8 +603,6 @@ def support(req):
                 for thisValue in req.form[thisKey]:
                     formString=formString+" "+(str(thisValue))
                 cols[thisKey]=formString
-
-#     util.redirect(req,"../testValue.py/testvalue?test="+repr(cols)+"---")
 
     if 'filename' in fieldNames:
         try:
@@ -692,13 +641,9 @@ def support(req):
             except:
                 action='cancel'
 
-#     util.redirect(req,"../testValue.py/testvalue?test="+repr(action)+"---"+str(cols)+'___'+repr(req.form.list))
-
     if action !='cancel':
 
         what=doSql(req,action,cols,fieldInfo['idField'],dbname,supportTableName,config['selectedHost'],"")
-
-#         util.redirect(req,"../testValue.py/testvalue?test="+repr(what)+"   "+str(config['dbname']))
 
         if what[0]:
             parameter="?popup=93&amp;errorMessage="+what[0]
@@ -739,7 +684,6 @@ def delMedia(req):
     idField=config['mediaIDfield']
     dbname=config['dbname']
 
-#    util.redirect(req,"../testValue.py/testvalue?test="+str(req.form)+"*****"+str(action))
     if action!='cancel':
 
         # delete the record
@@ -747,10 +691,8 @@ def delMedia(req):
         if what[0]:
             parameter="?popup=93&amp;errorMessage="+what[0]
         else:
-#            parameter="?media="+mediaRecord
             parameter="?action=3&amp;item="+str(itemID)
     else:
-#        parameter="?media="+mediaRecord
         parameter="?action=3&amp;item="+str(itemID)
 
     util.redirect(req,"/3t/index.py"+parameter)
@@ -776,7 +718,6 @@ def delCat(req):
     dbname=config['dbname']
     currentCat=req.form['currentCat']
 
-#    util.redirect(req,"../testValue.py/testvalue?test="+str(req.form)+"*****"+str(action))
     if action!='cancel':
 
         # delete the record
@@ -784,10 +725,8 @@ def delCat(req):
         if what[0]:
             parameter="?popup=93&amp;errorMessage="+what[0]
         else:
-#            parameter="?action=8"
             parameter="?action=8&amp;category="+str(currentCat)
     else:
-#        parameter="?action=8"
         parameter="?action=8&amp;category="+str(currentCat)
 
     util.redirect(req,"/3t/index.py"+parameter)
@@ -811,7 +750,6 @@ def delItem(req):
     tableName=config['itemTable']
     idField=config['itemIDfield']
     dbname=config['dbname']
-#    util.redirect(req,"../testValue.py/testvalue?test="+str(req.form)+"*****"+str(action))
 
     if action!='cancel':
 
@@ -830,11 +768,9 @@ def delItem(req):
 
 def delSupport(req):
     
-#     util.redirect(req,"../testValue.py/testvalue?test="+str(req.form.list))
     config=getConfig(req,req.form['dbname'].value)
     supportID=req.form['supportID']
     supportTableName=req.form['supportTableName']
-#     itemID=req.form['itemID']
     fieldInfo=getFieldInfo3(req,config['selectedHost'],config['dbname'],supportTableName)
     
     try:
@@ -847,7 +783,6 @@ def delSupport(req):
 
     config=getConfig(req,req.form['dbname'])
 
-#    util.redirect(req,"../testValue.py/testvalue?test="+str(req.form)+"*****"+str(action))
     if action!='cancel':
 
         # delete the record
@@ -856,10 +791,8 @@ def delSupport(req):
         if what[0]:
             parameter="?popup=93&amp;errorMessage="+what[0]
         else:
-#            parameter="?media="+mediaRecord
             parameter="?action=23&amp;supportTableName="+supportTableName
     else:
-#        parameter="?media="+mediaRecord
         parameter="?action=23&amp;supportTableName="+supportTableName
 
     util.redirect(req,"/3t/index.py"+parameter)
@@ -868,14 +801,12 @@ def doSql(req,action,cols,idField,dbname,tableName,selectedHost,owner):
     # this handles all insert, update, and delete sql
     # So, if the user is not logged in or doesn't have permission then this will fail
     # the default user (dbname) should only have select permission
-#     util.redirect(req,"../testValue.py/testvalue?test="+"doSql"+repr(cols))
     
     error=""
     insertID=''
     config=getConfig(req,req.form['dbname'].value)
 
     data=kooky2.myCookies(req,'get','',dbname,selectedHost)
-    #~ util.redirect(req,"../testValue.py/testvalue?test="+repr(data))
 
     try:
         username=data['username']
@@ -883,13 +814,6 @@ def doSql(req,action,cols,idField,dbname,tableName,selectedHost,owner):
     except:
         username=dbname
         userpass=dbname
-
-
-#     if not username:
-#         username=dbname
-#     if not userpass:
-#         userpass=dbname
-#     util.redirect(req,"../testValue.py/testvalue?test="+repr(username)+repr(userpass)+str(dbname))
 
     # get the column names and column types for tableName
     fieldInfo=getFieldInfo3(req,selectedHost,dbname,tableName)
@@ -921,16 +845,11 @@ def doSql(req,action,cols,idField,dbname,tableName,selectedHost,owner):
             if 'blob' in fieldTypes[colname.lower()]:
                 if colvalue:
                     pass
-#                     if config['convert2']:
-#                         conversion=convertImg(config,colvalue,cols[config['invisible']])
-#                         colvalue=conversion[0]
-#                         error=conversion[1]
                 else:
                     colvalue="skipme"
 
             # if it's a set field then change that colvalue
             elif 'set(' in fieldTypes[colname.lower()]:
-                #~ error='set'
                 if type(colvalue)==type([1]):
                     colvalue=string.join(colvalue,',')
 
@@ -967,13 +886,10 @@ def doSql(req,action,cols,idField,dbname,tableName,selectedHost,owner):
 
 
         setCols="("+setCols[1:]+")"
-        valueTags="("+valueTags[1:]+")" #tuple(valueTags)
+        valueTags="("+valueTags[1:]+")"
         setValues=tuple(setValues)
 
-        ########### this works
-
         q='insert into `'+tableName+'` '+ setCols+" "+ 'values '+valueTags
-#         util.redirect(req,"../testValue.py/testvalue?test="+str(q)+repr(setValues))
 
         try:
             dbconnection = MySQLdb.connect(host=selectedHost,user=username,passwd=userpass,db=dbname)
@@ -983,10 +899,7 @@ def doSql(req,action,cols,idField,dbname,tableName,selectedHost,owner):
             xcursor.execute("SELECT LAST_INSERT_ID()")
             insertID=xcursor.fetchone()[0]
         except:
-#            qstr=q.replace('%s','value')
             error='An INSERT query had failed for '+tableName.upper()  +" table and user "+username.upper()+". "
-#             error=str(q)+"   "+str(setValues)
-#            error=str(q)
         try:
             xcursor.close()
         except:
@@ -1000,8 +913,6 @@ def doSql(req,action,cols,idField,dbname,tableName,selectedHost,owner):
             dbconnection.close()
         except:
             pass
-        ########################
-
 
     elif action=='update':
 
@@ -1033,10 +944,6 @@ def doSql(req,action,cols,idField,dbname,tableName,selectedHost,owner):
             if 'blob' in fieldTypes[colname.lower()]:
                 if colvalue:
                     pass
-#                     if config['convert2']:
-#                         conversion=convertImg(config,colvalue,cols[config['invisible']])
-#                         colvalue=conversion[0]
-#                         error=conversion[1]
                 else:
                     colvalue="skipme"
 
@@ -1070,7 +977,6 @@ def doSql(req,action,cols,idField,dbname,tableName,selectedHost,owner):
             q='select `'+owner+'` from `'+tableName+'` where `'+idField+"`='"+str(idValue)+"'"
                         
             result=db.dbConnect(selectedHost,dbname,q,1)
-            #~ util.redirect(req,"../testValue.py/testvalue?test="+repr(result))
 
             try:
                 if result[0]:
@@ -1085,19 +991,14 @@ def doSql(req,action,cols,idField,dbname,tableName,selectedHost,owner):
                 username=dbname
                 userpass=dbname
 
-
-        ########### this works
         q="update `"+tableName+"` set "+str(setCols)+" where `"+idField+"`='"+str(idValue)+"'"
-#         util.redirect(req,"../testValue.py/testvalue?test="+str(q)+str(setValues))
 
         try:
             dbconnection = MySQLdb.connect(host=selectedHost,user=username,passwd=userpass,db=dbname)
             cursor = dbconnection.cursor()
             cursor.execute(q,setValues)
-#             util.redirect(req,"../testValue.py/testvalue?test="+repr(q)+str(username+" "+userpass+" "+dbname))
         except:
             error="An UPDATE query has failed for "+tableName.upper() +" table and user "+username.upper()+". "
-#             error=str(q)+"   "+str(setValues)
         try:
             xcursor.close()
         except:
@@ -1111,7 +1012,6 @@ def doSql(req,action,cols,idField,dbname,tableName,selectedHost,owner):
             dbconnection.close()
         except:
             pass
-        ########################
 
     elif action=="DELETE":
         # *******************************************************************
@@ -1122,7 +1022,6 @@ def doSql(req,action,cols,idField,dbname,tableName,selectedHost,owner):
 
         q="delete from `"+tableName+"` where `"+tableName+"`.`"+idField+"`="+"'"+str(cols)+"'"
         error=""
-#        util.redirect(req,"../testValue.py/testvalue?test="+repr(q))
 
         try:
             dbconnection = MySQLdb.connect(host=selectedHost,user=username,passwd=userpass,db=dbname)
@@ -1143,7 +1042,6 @@ def doSql(req,action,cols,idField,dbname,tableName,selectedHost,owner):
             dbconnection.close()
         except:
             pass
-        ########################
         
     if error:
         error=error+"<BR>-----<BR>"+\
@@ -1213,12 +1111,6 @@ def getFieldInfo3(req,selectedHost,dbname,tableName):
             fieldDefaults[fieldName.lower()]=fDefault
 
         fieldInfo['fieldNames']=fieldNames
-#    else:
-#        msg.append('Query Failed')
-#        msg.append(repr(q))
-#        msg.append('ID=2 for dbname='+str(dbname))
-#        errorHandler(req,msg,1)
-
 
     if fieldInfo['idField']:
         try:
@@ -1258,13 +1150,10 @@ def quoteHandler(tmp):
                 # if there is a 'Letter' or a left hand quote in
                 # front of the quote it's a right hand quote
                 if sind > 0 and (string.count(theLetters, theString[sind-1]) >0 or theString[sind-1]=='\xe2\x80\x9c'):
-    ##                       or theString[sind-1]=='&ldquo;'):
-    ##                            theString[sind]='&rdquo;'
                     theString[sind]='\xe2\x80\x9d'
                 # if there's not a 'Letter' in front of the quote
                 # or if it's the first character then it's a left quote.
                 else:
-    ##                            theString[sind]='&ldquo;'
                     theString[sind]='\xe2\x80\x9c'
     
             sind = sind +1
@@ -1297,7 +1186,6 @@ def convertImg(config,colvalue,file2Convert):
         outFile=open(convertedFile,"rb")
         colvalue=outFile.read()
         outFile.close()
-#        x=2/0
     except:
         error="Could not convert "+file2Convert.upper() +", command failed:\\n\\n"+convertCommand+\
         "\\n\\n Conversions that result in multiple files will fail by default."\

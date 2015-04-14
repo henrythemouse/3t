@@ -19,10 +19,6 @@ $Rev: 4 $
 
 from mod_python import psp,util #@UnresolvedImport
 
-'''
-$LastChangedDate: 2014-07-07 13:16:39 -0700 (Mon, 07 Jul 2014) $
-$LastChangedRevision:$
-'''
 
 
 # I USE THE WORD 'BROKEN' TO MARK BROKEN CODE
@@ -32,12 +28,7 @@ $LastChangedRevision:$
 # use this call to check variable values
 # util.redirect(req,"testValue.py/testvalue?test="+repr(qresult))
 
-# ************************** VERSION 2.0 dev *****************************
-# set some variables SPECIFIC to installation
-
-# *********************************************************************
-
-# this is a global variable, I don't think I need to pass this with functions !! but I do.
+# ************************** VERSION 3.0 *****************************
 
 #=================================================================================
 #=================================================================================
@@ -75,7 +66,6 @@ def index(req,currentCat=0,currentItem=1,action=0):
     try:
         dbname=req.form['config'].value
         config=myFunctions.getConfig(req,dbname)
-#         kookyDB=kooky2.myCookies(req,"","",dbname,"")
         
     except:
         # all I want here is the dbname from the browser cookie
@@ -87,22 +77,8 @@ def index(req,currentCat=0,currentItem=1,action=0):
         except:
             config=myFunctions.getConfig(req,"")
 
-
-#     util.redirect(req,"testValue.py/testvalue?test="+repr(config))
-    
-    # check for a config error
-#     if config['configError']=="configError":
     if config['configError']:
-#         errorMessage=config['configError']
-#         popup='93'
         action=100
-#         action=20
-
-#        util.redirect(req,"?error="+config['configError'])
-#    elif config['configError']:
-#        # just for debugging where the error occurred
-#        pass
-#        util.redirect(req,"testValue.py/testvalue?test="+repr(config['configError']))
     else:
         # write item images to disk for now until I can use them from the db
         writeImgs(config)
@@ -119,8 +95,6 @@ def index(req,currentCat=0,currentItem=1,action=0):
             error=req.form['error']
         except:
             error=''
-
-#        util.redirect(req,"testValue.py/testvalue?test="+repr(config))
 
         try:                # if available, get the category formdata
             catSelected=req.form['category']
@@ -166,14 +140,11 @@ def index(req,currentCat=0,currentItem=1,action=0):
                 action=16
             except:
                 mediaID=''
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(action)+"***"+str(mediaID)+'***'+str(req.form))
         try:
             supportTableName=req.form['supportTableName']
             if supportTableName=="Support Tables":
                 supportTableName=''
                 action=20
-#             else:
-#                 action=23
         except:
             pass
         
@@ -207,8 +178,6 @@ def index(req,currentCat=0,currentItem=1,action=0):
             popup=''
             errorMessage=''
             
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(config['dbname'])+"***"+str(dbname))
-
         #~ if action:          # load saved data
         # if I set this back to 'if action' then the login is reset on startup
         # if I do this then the login can be recovered and used again and again
@@ -227,8 +196,6 @@ def index(req,currentCat=0,currentItem=1,action=0):
             searchMode=req.form['searchMode']
         except:
             pass
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(data)+"--"+str(searchText))
-#             supportTableName=data['supportTableName']
         if not username or username=='':
             username=config['dbname']
             config['login']=''
@@ -250,9 +217,6 @@ def index(req,currentCat=0,currentItem=1,action=0):
                 searchText=data['searchText']
             except:
                 searchText=""
-#                 pass
-
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(data)+"--"+str(searchText)+"--"+str(action))            
 
         if not catID:
             try:
@@ -261,10 +225,6 @@ def index(req,currentCat=0,currentItem=1,action=0):
             except:
                 pass
             
-#     util.redirect(req,"testValue.py/testvalue?test="+str(config['dbname'])+"-"+str(username)+"-"+str(userpass))    
-#     util.redirect(req,"testValue.py/testvalue?test="+repr(searchText))
-    
-#    itemSelected=1
     # *******************************************
     # item image and navagation
     if action in (1,2,3,4):       # index item
@@ -272,7 +232,6 @@ def index(req,currentCat=0,currentItem=1,action=0):
         # need to refresh item in case of a newly inserted item
         item=itemData(currentItem,config)
         catSelect=catForm(catImages,currentCat)
-#        catImage=catImages[currentCat][1]
         currentItem=indexItem(item,itemSelected,action)
         item=itemData(currentItem,config)
         itemSelect=itemForm(item[4],currentItem)
@@ -287,8 +246,6 @@ def index(req,currentCat=0,currentItem=1,action=0):
         resultHeader=results[1]
         resultData=results[2]
         cancelAction=3
-#        colSums=catSum(currentItem,config)
-#        util.redirect(req,"testValue.py/testvalue?test="+repr(colSums))
         if currentItem==0:
             # this is for ALL items listing
             headerWidths=getItemColWidths(resultHeader,config)
@@ -305,7 +262,6 @@ def index(req,currentCat=0,currentItem=1,action=0):
         itemSelect=itemForm(item[4],currentItem)
         currentCat=indexCat(currentCat,catImages,catSelected,action)
         catSelect=catForm(catImages,currentCat)
-#        catImage=catImages[currentCat][1]
         supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
         results=catQuery(req,catImages[currentCat][0],item[1],config)
@@ -316,16 +272,13 @@ def index(req,currentCat=0,currentItem=1,action=0):
         resultHeader=results[1]
         resultData=results[2]
         cancelAction=7
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(results))
 
         headerWidths=getCatColWidths(resultHeader,config)
         resultTable=catTable(resultData,catImages[currentCat][0],resultHeader,headerWidths,config)
-#         util.redirect(req,"testValue.py/testvalue?test="+str(resultTable))
 
     elif action==10:     # edit item
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
-#        catImage=catImages[currentCat][1]
         supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
         # not that in all insert/update forms I use 'result' and not 'results'
@@ -340,7 +293,6 @@ def index(req,currentCat=0,currentItem=1,action=0):
     elif action==11:     # create item
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
-#        catImage=catImages[currentCat][1]
         supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
         result=createItem(currentCat,item,config)
@@ -353,12 +305,9 @@ def index(req,currentCat=0,currentItem=1,action=0):
     elif action==12:     # edit catagory
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
-#        catImage=catImages[currentCat][1]
         supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
-#         util.redirect(req,"testValue.py/testvalue?test="+str(catImages[currentCat][0]))
         result=editCat(catImages[currentCat][0],catID,config)
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(result))
 
         # parse the results list
         caption=result[0]
@@ -368,7 +317,6 @@ def index(req,currentCat=0,currentItem=1,action=0):
     elif action==13:     # create catagory
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
-#        catImage=catImages[currentCat][1]
         supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
         result=createCat(catImages[currentCat][0],catID,config)
@@ -382,12 +330,9 @@ def index(req,currentCat=0,currentItem=1,action=0):
        
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
-#        catImage=catImages[currentCat][1]
         supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(searchText)+repr(searchMode))
         results=searchQuery(searchText,searchMode,catImages[currentCat][0],item[1],config)
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(results[-3]))
 
         # parse the results list
         caption=results[0]
@@ -411,7 +356,6 @@ def index(req,currentCat=0,currentItem=1,action=0):
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
         item=itemData(currentItem,config)
-#        catImage=catImages[currentCat][1]
         supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
         results=mediaQuery(mediaID,config)
@@ -422,20 +366,15 @@ def index(req,currentCat=0,currentItem=1,action=0):
         resultData=results[2]
 
         headerWidths=getMediaColWidths(req,config)
-#         resultTable=mediaTable(resultData,cookieID['kookyID'],mediaID,config)
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(resultData))
         result=mediaTable(resultData,cookieID,mediaID,config)
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(result[1]))
         resultTable=result[0]
         
     elif action==16:     # edit media
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
-#        catImage=catImages[currentCat][1]
         supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
         result=editMedia(mediaID,catID,item,config)
-#        util.redirect(req,"testValue.py/testvalue?test="+repr(result[-1]))
 
         # parse the results list
         caption=result[0]
@@ -451,29 +390,22 @@ def index(req,currentCat=0,currentItem=1,action=0):
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
         item=itemData(currentItem,config)
-#        catImage=catImages[currentCat][1]
         supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(item))
         result=createMedia(mediaID,catID,item,config)
 
         # parse the results list
         caption=result[0]
         resultHeader=result[1]
         resultTable=result[2]
-        #~ catID=result[4]
 
     elif action==20:     # about
 
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
-#        catImage=catImages[currentCat][1]
         supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
-#         results=aboutInfo(config)
         results=getDoc(config,doc)
-        
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(results[1])+" "+str(results[2]))
         
         # parse the results list
         caption='Configuration' #results[0]
@@ -483,7 +415,6 @@ def index(req,currentCat=0,currentItem=1,action=0):
         
         docDiv=docTable(resultData,doc,config)
         resultTable=docDiv[0]
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(docDiv[1])+" resultTable: "+str(resultTable))
 
     elif action==21:     #edit config
 
@@ -492,7 +423,6 @@ def index(req,currentCat=0,currentItem=1,action=0):
         supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
         result=editConfig(req,config)
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(docDiv[1])+" resultTable: "+str(resultTable))
             
         # parse the results list
         caption=result[0]
@@ -502,7 +432,6 @@ def index(req,currentCat=0,currentItem=1,action=0):
     elif action==22:     #create config
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
-#        catImage=catImages[currentCat][1]
         supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
         result=createConfig(req,config)
@@ -514,21 +443,14 @@ def index(req,currentCat=0,currentItem=1,action=0):
 
     elif action==23:     #show support table
         
-#         currentItem=indexItem(item,itemSelected,action)
-#         itemImage=itemImg(itemImage,item,config)
-#         catImages=catImgs(config)
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
-#         catImage=catImages[currentCat][1]
         supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
         
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(catImages)+" "+str(supportTableName))
         result=supportTable(supportTableName,config)
         # in case the _category table has been edited this will refress the images
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(len(result[0[0]]))+" "+str(result[5]))
-        catImages=catImgs2(config)
-        
+        catImages=catImgs2(config)        
 
         # parse the results list
         caption='supportTableHeader'
@@ -539,10 +461,8 @@ def index(req,currentCat=0,currentItem=1,action=0):
     elif action==24:     #edit support record
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
-#        catImage=catImages[currentCat][1]
         supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(req.form.list)+" "+str(supportID))
 
         result=editSupport(supportTableName,supportID,config)
 
@@ -554,36 +474,15 @@ def index(req,currentCat=0,currentItem=1,action=0):
     elif action==25:     #create support record
         itemSelect=itemForm(item[4],currentItem)
         catSelect=catForm(catImages,currentCat)
-#        catImage=catImages[currentCat][1]
         supportSelect=supportForm(supportTableName,config)
         search=searchForm(searchText,searchMode)
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(supportTableName)+'___'+repr(config))
 
         result=createSupport(supportTableName,config)
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(result[:-1]))
 
         # parse the results list
         caption=result[0]
         resultHeader=result[1]
         resultTable=result[2]
-
-
-#     elif action==100:     # configure dialog
-#         # the emergency configuration dialog
-#         # when something is wrong in the config.txt file
-#         # the actual branch is done below
-# #         result=supportTable("_config",config)
-#         result=createSupport("_config",config)
-# #         util.redirect(req,"testValue.py/testvalue?test="+repr(req.form.list)+" "+str(result))
-# 
-#         # parse the results list
-#         supportTableName="_config"
-#         caption='supportTableHeader'
-#         resultTable=result[0]
-#         headerWidths=result[1]
-#         resultHeader=result[2]
-#         action=0
-#         pass
 
     elif action<100:               # no action - use defaults
         
@@ -591,13 +490,10 @@ def index(req,currentCat=0,currentItem=1,action=0):
             # this goes back to the item display
             # I could do more and return to ???, not a safe bet however.
             item=itemData(currentItem,config)
-            #~ util.redirect(req,"testValue.py/testvalue?test="+repr(currentItem))
             currentItem=indexItem(item,itemSelected,action)
             itemSelect=itemForm(item[4],currentItem)
             itemImage=itemImg(itemImage,item,config)
-#             catImages=catImgs(config)
             catSelect=catForm(catImages,currentCat)
-#            catImage=catImages[currentCat][1]
             supportSelect=supportForm(supportTableName,config)
             search=searchForm(searchText,searchMode)
             results=itemQuery(currentItem,item,config)
@@ -615,23 +511,16 @@ def index(req,currentCat=0,currentItem=1,action=0):
             # if the last entry was not media, the last media entry will be displayed
 
             itemID,mediaID,q=lastUpdate(config)
-#             util.redirect(req,"testValue.py/testvalue?test="+repr(q))
             item=itemData2(itemID,config)
             currentItem=indexItem(item,itemSelected,action)
             itemSelect=itemForm(item[4],currentItem)
             itemImage=itemImg(itemImage,item,config)
             catImages=catImgs2(config)
-#             util.redirect(req,"testValue.py/testvalue?test="+str(catImages)+"----"+str(currentItem))
             currentCat=0
             catSelect=catForm(catImages,currentCat)
-#            catImage=catImages[currentCat][1]
             supportSelect=supportForm(supportTableName,config)
             search=searchForm(searchText,searchMode)
             results=mediaQuery(mediaID,config)
-
-#             util.redirect(req,"testValue.py/testvalue?test="+repr(results)+"----"+str(item[1]))
-            # parse the results list
-            #~ cookieIDtext=kooky2.myCookies(req,'','','','')#['kookyID']
 
             caption="Most Recent Entry: "+results[0]
             resultHeader=results[1]
@@ -639,29 +528,21 @@ def index(req,currentCat=0,currentItem=1,action=0):
             action=15
             
             headerWidths=getMediaColWidths(req,config)
-            #~ data=kooky2.myCookies(req,'get','',config['dbname'],config['selectedHost'])
-            #~ username=data['username']
-            #~ util.redirect(req,"testValue.py/testvalue?test="+repr(data))
             result=mediaTable(resultData,cookieID,mediaID,config)
             resultTable=result[0]
             
         else:
 
-#             item=itemData2(1,config)
             item=itemData(currentItem,config)
-#             util.redirect(req,"testValue.py/testvalue?test="+repr(currentItem)+"----"+str(item))
             currentItem=indexItem(item,itemSelected,action)
             itemSelect=itemForm(item[4],currentItem)
             itemImage=itemImg(itemImage,item,config)
             catImages=catImgs2(config)
-#             util.redirect(req,"testValue.py/testvalue?test="+repr(catImages)+"----"+str(item[4]))
             catSelect=catForm(catImages,currentCat)
-#            catImage=catImages[currentCat][1]
             supportSelect=supportForm(supportTableName,config)
             search=searchForm(searchText,searchMode)
             results=itemQuery(currentItem,item,config)
             cleanTmp(config)
-#             util.redirect(req,"testValue.py/testvalue?test="+repr(results)+"----"+str(item[1]))
 
             # parse the results list
             caption=results[0]
@@ -693,17 +574,12 @@ def index(req,currentCat=0,currentItem=1,action=0):
             'results':results\
             }
 
-#         util.redirect(req,"testValue.py/testvalue?test="+"kooky1 "+repr((data['username']+"-"+data['userpass']+"-"+config['login'])))
         kookied=kooky2.myCookies(req,'save',data,config['dbname'],config['selectedHost'])
-#         util.redirect(req,"testValue.py/testvalue?test="+"kooky2 "+repr((kookied)))
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(data)+"--"+str(searchText)+"--"+str(action))            
 
         # set the template name
         mainForm='templates/main4.html'
         # check for an item relate cat record to enable/disable delete function
         relatedCat=relatedRecords(item[1],config)
-#        relatedCat=relatedRecords(currentItem,config)
-#         util.redirect(req,"testValue.py/testvalue?test="+"kooky "+repr((kookied)+repr(currentItem)))
 
         # the dic of values to pass to the html page
         v['loginValue']=config['login']
@@ -745,9 +621,7 @@ def index(req,currentCat=0,currentItem=1,action=0):
 
     else:
 
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(config))
         result=createSupport(config['configTable'],config)
-#         util.redirect(req,"testValue.py/testvalue?test="+repr(result))
         caption='supportTableHeader'
         resultTable=result[2]
 
@@ -758,8 +632,6 @@ def index(req,currentCat=0,currentItem=1,action=0):
         v['errorMessage']=errorMessage
         v['popup']=popup
         v['popupbackground']=config['popupbackground']
-
-#     util.redirect(req,"testValue.py/testvalue?test="+repr(config))
 
     # call the html doc passing it the data
     return psp.PSP(req,mainForm,vars=v)
@@ -1006,9 +878,6 @@ def moreForm():
 
     return(form)
 
-
-
-
 ############ item functions
 
 def writeImgs(config):
@@ -1147,9 +1016,6 @@ def itemData(currentItem,config):
  
     ## Really need to account for zero items in table
     ## Need to branch at some point to create the first item !!!
-#     mainTitle=''
-#     for thisItem in range(0,len(itemList[0])-1):
-#         mainTitle=mainTitle+" "+str(itemList[currentItem][thisItem])
     mainTitle=str(itemList[currentItem][0])
     itemID=itemList[currentItem][-1]
     imgName=itemList[currentItem][-1]
@@ -1158,14 +1024,12 @@ def itemData(currentItem,config):
     item=[mainTitle,itemID,imgName,itemCount,itemList,currentItem]
    
     return item
-#     return mainTitle
 
 def itemData2(itemID,config):
 
     selected=""
     for thisField in config['itemListColumns']:
         selected=selected+"`"+config['itemTable']+"`.`"+thisField+"`,"
-#     selected=selected[:-1]
     
     # get item item data
     q="select "+selected\
@@ -1208,7 +1072,6 @@ def itemData2(itemID,config):
     item=[mainTitle,itemID,imgName,itemCount,itemList,currentItem]
  
     return item
-#     return q
 
 def itemQuery(currentItem,item,config):
 
@@ -1411,7 +1274,6 @@ def itemTable(itemID,itemData,config):
     return (resultTable)
 
 def itemForm(itemList,currentItem):
-#     itemList2=strict401gen.Select(itemList,onChange="javascript:this.form.submit();",size=1,name='item',id='item',selected=itemList[currentItem],Class="topfield")
 
     itemList2=strict401gen.Select(itemList,zebra='on',onChange="javascript:document.newItem.submit();",size=1,name='item',id='item',selected=itemList[currentItem],Class="topfield")
     form=strict401gen.Form(submit="",name='newItem',id='newItem',cgi='index?action=4')
@@ -1481,9 +1343,8 @@ def createItem(currentItem,item,config):
             itemRow.append(strict401gen.TD(strict401gen.Input(type='file',autofocus=focus,name=thisField[0],id=thisField[0],size="10",Class="editfield")))
 
         elif thisField[0] in config['supportTables']:
-            #we have a support table, used to generate a selecet field
+            # we have a support table, used to generate a selecet field
             shortList,longList=getPickList(thisField[0],config)
-#             test=str(cols[thisField][0])+"  short: "+str(shortList)+"   long: "+str(longList)
             itemRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
             itemRow.append(strict401gen.TD(strict401gen.Select(shortList,autofocus=focus,name=thisField[0],id=thisField[0],Class="editfield")))            
 
@@ -1576,9 +1437,8 @@ def editItem(currentItem,item,config):
             itemRow.append(strict401gen.TD(strict401gen.Input(type='file',autofocus=focus,name=cols[thisField][0],id=cols[thisField][0],size="10",Class="editfield")))
 
         elif cols[thisField][0] in config['supportTables']:
-            #we have a support table, used to generate a selecet field
+            # we have a support table, used to generate a selecet field
             shortList,longList=getPickList(cols[thisField][0],config)
-#             test=str(cols[thisField][0])+"  short: "+str(shortList)+"   long: "+str(longList)
             itemRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
             if not values[0][thisField] or values[0][thisField]=="None":
                 itemRow.append(strict401gen.TD(strict401gen.Select(shortList,autofocus=focus,name=cols[thisField][0],id=cols[thisField][0],Class="editfield")))            
@@ -1624,7 +1484,6 @@ def catSum(currentItem,config):
                     colValue="0"
 
                 colSums.append(["Total for "+colName,colValue])
-#                colSums.append(q1)
     return colSums
 
 def catImgs(config):
@@ -1805,7 +1664,6 @@ def catQuery(req,categoryName,itemID,config):
         catHeader=[]
 
     return (catCaption,catHeader,qresult2,'cat')
-#     return (q)
 
 def catTable(catData,categoryName,header,colWidths,config):
     
@@ -1869,11 +1727,6 @@ def catTable(catData,categoryName,header,colWidths,config):
                     toolTable=strict401gen.TableLite(CLASS='tooltable')
                     toolRow=strict401gen.TR(Class=row+'row')
                     # column for the edit button
-#                     if searchType=='booleanxSearch':
-#                         editImage=strict401gen.RawText("&nbsp;")
-#                     elif searchType=="allSearch":
-#                         editImage=strict401gen.Image(("images/edit.png","16","16"),alt="Edit",id="Edit",title="Edit Record")
-#                     else:
                     editImage=strict401gen.Image((editImg,"16","16"),alt="Edit",id="Edit",title=editToolTip)
                     if 'inactive'in editImg:
                         toolRow.append(strict401gen.TD(editImage))
@@ -1900,7 +1753,6 @@ def catTable(catData,categoryName,header,colWidths,config):
                         catRow.append(strict401gen.TD(thisRecord[thisCol],Class="resultcol"))
                 else:
                     catRow.append(strict401gen.TD(strict401gen.RawText("&nbsp;"),Class="resultcol"))
-#                     catRow.append(strict401gen.TD(str(config['supportTables']),Class="resultcol"))
 
             if not note:
                 noteimage=strict401gen.Image(("images/add.png","16","16"),alt="Add",title="Add a "+config['mediaTable'])
@@ -1931,7 +1783,6 @@ def catTable(catData,categoryName,header,colWidths,config):
             catRow.append(strict401gen.TD(strict401gen.RawText("No records found for "+categoryName),colspan="1"))
         catTable.append(catRow)
         
-#     return catData
     return catTable
 
 def catColumns(categoryName,itemID,config):
@@ -2097,9 +1948,8 @@ def createCat(categoryName,item,config):
             catRow.append(strict401gen.TD(strict401gen.Input(type="text",autofocus=focus,name=thisField[0],id=thisField[0],maxlength="6",Class="editfield dataInput")))
 
         elif thisField[0] in config['supportTables']:
-            #we have a support table, used to generate a selecet field
+            # we have a support table, used to generate a selecet field
             shortList,longList=getPickList(thisField[0],config)
-#             test=str(cols[thisField][0])+"  short: "+str(shortList)+"   long: "+str(longList)
             catRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
             catRow.append(strict401gen.TD(strict401gen.Select(shortList,autofocus=focus,name=thisField[0],id=thisField[0],Class="editfield")))            
 
@@ -2218,9 +2068,8 @@ def editCat(categoryName,catID,config):
             catRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[0][thisField],autofocus=focus,name=cols[thisField][0],id=cols[thisField][0],maxlength="6",Class="editfield dataInput")))
 
         elif colNames[thisField] in config['supportTables'] or colNames[thisField]==config['catColumn']:
-            #we have a support table, used to generate a select field
+            # we have a support table, used to generate a select field
             shortList,longList=getPickList(cols[thisField][0],config)
-#             test=str(cols[thisField][0])+"  short: "+str(shortList)+"   long: "+str(longList)
             catRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
             if not values[0][thisField] or values[0][thisField]=="None":            
                 catRow.append(strict401gen.TD(strict401gen.Select(shortList,name=cols[thisField][0],id=cols[thisField][0],Class="editfield")))            
@@ -2498,7 +2347,6 @@ def mediaTable(mediaData,cookieID,record,config):
                 blobFile.write(thisRow[thisCol])
                 blobFile.close()
     
-    #                binaryLink=strict401gen.Href("tmp/"+cookieID+'/'+binaryname,text,onClick="window.open(this.href);return false;")
                 blobLink=strict401gen.Href("tmp/"+cookieID+'/'+blobName,strict401gen.Image("images/fileTypes/"+iconName,title=blobToolTip,alt=iconName,Class="mediacolicon"),onClick="window.open(this.href);return false;")
                 mediaRow.append(strict401gen.TD(blobLink,colspan="1",Class="mediacolimage"))
     
@@ -2633,9 +2481,8 @@ def createMedia(mediaID,catID,item,config):
             mediaRow.append(strict401gen.TD(strict401gen.Input(type="text",autofocus=focus,name=thisField[0],id=thisField[0],maxlength="6",Class="editfield dataInput")))
 
         elif thisField[0] in config['supportTables']:
-            #we have a support table, used to generate a selecet field
+            # we have a support table, used to generate a selecet field
             shortList,longList=getPickList(thisField[0],config)
-#             test=str(cols[thisField][0])+"  short: "+str(shortList)+"   long: "+str(longList)
             mediaRow.append(strict401gen.TD(thisField[0],Class="editlabel"))
             mediaRow.append(strict401gen.TD(strict401gen.Select(shortList,autofocus=focus,name=thisField[0],id=thisField[0],Class="editfield")))            
 
@@ -2657,7 +2504,6 @@ def createMedia(mediaID,catID,item,config):
         "` where `"+config['itemIDfield']+"`='"+str(item[1])+"'"
 
         info=db.dbConnect(config['selectedHost'],config['dbname'],q,1)
-#         caption=str(q)
         caption='Insert '+config['mediaTable']+' for '+" ".join(info)+' '
     else:
         # for a category header
@@ -2728,12 +2574,6 @@ def editMedia(mediaID,catID,item,config):
             maxlen=''
 
         count=count+1
-#         focus="1"
-#         if focus=="1":
-#             focus=''
-#         else:
-#             focus="1"
-#         
         if 'enum(' in cols[thisField][1]:
             enumList=cols[thisField][1].split("','")
             enumList[0]=enumList[0][6:]
@@ -2774,9 +2614,8 @@ def editMedia(mediaID,catID,item,config):
             mediaRow.append(strict401gen.TD(strict401gen.Input(type="text",value=values[0][thisField],autofocus=focus,name=cols[thisField][0],id=cols[thisField][0],maxlength="6",Class="editfield dataInput")))
 
         elif cols[thisField][0] in config['supportTables']:
-            #we have a support table, used to generate a selecet field
+            # we have a support table, used to generate a selecet field
             shortList,longList=getPickList(cols[thisField][0],config)
-#             test=str(cols[thisField][0])+"  short: "+str(shortList)+"   long: "+str(longList)
             mediaRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel"))
             if not values[0][thisField] or values[0][thisField]=="None":
                 mediaRow.append(strict401gen.TD(strict401gen.Select(shortList,autofocus=focus,name=cols[thisField][0],id=cols[thisField][0],Class="editfield dataInput")))            
@@ -2965,23 +2804,11 @@ def supportTable(supportTableName,config):
 
             supportTable.append(supportRow)
 
-#         # last row first col ???? doesn't look like this is needed, it's an attempt to pad the
-#         # bottom of the table to make sure I can scroll past the last row.
-#         #         supportTable.append(supportRow) supportRow=strict401gen.TR()
-#         supportRow.append(strict401gen.TD(strict401gen.Image(("images/shim.gif",endWidth,"10"),alt="Edit")))
-#         # last row middle cols
-#         for thisCol in colWidths:
-#             supportRow.append(strict401gen.TD(strict401gen.Image(("images/shim.gif",str(int(thisCol)-2),"10"),alt="Edit")))
-#         # last row last col
-#         supportRow.append(strict401gen.TD(strict401gen.Image(("images/shim.gif",endWidth,"10"),alt="Edit")))
-#         supportTable.append(supportRow)
-
     except:
         row='odd'
 
         supportRow=strict401gen.TR(Class=row+'row')
         supportRow.append(strict401gen.TD(strict401gen.RawText("No records found for "+supportTableName),colspan="1"))
-#         supportRow.append(strict401gen.TD(imagename,colspan="1"))
         supportTable.append(supportRow)
     
     header=[]
@@ -3009,7 +2836,6 @@ def editSupport(supportTableName,supportID,config):
     for thisCol in allCols:
         if 'PRI' in thisCol[3]:
             supportIDfield=thisCol[0]
-#             pass
         elif config['invisible'] in thisCol[0]:
             q4="select `"+supportTableName+'`.`'+thisCol[0]+"` from `"+supportTableName+\
             "` where `"+supportIDfield+"`='"+supportID+"'"
@@ -3063,8 +2889,6 @@ def editSupport(supportTableName,supportID,config):
                 
             supportComment.append(strict401gen.TD(str(comment),Class="editlabel",colspan=str(len(cols))))
             supportRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel",style="font-weight:bold"))
-#             selectedValues=values[thisField]
-#             if selectedValues==None:
             try:
                 selectedValues=values[thisField]
             except:
@@ -3105,8 +2929,6 @@ def editSupport(supportTableName,supportID,config):
                         supportRow.append(strict401gen.TD(strict401gen.Select(themeList,selected=selectedValues,name=cols[thisField][0],id=cols[thisField][0],style='width:80%',Class="editfield")))                    
                 else:
                         supportRow.append(strict401gen.TD(strict401gen.Input(type="text",value=selectedValues,name=cols[thisField][0],id=cols[thisField][0],size=sizelen,maxlength=maxlen,Class="editfield dataInput")))
-#                         supportRow.append(strict401gen.TD(strict401gen.Input(type="text",value=str(cols[thisField]),id=cols[thisField][0],size=sizelen,maxlength=maxlen,Class="editfield dataInput")))
-#                         supportRow.append(strict401gen.TD(strict401gen.Input(type="text",value='test',id=cols[thisField][0],maxlength=maxlen,Class="editfield dataInput")))
             
         else:
             # for all other support tables    
@@ -3160,7 +2982,6 @@ def createSupport(supportTableName,config):
 
     for thisCol in allCols:
         if 'PRI' in thisCol[3]:
-#             supportIDfield=thisCol[0]
             pass
         elif config['invisible'] in thisCol[0]:
             pass
@@ -3198,7 +3019,6 @@ def createSupport(supportTableName,config):
                 comment='no comment'
             supportComment.append(strict401gen.TD(str(comment[-1]),Class="editlabel",colspan=str(len(cols))))
             supportRow.append(strict401gen.TD(cols[thisField][0],Class="editlabel",style="font-weight:bold"))
-#             supportRow.append(strict401gen.TD(strict401gen.Input(type="text",id=cols[thisField][0],size=sizelen,maxlength=maxlen,Class="editfield dataInput")))
             
             try:
                 selectedValues=config[cols[thisField][0]]
@@ -3291,7 +3111,6 @@ def supportForm(supportTableName,config):
     supportList=strict401gen.Select(config['supportTables'],onChange="javascript:document.newSupport.submit();",size=1,name='supportTableName',id='supportTableName',Class="topfield")
     form=strict401gen.Form(submit="",name='newSupport',id='newSupport',cgi='index?action=23')
     form.append(supportList)
-#     form.append(strict401gen.Input(type='hidden',name='supportTableName',id='supportTableName',value=supportTableName))
     
     return(form)
 
@@ -3601,14 +3420,8 @@ def getMediaColWidths(req,config):
             except:
                 pass
 
-        #~ else:
-            #~ pass
-
-
         if colLen:
             colLengths.append(colLen)
-
-    #~ util.redirect(req,"testValue.py/testvalue?test="+repr(colLengths)+"---"+repr(colInfo))
 
     # total up all col lens
     colTotalLen=0
@@ -3665,7 +3478,7 @@ def updateCookie(req,name,value,config):
 
 
 
-############ about functions
+############ doc functions
 
 def getDoc(config,doc):
 
@@ -3779,7 +3592,6 @@ def docTable(docData,doc,config):
                     
             for line in docList:
                 txDiv.append(strict401gen.Para(line,Style="margin-left:10px;margin-right:10px"))       
-#                 txDiv.append(strict401gen.BR())
             txDiv.append(strict401gen.BR())
             pgDiv.append(txDiv)
         
@@ -4102,11 +3914,7 @@ def getToolTip(colName,colValue,config):
                 break
         except:
             pass
-        
-    # for debuging
-#     toolTip=str(rowText)
-      
-            
+                    
     return toolTip
 
 def getImageList(config):
